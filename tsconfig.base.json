@@ -1,0 +1,19 @@
+// pnpm-monorepo/tsconfig.base.json
+{
+  "compilerOptions": {
+    "strict": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noUnusedLocals": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "jsx": "react-jsx",
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "target": "ES2022",
+    "noImplicitAny": true,
+    "resolveJsonModule": true
+  }
+}
