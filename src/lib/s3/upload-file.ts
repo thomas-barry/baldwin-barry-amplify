@@ -1,5 +1,5 @@
-import { FileUploadHandlerEvent } from 'primereact/fileupload';
 import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
+import { FileUploadHandlerEvent } from 'primereact/fileupload';
 import getUploadUrlCall from '../function-calls/get-upload-url-call';
 
 const uploadFileToS3 = async (event: FileUploadHandlerEvent) => {

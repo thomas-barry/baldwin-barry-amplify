@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import lightningcss from 'vite-plugin-lightningcss';
-import { browserslistToTargets } from 'lightningcss';
 import browserslist from 'browserslist';
+import { browserslistToTargets } from 'lightningcss';
+import { defineConfig } from 'vite';
+import lightningcss from 'vite-plugin-lightningcss';
 
 export default defineConfig({
   plugins: [

@@ -1,12 +1,12 @@
 // Script to test S3 upload with Blob (mimicking browser File object)
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import fs from 'fs';
+import fetch from 'node-fetch';
+import { Blob } from 'node:buffer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import fetch from 'node-fetch';
 import { v4 as uuidv4 } from 'uuid';
-import { Blob } from 'node:buffer';
 
 // Get current directory path in ES modules
 const __filename = fileURLToPath(import.meta.url);

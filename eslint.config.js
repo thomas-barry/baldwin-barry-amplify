@@ -1,10 +1,9 @@
-import eslint from '@eslint/js';
-import js from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import pluginReact from 'eslint-plugin-react';
+import { default as eslint, default as js } from '@eslint/js';
 import pluginImport from 'eslint-plugin-import-x';
 import pluginPrettier from 'eslint-plugin-prettier';
+import pluginReact from 'eslint-plugin-react';
 import pluginReactRefresh from 'eslint-plugin-react-refresh';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {

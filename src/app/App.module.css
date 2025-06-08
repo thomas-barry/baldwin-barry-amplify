@@ -9,7 +9,7 @@
 .facePalmImage {
   max-width: 400px;
   border-radius: 8px;
-} 
+}
 
 .banner {
   color: white;
@@ -21,5 +21,5 @@
 }
 
 .fileUpload {
-  background-color: white
+  background-color: white;
 }

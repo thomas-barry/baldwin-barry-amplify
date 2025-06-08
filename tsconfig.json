@@ -2,10 +2,19 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "module": "ESNext",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "outDir": "build",
     "rootDir": "."
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.test.ts", "build"]
+  "exclude": [
+    "node_modules",
+    "amplify/**/*",
+    "**/*.test.ts",
+    "build"
+  ]
 }

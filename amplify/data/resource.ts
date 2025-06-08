@@ -1,35 +1,54 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
-import { helloWorld } from '../functions/hello-world/resource';
-import { getUploadUrl } from '../functions/get-upload-url/resource';
 
-/*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any user authenticated via an API key can "create", "read",
-"update", and "delete" any "Todo" records.
-=========================================================================*/
 const schema = a.schema({
-  Todo: a
+  Gallery: a
     .model({
-      content: a.string(),
+      name: a.string().required(),
+      description: a.string(),
+      createdDate: a.datetime().required(),
+      images: a.hasMany('GalleryImage', 'galleryId'),
     })
-    .authorization(allow => [allow.publicApiKey()]),
-  callHelloWorld: a
-    .query()
-    .arguments({
-      name: a.string(),
+    .authorization(allow => [allow.owner()]),
+
+  Image: a
+    .model({
+      title: a.string().required(),
+      description: a.string(),
+      s3Key: a.string().required(),
+      uploadDate: a.datetime().required(),
+      fileSize: a.integer(),
+      width: a.integer(),
+      height: a.integer(),
+      contentType: a.string(),
+      tags: a.string().array(),
+      galleries: a.hasMany('GalleryImage', 'imageId'),
+      metadata: a.hasOne('ImageMetadata', 'imageId'),
     })
-    .returns(a.string())
-    .authorization(allow => [allow.publicApiKey()])
-    .handler(a.handler.function(helloWorld)),
-  callGetUploadUrl: a
-    .query()
-    .arguments({
-      name: a.string(), // Filename with extension
+    .authorization(allow => [allow.owner()]),
+
+  GalleryImage: a
+    .model({
+      galleryId: a.id().required(),
+      imageId: a.id().required(),
+      gallery: a.belongsTo('Gallery', 'galleryId'),
+      image: a.belongsTo('Image', 'imageId'),
+      addedDate: a.datetime().required(),
+      order: a.integer(), // For custom ordering within gallery
     })
-    .returns(a.string()) // JSON string containing uploadUrl, key, bucket, expiresIn
-    .authorization(allow => [allow.publicApiKey()])
-    .handler(a.handler.function(getUploadUrl)),
+    .authorization(allow => [allow.owner()]),
+
+  ImageMetadata: a
+    .model({
+      imageId: a.id().required(),
+      exifData: a.json(),
+      location: a.string(),
+      camera: a.string(),
+      iso: a.integer(),
+      aperture: a.string(),
+      shutterSpeed: a.string(),
+      image: a.belongsTo('Image', 'imageId'),
+    })
+    .authorization(allow => [allow.owner()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -37,38 +56,6 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'apiKey',
-    apiKeyAuthorizationMode: {
-      expiresInDays: 7,
-    },
+    defaultAuthorizationMode: 'userPool',
   },
 });
-
-/*== STEP 2 ===============================================================
-Go to your frontend source code. From your client-side code, generate a
-Data client to make CRUDL requests to your table. (THIS SNIPPET WILL ONLY
-WORK IN THE FRONTEND CODE FILE.)
-
-Using JavaScript or Next.js React Server Components, Middleware, Server 
-Actions or Pages Router? Review how to generate Data clients for those use
-cases: https://docs.amplify.aws/gen2/build-a-backend/data/connect-to-API/
-=========================================================================*/
-
-/*
-"use client"
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
-
-const client = generateClient<Schema>() // use this Data client for CRUDL requests
-*/
-
-/*== STEP 3 ===============================================================
-Fetch records from the database and use them in your frontend component.
-(THIS SNIPPET WILL ONLY WORK IN THE FRONTEND CODE FILE.)
-=========================================================================*/
-
-/* For example, in a React component, you can use this snippet in your
-  function's RETURN statement */
-// const { data: todos } = await client.models.Todo.list()
-
-// return <ul>{todos.map(todo => <li key={todo.id}>{todo.content}</li>)}</ul>

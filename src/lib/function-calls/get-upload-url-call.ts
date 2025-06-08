@@ -1,5 +1,5 @@
 import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '../../../amplify/data/resource';
+import type { Schema } from '../../../amplify/storage/resource';
 
 interface UploadUrlResponse {
   uploadUrl: string;
@@ -24,6 +24,8 @@ export default async function getImageUploadUrl(file: File): Promise<UploadUrlRe
 
     const response = await client.queries.callGetUploadUrl({ name: file.name });
     const responseDataString = response.data;
+
+    console.log('response:', response);
 
     if (!responseDataString) {
       throw new Error('no data returned from the API');
