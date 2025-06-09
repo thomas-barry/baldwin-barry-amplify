@@ -1,0 +1,95 @@
+.galleryListContainer {
+  width: 100%;
+  max-width: 1000px;
+  margin: 20px auto;
+}
+
+.galleryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.galleryListTitle {
+  color: white;
+  margin: 0;
+}
+
+.sortContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+}
+
+.sortDropdown {
+  min-width: 150px;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.galleryCard {
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.galleryCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.loaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--red-500);
+  padding: 20px;
+  text-align: center;
+}
+
+.emptyStateCard {
+  width: 100%;
+  margin: 20px 0;
+  text-align: center;
+  background-color: var(--surface-card);
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .galleryGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .galleryHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .sortContainer {
+    width: 100%;
+  }
+}
