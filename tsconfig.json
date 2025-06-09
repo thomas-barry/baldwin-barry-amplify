@@ -8,7 +8,17 @@
       "DOM.Iterable"
     ],
     "outDir": "build",
-    "rootDir": "."
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@/components/*": ["src/components/*"],
+      "@/modules/*": ["src/modules/*"],
+      "@/context/*": ["src/context/*"],
+      "@/lib/*": ["src/lib/*"],
+      "@/assets/*": ["src/assets/*"],
+      "@/routes/*": ["src/routes/*"],
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": [

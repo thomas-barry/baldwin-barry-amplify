@@ -1,11 +1,10 @@
+import facePalmImage from '@/assets/facepalm.jpg';
+import GalleryList from '@/components/GalleryList';
 import { Authenticator } from '@aws-amplify/ui-react';
 import { generateClient } from 'aws-amplify/data';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { useRef, useState } from 'react';
-import facePalmImage from '../assets/facepalm.jpg';
-import AmplifyFileUploader from '../components/AmplifyFileUploader';
-import GalleryList from '../components/GalleryList';
+import { useRef } from 'react';
 import styles from './App.module.css';
 
 // Import type for our data schema
@@ -15,7 +14,6 @@ import type { Schema } from '../../amplify/data/resource';
 
 function App() {
   const toast = useRef<Toast>(null);
-  const [refreshGalleryTrigger, setRefreshGalleryTrigger] = useState(0);
 
   // Generate the client for our Amplify data models
   const client = generateClient<Schema>();
@@ -36,9 +34,6 @@ function App() {
         detail: `Created gallery "${result.data?.name || 'New Gallery'}" successfully!`,
         life: 3000,
       });
-
-      // Trigger gallery list refresh
-      setRefreshGalleryTrigger(prev => prev + 1);
 
       console.log('Created gallery:', result);
     } catch (error) {
@@ -71,9 +66,8 @@ function App() {
           onClick={handleCreateGallery}
         />
 
-        <GalleryList refreshTrigger={refreshGalleryTrigger} />
+        <GalleryList />
 
-        <AmplifyFileUploader />
         {/* <StorageImage bucket={bucket} path="_U8A0066.jpg" /> */}
       </main>
     </Authenticator>

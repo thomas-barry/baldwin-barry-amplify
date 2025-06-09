@@ -1,0 +1,135 @@
+.stickyNavbar {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: #303037;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbarContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-inline: 20px;
+}
+
+.navbarLogo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  letter-spacing: 1;
+  line-height: 0;
+  padding-block: 16px;
+}
+
+.navbarLogoLink {
+  text-decoration: none;
+}
+
+.facePalmImage {
+  max-width: 40px;
+  border-radius: 8px;
+}
+
+.navLinks {
+  display: flex;
+  gap: 20px;
+}
+
+.navLink {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.navLink:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.activeLink {
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.authSection {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.username {
+  color: white;
+  font-size: 0.9rem;
+}
+
+.adminBadge {
+  background-color: #ff9800;
+  color: #303037;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 5px;
+}
+
+.loginButton, .logoutButton {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.loginButton:hover, .logoutButton:hover {
+  background-color: #1565c0;
+}
+
+.logoutButton {
+  background-color: #f44336;
+}
+
+.logoutButton:hover {
+  background-color: #d32f2f;
+}
+
+.authLoading {
+  color: white;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .navbarContainer {
+    flex-direction: column;
+    padding: 10px;
+  }
+  
+  .navLinks {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .authSection {
+    margin-top: 10px;
+    margin-left: 0;
+  }
+}

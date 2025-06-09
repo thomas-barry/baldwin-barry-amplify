@@ -1,0 +1,55 @@
+.formContainer {
+  padding: 1rem 0;
+}
+
+.formField {
+  margin-bottom: 1.5rem;
+}
+
+.formLabel {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.requiredMark {
+  color: var(--red-500);
+}
+
+.dialogFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 1rem;
+}
+
+/* Override PrimeReact input styles for full width */
+:global(.w-full) {
+  width: 100% !important;
+}
+
+/* Make focus visible for accessibility */
+:global(.p-inputtext:focus) {
+  box-shadow: 0 0 0 0.2rem rgba(63, 81, 181, 0.25);
+}
+
+/* Error state for inputs */
+:global(.p-invalid) {
+  border-color: var(--red-500) !important;
+}
+
+/* Animation for showing the dialog */
+:global(.p-dialog) {
+  animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

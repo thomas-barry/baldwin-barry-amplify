@@ -1,25 +1,14 @@
 import { FileUploader } from '@aws-amplify/ui-react-storage';
 import { Card } from 'primereact/card';
 import { Toast } from 'primereact/toast';
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 
-const AmplifyFileUploader = () => {
-  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+const AmplifyFileUploader = ({
+  onUploadSuccess,
+}: {
+  onUploadSuccess: (event: { key?: string; fileType?: string }) => void;
+}) => {
   const toast = useRef<Toast>(null);
-
-  useEffect(() => {
-    console.log('Uploaded files:', uploadedFiles);
-  }, [uploadedFiles]);
-
-  const handleUploadSuccess = (event: { key?: string }) => {
-    setUploadedFiles(files => [...files, event.key || 'unknown']);
-    toast.current?.show({
-      severity: 'success',
-      summary: 'Upload Complete',
-      detail: 'Image uploaded successfully',
-      life: 3000,
-    });
-  };
 
   const handleUploadError = (error: string) => {
     console.error('upload error:', error);
@@ -40,7 +29,7 @@ const AmplifyFileUploader = () => {
         maxFileCount={1}
         isResumable={true}
         showThumbnails={false}
-        onUploadSuccess={handleUploadSuccess}
+        onUploadSuccess={onUploadSuccess}
         onUploadError={handleUploadError}
       />
     </Card>

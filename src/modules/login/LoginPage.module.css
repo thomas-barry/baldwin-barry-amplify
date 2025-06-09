@@ -1,0 +1,34 @@
+.loginContainer {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.loginCard {
+  max-width: 460px;
+  width: 100%;
+  background-color: var(--surface-card);
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  text-align: center;
+}
+
+.loginCard h1 {
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.loginCard p {
+  margin-bottom: 2rem;
+  color: var(--text-color-secondary);
+}
+
+/* Style for Amplify UI components */
+:global(.amplify-button[data-variation='primary']) {
+  background-color: var(--primary-color);
+}
+
+:global(.amplify-tabs) {
+  margin-top: 1rem;
+}

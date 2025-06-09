@@ -1,0 +1,44 @@
+.galleryCard {
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.galleryCardLink {
+  text-decoration: none;;
+}
+
+.galleryCardContainer {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.deleteButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  background-color: rgba(244, 67, 54, 0.9) !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.deleteButton:hover {
+  background-color: rgba(211, 47, 47, 0.95) !important;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.deleteButton .pi {
+  font-size: 14px;
+  color: white;
+}
