@@ -1,3 +1,36 @@
+.homeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 20px;
+}
+
+.welcomeCard {
+  max-width: 600px;
+  text-align: center;
+  padding: 2rem;
+}
+
+.welcomeCard h1 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.welcomeCard p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  color: var(--text-color-secondary);
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
 .container {
   display: flex;
   flex-direction: column;

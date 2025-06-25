@@ -1,8 +1,8 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
-import { InputTextarea } from 'primereact/inputtextarea';
 import { Toast } from 'primereact/toast';
 import { useRef, useState } from 'react';
 import type { Schema } from '../../../../../amplify/data/resource';
@@ -19,7 +19,6 @@ interface GalleryFormProps {
 
 const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }: GalleryFormProps) => {
   const [name, setName] = useState<string>(initialValues?.name || '');
-  const [description, setDescription] = useState<string>(initialValues?.description || '');
   const [createdDate, setCreatedDate] = useState<Date>(
     initialValues?.createdDate ? new Date(initialValues.createdDate) : new Date(),
   );
@@ -29,10 +28,10 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
 
   // Generate the client for our Amplify data models
   const client = generateClient<Schema>();
+  const queryClient = useQueryClient();
 
   const resetForm = () => {
     setName(initialValues?.name || '');
-    setDescription(initialValues?.description || '');
     setCreatedDate(initialValues?.createdDate ? new Date(initialValues.createdDate) : new Date());
     setNameError('');
   };
@@ -65,7 +64,6 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
 
       const galleryData = {
         name: name.trim(),
-        description: description.trim() || null,
         createdDate: createdDate.toISOString(),
       };
 
@@ -97,6 +95,9 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
           detail: isEdit ? 'Gallery has been updated successfully' : 'New gallery has been created',
           life: 3000,
         });
+
+        // Refresh the galleries list
+        queryClient.invalidateQueries({ queryKey: ['galleries'] });
 
         onSave(savedGallery);
         handleHide();
@@ -160,22 +161,6 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
               placeholder='Enter gallery name'
             />
             {nameError && <small className='p-error'>{nameError}</small>}
-          </div>
-
-          <div className={styles.formField}>
-            <label
-              htmlFor='description'
-              className={styles.formLabel}>
-              Description
-            </label>
-            <InputTextarea
-              id='description'
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              className='w-full'
-              rows={5}
-              placeholder='Enter gallery description (optional)'
-            />
           </div>
         </div>
       </Dialog>

@@ -1,0 +1,231 @@
+.galleryContainer {
+  margin: 20px 0;
+}
+
+.thumbnailsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+/* Override for mobile to maintain horizontal scroll if preferred */
+@media (max-width: 768px) {
+  .thumbnailsContainer {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .thumbnailsContainer::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .thumbnailsContainer::-webkit-scrollbar-track {
+    background: #e9ecef;
+    border-radius: 4px;
+  }
+
+  .thumbnailsContainer::-webkit-scrollbar-thumb {
+    background: #6c757d;
+    border-radius: 4px;
+  }
+
+  .thumbnailsContainer::-webkit-scrollbar-thumb:hover {
+    background: #495057;
+  }
+}
+
+.thumbnailWrapper {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 150px;
+  max-width: 200px;
+  position: relative; /* Added for overlay positioning */
+}
+
+.thumbnail {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.thumbnail:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-color: #007bff;
+}
+
+/* PhotoSwipe overlay styles */
+.thumbnailOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  margin-bottom: 8px; /* Account for title space */
+}
+
+.thumbnailWrapper:hover .thumbnailOverlay {
+  opacity: 1;
+}
+
+.thumbnailOverlay i {
+  color: white;
+  font-size: 24px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Accessibility improvements for PhotoSwipe */
+.thumbnailWrapper:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.thumbnailWrapper:focus .thumbnailOverlay {
+  opacity: 1;
+}
+
+.thumbnailWrapper {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 150px;
+  max-width: 200px;
+  position: relative; /* Added for overlay positioning */
+}
+
+.thumbnail {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.thumbnail:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-color: #007bff;
+}
+
+/* PhotoSwipe overlay styles */
+.thumbnailOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  margin-bottom: 8px; /* Account for title space */
+}
+
+.thumbnailWrapper:hover .thumbnailOverlay {
+  opacity: 1;
+}
+
+.thumbnailOverlay i {
+  color: white;
+  font-size: 24px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Accessibility improvements for PhotoSwipe */
+.thumbnailWrapper:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.thumbnailWrapper:focus .thumbnailOverlay {
+  opacity: 1;
+}
+
+/* PhotoSwipe gallery grid layout */
+.thumbnailsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+/* Override for mobile to maintain horizontal scroll if preferred */
+@media (max-width: 768px) {
+  .thumbnailsContainer {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .thumbnailsContainer::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .thumbnailsContainer::-webkit-scrollbar-track {
+    background: #e9ecef;
+    border-radius: 4px;
+  }
+
+  .thumbnailsContainer::-webkit-scrollbar-thumb {
+    background: #6c757d;
+    border-radius: 4px;
+  }
+
+  .thumbnailsContainer::-webkit-scrollbar-thumb:hover {
+    background: #495057;
+  }
+  
+  .thumbnailWrapper {
+    min-width: 120px;
+    max-width: 120px;
+  }
+  
+  .thumbnail {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .imageTitle {
+    max-width: 120px;
+    font-size: 11px;
+  }
+
+  .thumbnailOverlay i {
+    font-size: 20px;
+  }
+}

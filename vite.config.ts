@@ -15,6 +15,9 @@ export default defineConfig({
       minify: true,
     }),
   ],
+  optimizeDeps: {
+    include: ['react-image-gallery'],
+  },
   resolve: {
     alias: {
       '@/components': path.resolve(__dirname, './src/components'),

@@ -1,3 +1,6 @@
+/* Import react-image-gallery styles */
+@import url('react-image-gallery/styles/css/image-gallery.css');
+
 #root {
   width: 100%;
   height: 100%;

@@ -9,27 +9,47 @@ import styles from './GalleryList.module.css';
 
 const GalleryList = () => {
   // Generate the client for our Amplify data models
-  const client = generateClient<Schema>();
+  const client = generateClient<Schema>({
+    authMode: 'apiKey',
+  });
   const queryClient = useQueryClient();
 
   const {
     data: galleries,
     isLoading,
     isError: isErrorQuery,
+    error,
   } = useQuery({
     queryKey: ['galleries'],
     queryFn: async () => {
-      const response = await client.models.Gallery.list();
-      const allGalleries = response.data;
-      if (!allGalleries) {
-        return null;
-      }
-      return allGalleries;
+      const response = await client.models.Gallery.list({
+        authMode: 'apiKey',
+      });
+      return response.data;
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (galleryId: string) => {
+      console.log('Deleting gallery with ID:', galleryId);
+      // First, delete all associated GalleryImage records
+      const galleryImagesResponse = await client.models.GalleryImage.list({
+        filter: { galleryId: { eq: galleryId } },
+        authMode: 'apiKey',
+      });
+
+      console.log('Errors', galleryImagesResponse.errors);
+
+      console.log('Gallery images to delete:', galleryImagesResponse.data);
+
+      if (galleryImagesResponse.data) {
+        // Delete each GalleryImage record
+        for (const galleryImage of galleryImagesResponse.data) {
+          await client.models.GalleryImage.delete({ id: galleryImage.id });
+        }
+      }
+
+      // Then delete the Gallery itself
       const response = await client.models.Gallery.delete({ id: galleryId });
       return response;
     },
@@ -63,7 +83,7 @@ const GalleryList = () => {
         <i
           className='pi pi-exclamation-triangle'
           style={{ fontSize: '2rem', color: 'var(--red-500)' }}></i>
-        <p>Error: {isErrorQuery}</p>
+        <p>Error loading galleries: {error?.message || 'Unknown error'}</p>
       </div>
     );
   }
