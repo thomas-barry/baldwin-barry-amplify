@@ -2,12 +2,21 @@ import { FileUploader } from '@aws-amplify/ui-react-storage';
 import { Card } from 'primereact/card';
 import { Toast } from 'primereact/toast';
 import { useRef } from 'react';
+import { createImageUploadMetadata } from '../../../../lib/s3-metadata-utils';
+
+interface AmplifyFileUploaderProps {
+  onUploadSuccess: (event: { key?: string; fileType?: string }) => void;
+  galleryId?: string;
+  imageTitle?: string;
+  imageDescription?: string;
+}
 
 const AmplifyFileUploader = ({
   onUploadSuccess,
-}: {
-  onUploadSuccess: (event: { key?: string; fileType?: string }) => void;
-}) => {
+  galleryId,
+  imageTitle,
+  imageDescription,
+}: AmplifyFileUploaderProps) => {
   const toast = useRef<Toast>(null);
 
   const handleUploadError = (error: string) => {
@@ -18,6 +27,24 @@ const AmplifyFileUploader = ({
       detail: error || 'failed to upload image',
       life: 5000,
     });
+  };
+
+  // Process file to add metadata before upload
+  const processFile = ({ file, key }: { file: File; key: string }) => {
+    const metadata = createImageUploadMetadata({
+      galleryId,
+      title: imageTitle,
+      description: imageDescription,
+      originalFilename: file.name,
+    });
+
+    console.log('Adding metadata to S3 upload:', metadata);
+
+    return {
+      file,
+      key,
+      metadata,
+    };
   };
 
   return (
@@ -31,6 +58,7 @@ const AmplifyFileUploader = ({
         showThumbnails={false}
         onUploadSuccess={onUploadSuccess}
         onUploadError={handleUploadError}
+        processFile={processFile}
       />
     </Card>
   );

@@ -2,6 +2,39 @@ import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3
 import sharp from 'sharp';
 import { Readable } from 'stream';
 
+// Utility functions for metadata handling
+interface ImageMetadata {
+  galleryId?: string;
+  title?: string;
+  description?: string;
+  uploadTimestamp?: string;
+  originalFilename?: string;
+  [key: string]: string | undefined;
+}
+
+function parseS3Metadata(s3Metadata: Record<string, string> = {}): ImageMetadata {
+  const metadata: ImageMetadata = {};
+
+  // Gallery ID (try multiple possible keys)
+  metadata.galleryId = s3Metadata.galleryid || s3Metadata['gallery-id'] || s3Metadata.gallery_id;
+
+  // Image title
+  metadata.title = s3Metadata.title || s3Metadata['image-title'] || s3Metadata.imagetitle;
+
+  // Image description
+  metadata.description = s3Metadata.description || s3Metadata['image-description'] || s3Metadata.imagedescription;
+
+  // Upload timestamp
+  metadata.uploadTimestamp =
+    s3Metadata.uploadtimestamp || s3Metadata['upload-timestamp'] || s3Metadata.upload_timestamp;
+
+  // Original filename
+  metadata.originalFilename =
+    s3Metadata.originalfilename || s3Metadata['original-filename'] || s3Metadata.original_filename;
+
+  return metadata;
+}
+
 async function streamToBuffer(readableStream: Readable): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
@@ -70,6 +103,15 @@ export const handler = async (event: any) => {
       const contentType = response.ContentType || '';
       console.log('content type:', contentType);
 
+      // Read metadata from the S3 object
+      const rawMetadata = response.Metadata || {};
+      console.log('S3 object metadata:', rawMetadata);
+
+      // Extract specific metadata fields if they exist
+      const { galleryId, title, description } = parseS3Metadata(rawMetadata);
+
+      console.log('Extracted metadata:', { galleryId, title, description });
+
       if (!isImage(contentType)) {
         console.log(`skipping non-image file: ${key} with content type: ${contentType}`);
         continue;
@@ -107,12 +149,20 @@ export const handler = async (event: any) => {
           'thumbnail-generator': 'amplify-sharp',
           width: THUMBNAIL_WIDTH.toString(),
           height: THUMBNAIL_HEIGHT.toString(),
+          // Pass through original metadata if available
+          ...(galleryId && { galleryid: galleryId }),
+          ...(title && { title }),
+          ...(description && { description }),
         },
       });
 
       await s3Client.send(putCommand);
 
       console.log(`successfully generated thumbnail: ${thumbnailKey}`);
+
+      // TODO: Optionally create Image record in DynamoDB here using the metadata
+      // This would require adding the necessary permissions and GraphQL client
+      // For now, the frontend handles Image record creation
     } catch (error) {
       console.error('error processing image:', error);
     }

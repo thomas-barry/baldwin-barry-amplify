@@ -177,7 +177,12 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
           <span>{isLoading ? 'Loading...' : `${imageCount} image${imageCount !== 1 ? 's' : ''}`}</span>
         </div>
       </div>
-      {isAdmin && <AmplifyFileUploader onUploadSuccess={onUploadSuccess} />}
+      {isAdmin && (
+        <AmplifyFileUploader
+          onUploadSuccess={onUploadSuccess}
+          galleryId={galleryId}
+        />
+      )}
 
       {/* Image Gallery Display */}
       <ImageGalleryComponent
