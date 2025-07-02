@@ -7,7 +7,7 @@ export interface ImageMetadata {
   title?: string;
   description?: string;
   uploadTimestamp?: string;
-  originalFilename?: string;
+  filename?: string;
   [key: string]: string | undefined;
 }
 
@@ -32,8 +32,7 @@ export function parseS3Metadata(s3Metadata: Record<string, string> = {}): ImageM
     s3Metadata.uploadtimestamp || s3Metadata['upload-timestamp'] || s3Metadata.upload_timestamp;
 
   // Original filename
-  metadata.originalFilename =
-    s3Metadata.originalfilename || s3Metadata['original-filename'] || s3Metadata.original_filename;
+  metadata.filename = s3Metadata.filename || s3Metadata['filename'];
 
   // Add any other metadata fields that don't match known patterns
   Object.keys(s3Metadata).forEach(key => {
@@ -51,9 +50,7 @@ export function parseS3Metadata(s3Metadata: Record<string, string> = {}): ImageM
         'uploadtimestamp',
         'upload-timestamp',
         'upload_timestamp',
-        'originalfilename',
-        'original-filename',
-        'original_filename',
+        'filename',
       ].includes(key.toLowerCase())
     ) {
       metadata[key] = s3Metadata[key];
@@ -127,7 +124,8 @@ export function createImageUploadMetadata(options: {
   galleryId?: string;
   title?: string;
   description?: string;
-  originalFilename?: string;
+  fileName?: string;
+  s3Key?: string;
   additionalMetadata?: Record<string, unknown>;
 }): Record<string, string> {
   const metadata: Record<string, unknown> = {
@@ -146,8 +144,12 @@ export function createImageUploadMetadata(options: {
     metadata.description = options.description;
   }
 
-  if (options.originalFilename) {
-    metadata.originalfilename = options.originalFilename;
+  if (options.fileName) {
+    metadata.filename = options.fileName;
+  }
+
+  if (options.s3Key) {
+    metadata.s3key = options.s3Key;
   }
 
   // Add any additional metadata

@@ -11,15 +11,11 @@ import ImageGalleryComponent from '../image-gallery/ImageGallery';
 const Gallery = ({ galleryId }: { galleryId: string }) => {
   const { isAdmin } = useAuth();
   const toast = useRef<Toast>(null);
-  // Use userPool for mutations (create/update/delete) - requires authentication
-  const clientUserPool = generateClient<Schema>({
-    authMode: 'userPool',
-  });
-  // Use apiKey for queries (read) - allows public access
+  const queryClient = useQueryClient();
+
   const clientApiKey = generateClient<Schema>({
     authMode: 'apiKey',
   });
-  const queryClient = useQueryClient();
 
   const { data: galleryImages, isLoading } = useQuery({
     queryKey: ['galleryImages', galleryId],
@@ -47,7 +43,7 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
 
   const onUploadSuccess = async (event: { key?: string; fileType?: string }) => {
     console.log('ON UPLOAD SUCCESS', event.key);
-    console.log('Current user auth status:', { isAdmin });
+    console.log('current user auth status:', { isAdmin });
 
     try {
       // Check if user is authenticated
@@ -60,72 +56,6 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
 
       if (!event.key) {
         throw new Error('Upload succeeded but no file key was returned');
-      }
-
-      // Extract filename from the key (removing the path)
-      const filename = event.key.split('/').pop() || 'Untitled';
-
-      // Generate thumbnail key by replacing 'uploads/' with 'thumbnails/'
-      const thumbnailKey = event.key.replace('uploads/', 'thumbnails/');
-
-      // 1. Create Image record
-      console.log('Creating image record with key:', event.key);
-      console.log('Image creation payload:', {
-        title: filename,
-        s3Key: event.key,
-        s3ThumbnailKey: thumbnailKey,
-        uploadDate: new Date().toISOString(),
-        contentType: event.fileType || 'image/jpeg',
-      });
-
-      const newImage = await clientUserPool.models.Image.create({
-        title: filename,
-        s3Key: event.key,
-        s3ThumbnailKey: thumbnailKey,
-        uploadDate: new Date().toISOString(),
-        contentType: event.fileType || 'image/jpeg', // Default if not provided
-        // Add other optional fields as needed
-      });
-
-      console.log('Image creation response:', newImage);
-      console.log('Image creation errors:', newImage.errors);
-
-      if (newImage.errors && newImage.errors.length > 0) {
-        throw new Error(
-          `Image creation failed: ${newImage.errors.map((e: { message: string }) => e.message).join(', ')}`,
-        );
-      }
-
-      if (!newImage.data) {
-        throw new Error('Image creation succeeded but no data was returned');
-      }
-
-      // 2. Create GalleryImage association if we have an image ID
-      console.log('Creating gallery image association for gallery:', galleryId);
-      console.log('New image data:', newImage.data?.id);
-      if (newImage.data?.id) {
-        const galleryImageResult = await clientUserPool.models.GalleryImage.create({
-          galleryId: galleryId,
-          imageId: newImage.data.id,
-          addedDate: new Date().toISOString(),
-          order: 0, // Default ordering
-        });
-
-        console.log('GalleryImage creation response:', galleryImageResult);
-        console.log('GalleryImage creation errors:', galleryImageResult.errors);
-
-        if (galleryImageResult.errors && galleryImageResult.errors.length > 0) {
-          throw new Error(
-            `GalleryImage creation failed: ${galleryImageResult.errors.map((e: { message: string }) => e.message).join(', ')}`,
-          );
-        }
-
-        console.log('Image associated with gallery:', {
-          galleryId,
-          imageId: newImage.data.id,
-        });
-      } else {
-        throw new Error('Image creation succeeded but no ID was returned');
       }
 
       // Update state and show success message

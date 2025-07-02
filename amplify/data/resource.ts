@@ -9,7 +9,7 @@ const schema = a.schema({
       images: a.hasMany('GalleryImage', 'galleryId'),
     })
     .authorization(allow => [
-      allow.publicApiKey(), // Allow public read access
+      allow.publicApiKey(),
       allow.owner().to(['create', 'update', 'delete']), // Only owners can modify
     ]),
 
@@ -18,26 +18,18 @@ const schema = a.schema({
       title: a.string().required(),
       description: a.string(),
       s3Key: a.string().required(),
-      s3ThumbnailKey: a.string(), // Path to the thumbnail image in S3
+      s3ThumbnailKey: a.string(),
       uploadDate: a.datetime().required(),
+      fileName: a.string().required(),
       fileSize: a.integer(),
       width: a.integer(),
       height: a.integer(),
       contentType: a.string(),
       tags: a.string().array(),
-      // Moved from ImageMetadata
       exifData: a.json(),
-      location: a.string(),
-      camera: a.string(),
-      iso: a.integer(),
-      aperture: a.string(),
-      shutterSpeed: a.string(),
       galleries: a.hasMany('GalleryImage', 'imageId'),
     })
-    .authorization(allow => [
-      allow.publicApiKey().to(['read']), // Allow public read access
-      allow.owner().to(['create', 'update', 'delete']), // Only owners can modify
-    ]),
+    .authorization(allow => [allow.publicApiKey().to(['read']), allow.owner().to(['create', 'update', 'delete'])]),
 
   GalleryImage: a
     .model({
@@ -46,10 +38,20 @@ const schema = a.schema({
       gallery: a.belongsTo('Gallery', 'galleryId'),
       image: a.belongsTo('Image', 'imageId'),
       addedDate: a.datetime().required(),
-      order: a.integer(), // For custom ordering within gallery
+      order: a.integer(),
     })
     .authorization(allow => [
       allow.publicApiKey().to(['read']), // Allow public read access
+      allow.owner().to(['create', 'update', 'delete']), // Only owners can modify
+    ]),
+
+  People: a
+    .model({
+      firstName: a.string().required(),
+      lastName: a.string().required(),
+    })
+    .authorization(allow => [
+      allow.publicApiKey(), // Allow public read access
       allow.owner().to(['create', 'update', 'delete']), // Only owners can modify
     ]),
 });

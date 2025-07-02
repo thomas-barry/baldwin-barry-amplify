@@ -4,6 +4,8 @@ import { Toast } from 'primereact/toast';
 import { useRef } from 'react';
 import { createImageUploadMetadata } from '../../../../lib/s3-metadata-utils';
 
+const UPLOAD_PATH = 'uploads/';
+
 interface AmplifyFileUploaderProps {
   onUploadSuccess: (event: { key?: string; fileType?: string }) => void;
   galleryId?: string;
@@ -11,12 +13,7 @@ interface AmplifyFileUploaderProps {
   imageDescription?: string;
 }
 
-const AmplifyFileUploader = ({
-  onUploadSuccess,
-  galleryId,
-  imageTitle,
-  imageDescription,
-}: AmplifyFileUploaderProps) => {
+const AmplifyFileUploader = ({ onUploadSuccess, galleryId }: AmplifyFileUploaderProps) => {
   const toast = useRef<Toast>(null);
 
   const handleUploadError = (error: string) => {
@@ -33,9 +30,10 @@ const AmplifyFileUploader = ({
   const processFile = ({ file, key }: { file: File; key: string }) => {
     const metadata = createImageUploadMetadata({
       galleryId,
-      title: imageTitle,
-      description: imageDescription,
-      originalFilename: file.name,
+      title: file.name,
+      description: '',
+      fileName: file.name,
+      s3Key: `${UPLOAD_PATH}${key}`,
     });
 
     console.log('Adding metadata to S3 upload:', metadata);
@@ -52,8 +50,8 @@ const AmplifyFileUploader = ({
       <Toast ref={toast} />
       <FileUploader
         acceptedFileTypes={['image/*']}
-        path='uploads/'
-        maxFileCount={1}
+        path={UPLOAD_PATH}
+        maxFileCount={10}
         isResumable={true}
         showThumbnails={false}
         onUploadSuccess={onUploadSuccess}

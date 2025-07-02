@@ -87,11 +87,11 @@ const imageDescription = metadata.description || metadata['image-description'];
 
 The following metadata fields are automatically added:
 
-- `galleryid`: The ID of the gallery the image belongs to
-- `title`: User-provided image title
-- `description`: User-provided image description
-- `uploadtimestamp`: ISO timestamp of when the upload occurred
-- `originalfilename`: The original filename before any processing
+- `galleryid`
+- `title`
+- `description`
+- `uploadtimestamp`
+- `filename`
 
 ## Advanced Usage Example
 

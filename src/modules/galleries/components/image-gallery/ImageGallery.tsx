@@ -19,6 +19,8 @@ interface GalleryImage {
     description?: string | null;
     uploadDate: string;
     contentType?: string | null;
+    width: number | null;
+    height: number | null;
   };
 }
 
@@ -71,6 +73,8 @@ const ImageGalleryComponent = ({ galleryImages, isLoading }: ImageGalleryCompone
                 thumbnail: thumbnailUrl,
                 description: galleryImage.image.description || galleryImage.image.title || '',
                 originalTitle: galleryImage.image.title,
+                originalHeight: galleryImage.image.width,
+                originalWidth: galleryImage.image.height,
               } as ReactImageGalleryItem;
             } catch (error) {
               console.error('Failed to get URL for image:', galleryImage.image.s3Key, error);
@@ -151,7 +155,7 @@ const ImageGalleryComponent = ({ galleryImages, isLoading }: ImageGalleryCompone
               className={styles.galleryImage}
               loading='lazy'
             />
-            {item.description && <div className={styles.imageDescription}>{item.description}</div>}
+            {/* {item.description && <div className={styles.imageDescription}>{item.description}</div>} */}
           </div>
         )}
         renderThumbInner={(item: ReactImageGalleryItem) => (
