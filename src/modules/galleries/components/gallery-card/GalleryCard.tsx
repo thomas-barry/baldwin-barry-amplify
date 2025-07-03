@@ -30,9 +30,7 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
         className={styles.galleryCardLink}>
         <Card
           title={gallery.name}
-          className={styles.galleryCard}>
-          <p>{gallery.description || 'No description'}</p>
-        </Card>
+          className={styles.galleryCard}></Card>
       </Link>
       {isAdmin && onDelete && (
         <Button

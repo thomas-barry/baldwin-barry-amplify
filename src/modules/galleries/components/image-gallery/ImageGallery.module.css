@@ -2,11 +2,8 @@
 
 .galleryContainer {
   width: 100%;
-  max-width: 1200px;
   margin: 0 auto;
-  background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
@@ -73,7 +70,8 @@
 
 .imageItem {
   position: relative;
-  height: 70vh;
+  height: 80vh;
+  padding-block: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -135,9 +133,7 @@
 }
 
 :global(.image-gallery-thumbnails-wrapper) {
-  background: #f8f9fa;
   padding: 16px;
-  border-top: 1px solid #e9ecef;
 }
 
 :global(.image-gallery-thumbnail) {

@@ -6,6 +6,8 @@ const schema = a.schema({
       name: a.string().required(),
       description: a.string(),
       createdDate: a.datetime().required(),
+      thumbnailImageId: a.id(),
+      thumbnailImage: a.belongsTo('Image', 'thumbnailImageId'),
       images: a.hasMany('GalleryImage', 'galleryId'),
     })
     .authorization(allow => [
@@ -28,6 +30,7 @@ const schema = a.schema({
       tags: a.string().array(),
       exifData: a.json(),
       galleries: a.hasMany('GalleryImage', 'imageId'),
+      thumbnailForGallery: a.hasOne('Gallery', 'thumbnailImageId'),
     })
     .authorization(allow => [allow.publicApiKey().to(['read']), allow.owner().to(['create', 'update', 'delete'])]),
 
@@ -42,16 +45,6 @@ const schema = a.schema({
     })
     .authorization(allow => [
       allow.publicApiKey().to(['read']), // Allow public read access
-      allow.owner().to(['create', 'update', 'delete']), // Only owners can modify
-    ]),
-
-  People: a
-    .model({
-      firstName: a.string().required(),
-      lastName: a.string().required(),
-    })
-    .authorization(allow => [
-      allow.publicApiKey(), // Allow public read access
       allow.owner().to(['create', 'update', 'delete']), // Only owners can modify
     ]),
 });

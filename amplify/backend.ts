@@ -18,7 +18,6 @@ backend.onUploadHandler.addEnvironment('GRAPHQL_ENDPOINT', backend.data.graphqlU
 backend.data.resources.tables['Gallery'].grantReadWriteData(backend.onUploadHandler.resources.lambda);
 backend.data.resources.tables['Image'].grantReadWriteData(backend.onUploadHandler.resources.lambda);
 backend.data.resources.tables['GalleryImage'].grantReadWriteData(backend.onUploadHandler.resources.lambda);
-backend.data.resources.tables['People'].grantReadWriteData(backend.onUploadHandler.resources.lambda);
 
 // Add table names as environment variables so Lambda can find them
 backend.onUploadHandler.addEnvironment('GALLERY_TABLE_NAME', backend.data.resources.tables['Gallery'].tableName);
@@ -27,7 +26,6 @@ backend.onUploadHandler.addEnvironment(
   'GALLERY_IMAGE_TABLE_NAME',
   backend.data.resources.tables['GalleryImage'].tableName,
 );
-backend.onUploadHandler.addEnvironment('PEOPLE_TABLE_NAME', backend.data.resources.tables['People'].tableName);
 
 // Export function name for debugging/monitoring purposes
 backend.addOutput({
