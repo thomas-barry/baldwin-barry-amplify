@@ -24,7 +24,6 @@ const GalleryList = () => {
     queryFn: async () => {
       const response = await client.models.Gallery.list({
         authMode: 'apiKey',
-        selectionSet: ['id', 'name', 'description', 'createdDate', 'thumbnailImageId', 'thumbnailImage.*'],
       });
       return response.data;
     },
