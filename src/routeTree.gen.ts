@@ -15,7 +15,8 @@ import { Route as LoginImport } from './routes/login'
 import { Route as IndexImport } from './routes/index'
 import { Route as GalleriesIndexImport } from './routes/galleries/index'
 import { Route as AdminIndexImport } from './routes/admin/index'
-import { Route as GalleriesGalleryIdImport } from './routes/galleries/$galleryId'
+import { Route as GalleriesGalleryIdIndexImport } from './routes/galleries/$galleryId/index'
+import { Route as GalleriesGalleryIdEditImport } from './routes/galleries/$galleryId/edit'
 
 // Create/Update Routes
 
@@ -43,9 +44,15 @@ const AdminIndexRoute = AdminIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const GalleriesGalleryIdRoute = GalleriesGalleryIdImport.update({
-  id: '/galleries/$galleryId',
-  path: '/galleries/$galleryId',
+const GalleriesGalleryIdIndexRoute = GalleriesGalleryIdIndexImport.update({
+  id: '/galleries/$galleryId/',
+  path: '/galleries/$galleryId/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const GalleriesGalleryIdEditRoute = GalleriesGalleryIdEditImport.update({
+  id: '/galleries/$galleryId/edit',
+  path: '/galleries/$galleryId/edit',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -67,13 +74,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
-    '/galleries/$galleryId': {
-      id: '/galleries/$galleryId'
-      path: '/galleries/$galleryId'
-      fullPath: '/galleries/$galleryId'
-      preLoaderRoute: typeof GalleriesGalleryIdImport
-      parentRoute: typeof rootRoute
-    }
     '/admin/': {
       id: '/admin/'
       path: '/admin'
@@ -88,6 +88,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalleriesIndexImport
       parentRoute: typeof rootRoute
     }
+    '/galleries/$galleryId/edit': {
+      id: '/galleries/$galleryId/edit'
+      path: '/galleries/$galleryId/edit'
+      fullPath: '/galleries/$galleryId/edit'
+      preLoaderRoute: typeof GalleriesGalleryIdEditImport
+      parentRoute: typeof rootRoute
+    }
+    '/galleries/$galleryId/': {
+      id: '/galleries/$galleryId/'
+      path: '/galleries/$galleryId'
+      fullPath: '/galleries/$galleryId'
+      preLoaderRoute: typeof GalleriesGalleryIdIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -96,57 +110,75 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/galleries/$galleryId': typeof GalleriesGalleryIdRoute
   '/admin': typeof AdminIndexRoute
   '/galleries': typeof GalleriesIndexRoute
+  '/galleries/$galleryId/edit': typeof GalleriesGalleryIdEditRoute
+  '/galleries/$galleryId': typeof GalleriesGalleryIdIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/galleries/$galleryId': typeof GalleriesGalleryIdRoute
   '/admin': typeof AdminIndexRoute
   '/galleries': typeof GalleriesIndexRoute
+  '/galleries/$galleryId/edit': typeof GalleriesGalleryIdEditRoute
+  '/galleries/$galleryId': typeof GalleriesGalleryIdIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/galleries/$galleryId': typeof GalleriesGalleryIdRoute
   '/admin/': typeof AdminIndexRoute
   '/galleries/': typeof GalleriesIndexRoute
+  '/galleries/$galleryId/edit': typeof GalleriesGalleryIdEditRoute
+  '/galleries/$galleryId/': typeof GalleriesGalleryIdIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/galleries/$galleryId' | '/admin' | '/galleries'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/admin'
+    | '/galleries'
+    | '/galleries/$galleryId/edit'
+    | '/galleries/$galleryId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/galleries/$galleryId' | '/admin' | '/galleries'
+  to:
+    | '/'
+    | '/login'
+    | '/admin'
+    | '/galleries'
+    | '/galleries/$galleryId/edit'
+    | '/galleries/$galleryId'
   id:
     | '__root__'
     | '/'
     | '/login'
-    | '/galleries/$galleryId'
     | '/admin/'
     | '/galleries/'
+    | '/galleries/$galleryId/edit'
+    | '/galleries/$galleryId/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
-  GalleriesGalleryIdRoute: typeof GalleriesGalleryIdRoute
   AdminIndexRoute: typeof AdminIndexRoute
   GalleriesIndexRoute: typeof GalleriesIndexRoute
+  GalleriesGalleryIdEditRoute: typeof GalleriesGalleryIdEditRoute
+  GalleriesGalleryIdIndexRoute: typeof GalleriesGalleryIdIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
-  GalleriesGalleryIdRoute: GalleriesGalleryIdRoute,
   AdminIndexRoute: AdminIndexRoute,
   GalleriesIndexRoute: GalleriesIndexRoute,
+  GalleriesGalleryIdEditRoute: GalleriesGalleryIdEditRoute,
+  GalleriesGalleryIdIndexRoute: GalleriesGalleryIdIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -161,9 +193,10 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/login",
-        "/galleries/$galleryId",
         "/admin/",
-        "/galleries/"
+        "/galleries/",
+        "/galleries/$galleryId/edit",
+        "/galleries/$galleryId/"
       ]
     },
     "/": {
@@ -172,14 +205,17 @@ export const routeTree = rootRoute
     "/login": {
       "filePath": "login.tsx"
     },
-    "/galleries/$galleryId": {
-      "filePath": "galleries/$galleryId.tsx"
-    },
     "/admin/": {
       "filePath": "admin/index.tsx"
     },
     "/galleries/": {
       "filePath": "galleries/index.tsx"
+    },
+    "/galleries/$galleryId/edit": {
+      "filePath": "galleries/$galleryId/edit.tsx"
+    },
+    "/galleries/$galleryId/": {
+      "filePath": "galleries/$galleryId/index.tsx"
     }
   }
 }

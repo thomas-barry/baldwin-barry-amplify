@@ -12,7 +12,7 @@ const schema = a.schema({
     })
     .authorization(allow => [
       allow.publicApiKey(),
-      allow.owner().to(['create', 'update', 'delete']), // Only owners can modify
+      allow.group('admin').to(['create', 'update', 'delete']), // Only owners can modify
     ]),
 
   Image: a
@@ -32,7 +32,10 @@ const schema = a.schema({
       galleries: a.hasMany('GalleryImage', 'imageId'),
       thumbnailForGallery: a.hasOne('Gallery', 'thumbnailImageId'),
     })
-    .authorization(allow => [allow.publicApiKey().to(['read']), allow.owner().to(['create', 'update', 'delete'])]),
+    .authorization(allow => [
+      allow.publicApiKey().to(['read']),
+      allow.group('admin').to(['create', 'update', 'delete']),
+    ]),
 
   GalleryImage: a
     .model({
@@ -45,7 +48,7 @@ const schema = a.schema({
     })
     .authorization(allow => [
       allow.publicApiKey().to(['read']), // Allow public read access
-      allow.owner().to(['create', 'update', 'delete']), // Only owners can modify
+      allow.group('admin').to(['create', 'update', 'delete']), // Only owners can modify
     ]),
 });
 

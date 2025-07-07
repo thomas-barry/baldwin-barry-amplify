@@ -1,7 +1,7 @@
 import Gallery from '@/modules/galleries/components/gallery/Gallery';
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/galleries/$galleryId')({
+export const Route = createFileRoute('/galleries/$galleryId/')({
   component: RouteComponent,
 });
 

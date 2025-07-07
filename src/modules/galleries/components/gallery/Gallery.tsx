@@ -1,7 +1,9 @@
 import { useAuth } from '@/context/AuthContext';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/data';
+import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { useRef } from 'react';
 import type { Schema } from '../../../../../amplify/data/resource';
@@ -25,7 +27,24 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
         filter: { galleryId: { eq: galleryId } },
         selectionSet: ['id', 'galleryId', 'imageId', 'addedDate', 'order', 'image.*'],
       });
-      return response.data;
+
+      // Sort by order field (nulls last), then by addedDate
+      const sortedData = response.data?.sort((a, b) => {
+        // Handle null/undefined order values - put them at the end
+        if (a.order === null && b.order === null) return 0;
+        if (a.order === null) return 1;
+        if (b.order === null) return -1;
+
+        // If both have order values, sort by order
+        if (a.order !== b.order) {
+          return a.order - b.order;
+        }
+
+        // If order values are the same, sort by addedDate as fallback
+        return new Date(a.addedDate).getTime() - new Date(b.addedDate).getTime();
+      });
+
+      return sortedData;
     },
   });
 
@@ -42,9 +61,6 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
   const imageCount = galleryImages?.length || 0;
 
   const onUploadSuccess = async (event: { key?: string; fileType?: string }) => {
-    console.log('ON UPLOAD SUCCESS', event.key);
-    console.log('current user auth status:', { isAdmin });
-
     try {
       // Check if user is authenticated
       const currentUser = await getCurrentUser();
@@ -105,6 +121,20 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
             className='pi pi-images'
             style={{ fontSize: '16px' }}></i>
           <span>{isLoading ? 'Loading...' : `${imageCount} image${imageCount !== 1 ? 's' : ''}`}</span>
+          {isAdmin && (
+            <Link
+              to='/galleries/$galleryId/edit'
+              params={{ galleryId }}
+              style={{ marginLeft: '12px' }}>
+              <Button
+                icon='pi pi-pencil'
+                size='small'
+                severity='info'
+                tooltip='Edit Gallery'
+                aria-label='Edit Gallery'
+              />
+            </Link>
+          )}
         </div>
       </div>
       {isAdmin && (
