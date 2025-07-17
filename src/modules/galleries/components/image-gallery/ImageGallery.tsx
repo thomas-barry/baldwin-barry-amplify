@@ -1,8 +1,8 @@
-import { getUrl } from 'aws-amplify/storage';
+import { StorageImage } from '@aws-amplify/ui-react-storage';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { useEffect, useState } from 'react';
 import { default as ReactImageGallery, ReactImageGalleryItem } from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
+import { THUMBNAIL_PREFIX, UPLOADS_PREFIX } from '../../../../../constants';
 import styles from './ImageGallery.module.css';
 
 interface GalleryImage {
@@ -30,91 +30,20 @@ interface ImageGalleryComponentProps {
 }
 
 const ImageGalleryComponent = ({ galleryImages, isLoading }: ImageGalleryComponentProps) => {
-  const [galleryItems, setGalleryItems] = useState<ReactImageGalleryItem[]>([]);
-  const [isLoadingUrls, setIsLoadingUrls] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const galleryItems = galleryImages.map(galleryImage => ({
+    original: galleryImage.image.s3Key,
+    thumbnail: galleryImage.image.s3ThumbnailKey || galleryImage.image.s3Key.replace(UPLOADS_PREFIX, THUMBNAIL_PREFIX),
+    description: galleryImage.image.description || galleryImage.image.title || '',
+    originalTitle: galleryImage.image.title,
+    originalHeight: galleryImage.image.height || 0,
+    originalWidth: galleryImage.image.width || 0,
+  }));
 
-  useEffect(() => {
-    const loadImageUrls = async () => {
-      if (!galleryImages?.length) {
-        setGalleryItems([]);
-        return;
-      }
-
-      setIsLoadingUrls(true);
-      setError(null);
-
-      try {
-        const items = await Promise.all(
-          galleryImages.map(async galleryImage => {
-            try {
-              // Get the original image URL
-              const originalUrlResult = await getUrl({
-                path: galleryImage.image.s3Key,
-                options: { expiresIn: 3600 }, // 1 hour
-              });
-
-              // Get thumbnail URL, fallback to original if no thumbnail
-              let thumbnailUrl = originalUrlResult.url.toString();
-              if (galleryImage.image.s3ThumbnailKey) {
-                try {
-                  const thumbnailUrlResult = await getUrl({
-                    path: galleryImage.image.s3ThumbnailKey,
-                    options: { expiresIn: 3600 },
-                  });
-                  thumbnailUrl = thumbnailUrlResult.url.toString();
-                } catch (thumbnailError) {
-                  console.warn('Failed to get thumbnail URL, using original:', thumbnailError);
-                }
-              }
-
-              return {
-                original: originalUrlResult.url.toString(),
-                thumbnail: thumbnailUrl,
-                description: galleryImage.image.description || galleryImage.image.title || '',
-                originalTitle: galleryImage.image.title,
-                originalHeight: galleryImage.image.width,
-                originalWidth: galleryImage.image.height,
-              } as ReactImageGalleryItem;
-            } catch (error) {
-              console.error('Failed to get URL for image:', galleryImage.image.s3Key, error);
-              return null;
-            }
-          }),
-        );
-
-        // Filter out any failed items and ensure type safety
-        const validItems: ReactImageGalleryItem[] = items.filter(
-          (item): item is ReactImageGalleryItem => item !== null,
-        );
-        setGalleryItems(validItems);
-      } catch (error) {
-        console.error('Error loading image URLs:', error);
-        setError('Failed to load images');
-      } finally {
-        setIsLoadingUrls(false);
-      }
-    };
-
-    loadImageUrls();
-  }, [galleryImages]);
-
-  if (isLoading || isLoadingUrls) {
+  if (isLoading) {
     return (
       <div className={styles.loadingContainer}>
         <ProgressSpinner />
         <p>Loading images...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.errorContainer}>
-        <i
-          className='pi pi-exclamation-triangle'
-          style={{ fontSize: '2rem', color: 'var(--red-500)' }}></i>
-        <p>{error}</p>
       </div>
     );
   }
@@ -149,22 +78,27 @@ const ImageGalleryComponent = ({ galleryImages, isLoading }: ImageGalleryCompone
         lazyLoad={true}
         renderItem={(item: ReactImageGalleryItem) => (
           <div className={styles.imageItem}>
-            <img
-              src={item.original}
+            <StorageImage
               alt={item.originalTitle || item.description || 'Gallery image'}
-              className={styles.galleryImage}
-              loading='lazy'
+              path={item.original}
+              onGetUrlError={error => console.error(error)}
+              objectFit='contain'
+              maxWidth='100%'
+              maxHeight='100%'
+              borderRadius='8px'
             />
-            {/* {item.description && <div className={styles.imageDescription}>{item.description}</div>} */}
           </div>
         )}
         renderThumbInner={(item: ReactImageGalleryItem) => (
           <div className={styles.thumbnailContainer}>
-            <img
-              src={item.thumbnail}
-              alt={item.originalTitle || 'Thumbnail'}
-              className={styles.thumbnailImage}
-              loading='lazy'
+            <StorageImage
+              alt={item.originalTitle || item.description || 'Gallery image'}
+              path={item.original.replace(UPLOADS_PREFIX, THUMBNAIL_PREFIX)}
+              onGetUrlError={error => console.error(error)}
+              objectFit='cover'
+              objectPosition='top'
+              maxWidth='100%'
+              maxHeight='100%'
             />
           </div>
         )}

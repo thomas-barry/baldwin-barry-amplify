@@ -1,8 +1,13 @@
 .mainContent {
   padding: 20px;
-  margin-top: 0px; 
+  margin-top: 0px;
   width: 100%;
   max-width: 90vw;
   margin-left: auto;
   margin-right: auto;
+
+  @media (max-width: 768px) {
+    padding: 0;
+    max-width: 100%;
+  }
 }

@@ -4,6 +4,7 @@ import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
 import exifr from 'exifr';
 import sharp from 'sharp';
 import { Readable } from 'stream';
+import { THUMBNAIL_HEIGHT, THUMBNAIL_PREFIX, THUMBNAIL_WIDTH, UPLOADS_PREFIX } from '../../../constants';
 import streamToBuffer from './streamToBuffer';
 
 // Utility functions for metadata handling
@@ -89,10 +90,6 @@ async function extractImageMetadata(imageBuffer: Buffer): Promise<ExtractedImage
 }
 
 // Configuration
-const THUMBNAIL_WIDTH = 200; // Width of thumbnail in pixels
-const THUMBNAIL_HEIGHT = 200; // Height of thumbnail in pixels
-const THUMBNAIL_PREFIX = 'thumbnails/';
-const UPLOADS_PREFIX = 'uploads/';
 
 // Helper function to determine if the file is an image
 function isImage(contentType: string): boolean {

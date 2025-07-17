@@ -9,6 +9,7 @@ import { useRef } from 'react';
 import type { Schema } from '../../../../../amplify/data/resource';
 import AmplifyFileUploader from '../amplify-file-uploader/AmplifyFileUploader';
 import ImageGalleryComponent from '../image-gallery/ImageGallery';
+import styles from './Gallery.module.css';
 
 const Gallery = ({ galleryId }: { galleryId: string }) => {
   const { isAdmin } = useAuth();
@@ -94,18 +95,8 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '20px',
-          padding: '10px',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #dee2e6',
-        }}>
+    <div>
+      <div className={styles.galleryTitle}>
         <h3 style={{ margin: 0, color: '#495057' }}>
           {isGalleryLoading ? 'Loading...' : gallery?.name || 'Gallery Images'}
         </h3>

@@ -109,6 +109,10 @@
   background: #f8f9fa;
   border-radius: 6px;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .thumbnailImage {
@@ -134,6 +138,12 @@
 
 :global(.image-gallery-thumbnails-wrapper) {
   padding: 16px;
+}
+
+:global(.image-gallery-thumbnails) {
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 :global(.image-gallery-thumbnail) {
@@ -186,15 +196,15 @@
     margin: 0;
     border-radius: 0;
   }
-  
+
   .thumbnailContainer {
     height: 60px;
   }
-  
+
   :global(.image-gallery-thumbnails-wrapper) {
     padding: 12px;
   }
-  
+
   .imageDescription {
     padding: 16px;
     font-size: 13px;
@@ -205,15 +215,15 @@
   .emptyContainer {
     padding: 60px 16px;
   }
-  
+
   .emptyContainer h3 {
     font-size: 20px;
   }
-  
+
   .emptyContainer p {
     font-size: 14px;
   }
-  
+
   .loadingContainer,
   .errorContainer {
     padding: 40px 16px;
