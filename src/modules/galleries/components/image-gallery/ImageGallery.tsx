@@ -86,6 +86,7 @@ const ImageGalleryComponent = ({ galleryImages, isLoading }: ImageGalleryCompone
               maxWidth='100%'
               maxHeight='100%'
               borderRadius='8px'
+              loading='lazy'
             />
           </div>
         )}
@@ -99,6 +100,7 @@ const ImageGalleryComponent = ({ galleryImages, isLoading }: ImageGalleryCompone
               objectPosition='top'
               maxWidth='100%'
               maxHeight='100%'
+              loading='lazy'
             />
           </div>
         )}
