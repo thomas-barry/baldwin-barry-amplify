@@ -1,9 +1,11 @@
-import { StorageImage } from '@aws-amplify/ui-react-storage';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { memo } from 'react';
 import { default as ReactImageGallery, ReactImageGalleryItem } from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
 import { THUMBNAIL_PREFIX, UPLOADS_PREFIX } from '../../../../../constants';
 import styles from './ImageGallery.module.css';
+
+const CLOUDFRONT_DOMAIN = 'd3v1ijc4huf10a.cloudfront.net';
 
 interface GalleryImage {
   id: string;
@@ -60,6 +62,8 @@ const ImageGalleryComponent = ({ galleryImages, isLoading }: ImageGalleryCompone
     );
   }
 
+  console.log('RENDER');
+
   return (
     <div className={styles.galleryContainer}>
       <ReactImageGallery
@@ -75,31 +79,22 @@ const ImageGalleryComponent = ({ galleryImages, isLoading }: ImageGalleryCompone
         useBrowserFullscreen={true}
         showBullets={false}
         showIndex={true}
-        lazyLoad={true}
         renderItem={(item: ReactImageGalleryItem) => (
           <div className={styles.imageItem}>
-            <StorageImage
+            <img
+              src={`https://${CLOUDFRONT_DOMAIN}/${item.original}`}
               alt={item.originalTitle || item.description || 'Gallery image'}
-              path={item.original}
-              onGetUrlError={error => console.error(error)}
-              objectFit='contain'
-              maxWidth='100%'
-              maxHeight='100%'
-              borderRadius='8px'
+              className={styles.galleryImage}
               loading='lazy'
             />
           </div>
         )}
         renderThumbInner={(item: ReactImageGalleryItem) => (
           <div className={styles.thumbnailContainer}>
-            <StorageImage
-              alt={item.originalTitle || item.description || 'Gallery image'}
-              path={item.original.replace(UPLOADS_PREFIX, THUMBNAIL_PREFIX)}
-              onGetUrlError={error => console.error(error)}
-              objectFit='cover'
-              objectPosition='top'
-              maxWidth='100%'
-              maxHeight='100%'
+            <img
+              src={`https://${CLOUDFRONT_DOMAIN}/${item.thumbnail}`}
+              alt={item.originalTitle || item.description || 'Gallery thumbnail'}
+              className={`${styles.thumbnailImage} image-gallery-thumbnail`}
               loading='lazy'
             />
           </div>
@@ -109,4 +104,4 @@ const ImageGalleryComponent = ({ galleryImages, isLoading }: ImageGalleryCompone
   );
 };
 
-export default ImageGalleryComponent;
+export default memo(ImageGalleryComponent);
