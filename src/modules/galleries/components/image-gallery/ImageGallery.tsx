@@ -2,10 +2,16 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { memo } from 'react';
 import { default as ReactImageGallery, ReactImageGalleryItem } from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { THUMBNAIL_PREFIX, UPLOADS_PREFIX } from '../../../../../constants';
 import styles from './ImageGallery.module.css';
 
-const CLOUDFRONT_DOMAIN = 'd3v1ijc4huf10a.cloudfront.net';
+const CLOUDFRONT_DOMAIN = import.meta.env.VITE_CLOUDFRONT_DOMAIN || 'd3v1ijc4huf10a.cloudfront.net';
+
+// This component uses LazyLoadImage because lazy loading in a horizontally scrolling
+// container doesn't work in Safari browsers.
+
+import.meta.env.VITE_CLOUDFRONT_DOMAIN;
 
 interface GalleryImage {
   id: string;
@@ -62,8 +68,6 @@ const ImageGalleryComponent = ({ galleryImages, isLoading }: ImageGalleryCompone
     );
   }
 
-  console.log('RENDER');
-
   return (
     <div className={styles.galleryContainer}>
       <ReactImageGallery
@@ -79,23 +83,25 @@ const ImageGalleryComponent = ({ galleryImages, isLoading }: ImageGalleryCompone
         useBrowserFullscreen={true}
         showBullets={false}
         showIndex={true}
-        renderItem={(item: ReactImageGalleryItem) => (
-          <div className={styles.imageItem}>
-            <img
-              src={`https://${CLOUDFRONT_DOMAIN}/${item.original}`}
-              alt={item.originalTitle || item.description || 'Gallery image'}
-              className={styles.galleryImage}
-              loading='lazy'
-            />
-          </div>
-        )}
+        renderItem={(item: ReactImageGalleryItem) => {
+          return (
+            <div className={styles.imageItem}>
+              <LazyLoadImage
+                src={`https://${CLOUDFRONT_DOMAIN}/${item.original}`}
+                alt={item.originalTitle || item.description || 'Gallery image'}
+                className={styles.galleryImage}
+                width={item.originalWidth || '100%'}
+                height={item.originalHeight || '100%'}
+              />
+            </div>
+          );
+        }}
         renderThumbInner={(item: ReactImageGalleryItem) => (
           <div className={styles.thumbnailContainer}>
-            <img
+            <LazyLoadImage
               src={`https://${CLOUDFRONT_DOMAIN}/${item.thumbnail}`}
               alt={item.originalTitle || item.description || 'Gallery thumbnail'}
               className={`${styles.thumbnailImage} image-gallery-thumbnail`}
-              loading='lazy'
             />
           </div>
         )}
