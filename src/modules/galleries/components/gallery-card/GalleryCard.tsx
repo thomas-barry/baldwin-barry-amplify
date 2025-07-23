@@ -1,7 +1,7 @@
 import { useAuth } from '@/context/AuthContext';
+import { StorageImage } from '@aws-amplify/ui-react-storage';
 import { Link } from '@tanstack/react-router';
 import { Button } from 'primereact/button';
-import { Card } from 'primereact/card';
 
 import { Gallery } from '../../types';
 import styles from './GalleryCard.module.css';
@@ -23,14 +23,21 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
   };
 
   return (
-    <div className={styles.galleryCardContainer}>
+    <article className={styles.galleryCard}>
       <Link
         to='/galleries/$galleryId'
         params={{ galleryId: gallery.id }}
         className={styles.galleryCardLink}>
-        <Card
-          title={gallery.name}
-          className={styles.galleryCard}></Card>
+        <div className={styles.galleryCard}>
+          <h2 className={styles.galleryCardTitle}>{gallery.name}</h2>
+          {gallery.thumbnailImage && (
+            <StorageImage
+              path={gallery.thumbnailImage?.s3ThumbnailKey || ''}
+              alt={gallery.thumbnailImage?.title || 'Gallery Thumbnail'}
+              className={styles.galleryThumbnail}
+            />
+          )}
+        </div>
       </Link>
       {isAdmin && (
         <div className={styles.actionButtons}>
@@ -61,7 +68,7 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
           )}
         </div>
       )}
-    </div>
+    </article>
   );
 };
 

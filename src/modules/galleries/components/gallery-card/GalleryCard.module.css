@@ -1,27 +1,41 @@
 .galleryCard {
-  border-radius: 8px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   display: flex;
   flex-direction: column;
   width: 300px;
   height: 300px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.galleryCardTitle {
+  color: white;
+  background-color: rgba(0, 0, 0, 0.3);
+  margin: 0;
+  padding-block: 8px;
+  padding-inline-start: 1rem;
 }
 
 .galleryCardLink {
-  text-decoration: none;;
+  text-decoration: none;
 }
 
-.galleryCardContainer {
-  position: relative;
-  display: inline-block;
+.galleryThumbnail {
+  position: absolute;
   width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+  object-fit: fill;
+  z-index: -1;
 }
 
 .actionButtons {
   position: absolute;
   bottom: 12px;
-  right: 32px;
-  z-index: 10;
+  right: 12px;
   display: flex;
   gap: 4px;
 }

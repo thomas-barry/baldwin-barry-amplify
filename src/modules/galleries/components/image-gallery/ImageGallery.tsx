@@ -11,8 +11,6 @@ const CLOUDFRONT_DOMAIN = import.meta.env.VITE_CLOUDFRONT_DOMAIN || 'd3v1ijc4huf
 // This component uses LazyLoadImage because lazy loading in a horizontally scrolling
 // container doesn't work in Safari browsers.
 
-import.meta.env.VITE_CLOUDFRONT_DOMAIN;
-
 interface GalleryImage {
   id: string;
   galleryId: string;
