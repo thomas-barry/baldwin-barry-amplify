@@ -1,13 +1,18 @@
 .stickyNavbar {
+  --sticky-navbar-bg: #c5c5cb;
   position: sticky;
   top: 0;
   width: 100%;
-  z-index: 1000;
-  background-color: #303037;
+  color: var(--clr-text);
+  background-color: var(--sticky-navbar-bg);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
   @media (max-width: 768px) {
     display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    --sticky-navbar-bg: #383840;
   }
 }
 
@@ -22,17 +27,18 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  padding-block: 16px;
   gap: 20px;
+  color: var(--clr-text);
   text-decoration: none;
   font-size: 1.5rem;
-  font-weight: bold;
-  color: white;
+  font-weight: var(--fw-light);
   letter-spacing: 1;
   line-height: 0;
-  padding-block: 16px;
 }
 
 .navbarLogoLink {
+  color: var(--clr-text);
   text-decoration: none;
 }
 
@@ -47,10 +53,11 @@
 }
 
 .navLink {
-  color: white;
+  padding: 8px 12px;
+  color: var(--clr-text);
+  background-color: var(--clr-surface);
   text-decoration: none;
   font-size: 1rem;
-  padding: 8px 12px;
   border-radius: 4px;
   transition: all 0.2s ease;
 }
@@ -60,8 +67,7 @@
 }
 
 .activeLink {
-  font-weight: bold;
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(6, 6, 6, 0.15);
 }
 
 .authSection {

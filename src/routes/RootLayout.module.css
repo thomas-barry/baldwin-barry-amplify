@@ -1,13 +1,13 @@
-.mainContent {
-  padding: 20px;
-  margin-top: 0px;
-  width: 100%;
-  max-width: 90vw;
-  margin-left: auto;
-  margin-right: auto;
+@layer default {
+  .mainContent {
+    margin-top: 20px;
+    padding-inline: 20px;
+    width: 100%;
+    height: 100%;
 
-  @media (max-width: 768px) {
-    padding: 0;
-    max-width: 100%;
+    @media (max-width: 768px) {
+      padding: 0;
+      max-width: 100%;
+    }
   }
 }

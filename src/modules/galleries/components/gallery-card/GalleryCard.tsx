@@ -1,5 +1,4 @@
 import { useAuth } from '@/context/AuthContext';
-import { StorageImage } from '@aws-amplify/ui-react-storage';
 import { Link } from '@tanstack/react-router';
 import { Button } from 'primereact/button';
 
@@ -10,6 +9,8 @@ interface GalleryCardProps {
   gallery: Gallery;
   onDelete?: (gallery: Gallery) => void;
 }
+
+const CLOUDFRONT_DOMAIN = import.meta.env.VITE_CLOUDFRONT_DOMAIN || 'd3v1ijc4huf10a.cloudfront.net';
 
 const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
   const { isAdmin } = useAuth();
@@ -23,7 +24,7 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
   };
 
   return (
-    <article className={styles.galleryCard}>
+    <article>
       <Link
         to='/galleries/$galleryId'
         params={{ galleryId: gallery.id }}
@@ -31,8 +32,8 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
         <div className={styles.galleryCard}>
           <h2 className={styles.galleryCardTitle}>{gallery.name}</h2>
           {gallery.thumbnailImage && (
-            <StorageImage
-              path={gallery.thumbnailImage?.s3ThumbnailKey || ''}
+            <img
+              src={`https://${CLOUDFRONT_DOMAIN}/${gallery.thumbnailImage.s3ThumbnailKey}`}
               alt={gallery.thumbnailImage?.title || 'Gallery Thumbnail'}
               className={styles.galleryThumbnail}
             />

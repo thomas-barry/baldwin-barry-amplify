@@ -24,6 +24,7 @@
     "aws-amplify": "^6.6.6",
     "axios": "^1.9.0",
     "node-fetch": "^3.3.2",
+    "normalize.css": "^8.0.1",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.5",

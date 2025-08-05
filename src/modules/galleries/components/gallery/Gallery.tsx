@@ -5,16 +5,17 @@ import { getCurrentUser } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/data';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import type { Schema } from '../../../../../amplify/data/resource';
 import AmplifyFileUploader from '../amplify-file-uploader/AmplifyFileUploader';
 import ImageGalleryComponent from '../image-gallery/ImageGallery';
 import styles from './Gallery.module.css';
 
 const Gallery = ({ galleryId }: { galleryId: string }) => {
-  const { isAdmin } = useAuth();
   const toast = useRef<Toast>(null);
+  const { isAdmin } = useAuth();
   const queryClient = useQueryClient();
+  const [slideIndex, setSlideIndex] = useState(0);
 
   const clientApiKey = generateClient<Schema>({
     authMode: 'apiKey',
@@ -111,7 +112,7 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
           <i
             className='pi pi-images'
             style={{ fontSize: '16px' }}></i>
-          <span>{isLoading ? 'Loading...' : `${imageCount} image${imageCount !== 1 ? 's' : ''}`}</span>
+          <span>{isLoading ? 'Loading...' : `${slideIndex + 1} of ${imageCount}`}</span>
           {isAdmin && (
             <Link
               to='/galleries/$galleryId/edit'
@@ -139,6 +140,7 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
       <ImageGalleryComponent
         galleryImages={galleryImages || []}
         isLoading={isLoading}
+        setSlideIndex={setSlideIndex}
       />
 
       <Toast ref={toast} />

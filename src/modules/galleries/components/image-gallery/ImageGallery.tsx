@@ -33,9 +33,10 @@ interface GalleryImage {
 interface ImageGalleryComponentProps {
   galleryImages: GalleryImage[];
   isLoading: boolean;
+  setSlideIndex: (index: number) => void;
 }
 
-const ImageGalleryComponent = ({ galleryImages, isLoading }: ImageGalleryComponentProps) => {
+const ImageGalleryComponent = ({ galleryImages, isLoading, setSlideIndex }: ImageGalleryComponentProps) => {
   const galleryItems = galleryImages.map(galleryImage => ({
     original: galleryImage.image.s3Key,
     thumbnail: galleryImage.image.s3ThumbnailKey || galleryImage.image.s3Key.replace(UPLOADS_PREFIX, THUMBNAIL_PREFIX),
@@ -80,16 +81,14 @@ const ImageGalleryComponent = ({ galleryImages, isLoading }: ImageGalleryCompone
         thumbnailPosition='bottom'
         useBrowserFullscreen={true}
         showBullets={false}
-        showIndex={true}
+        onSlide={setSlideIndex}
         renderItem={(item: ReactImageGalleryItem) => {
           return (
-            <div className={styles.imageItem}>
+            <div className={styles.imageContainer}>
               <LazyLoadImage
                 src={`https://${CLOUDFRONT_DOMAIN}/${item.original}`}
                 alt={item.originalTitle || item.description || 'Gallery image'}
-                className={styles.galleryImage}
-                width={item.originalWidth || '100%'}
-                height={item.originalHeight || '100%'}
+                className={styles.image}
               />
             </div>
           );
