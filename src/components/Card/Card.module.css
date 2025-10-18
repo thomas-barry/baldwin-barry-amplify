@@ -1,0 +1,139 @@
+.card {
+  background-color: var(--clr-white);
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid transparent;
+}
+
+/* Variants */
+.default {
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.elevated {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.outlined {
+  border: 1px solid hsl(240, 5%, 85%);
+  box-shadow: none;
+}
+
+/* Padding variants */
+.padding-sm {
+  padding: 0.75rem;
+}
+
+.padding-md {
+  padding: 1rem;
+}
+
+.padding-lg {
+  padding: 1.5rem;
+}
+
+/* Clickable/Interactive states */
+.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.clickable.outlined:hover {
+  border-color: hsl(240, 5%, 70%);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.clickable:active {
+  transform: translateY(-1px);
+  transition-duration: 0.1s;
+}
+
+.clickable:focus {
+  outline: none;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    0 0 0 3px hsl(220, 90%, 85%);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .card {
+    background-color: hsl(240, 5%, 20%);
+    color: var(--clr-text);
+  }
+
+  .outlined {
+    border-color: hsl(240, 5%, 30%);
+  }
+
+  .clickable.outlined:hover {
+    border-color: hsl(240, 5%, 45%);
+  }
+
+  .clickable:focus {
+    box-shadow:
+      0 10px 25px -5px rgba(0, 0, 0, 0.2),
+      0 10px 10px -5px rgba(0, 0, 0, 0.1),
+      0 0 0 3px hsl(220, 90%, 60%);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .card {
+    border-radius: 8px;
+  }
+
+  .clickable:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* Subtle animation for content */
+.card > * {
+  transition: opacity 0.2s ease;
+}
+
+.clickable:hover > * {
+  opacity: 0.95;
+}
+
+/* Add a subtle inner glow effect on hover */
+.clickable::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.clickable:hover::before {
+  opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .clickable::before {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  }
+}

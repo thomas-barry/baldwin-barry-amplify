@@ -7,8 +7,10 @@ export const Route = createRootRoute({
   component: () => (
     <>
       <NavBar />
-      <div className={styles.mainContent}>
-        <Outlet />
+      <div className={styles.pageGridContainer}>
+        <div className={styles.mainContent}>
+          <Outlet />
+        </div>
       </div>
       <TanStackRouterDevtools />
     </>

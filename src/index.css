@@ -1,6 +1,6 @@
-@layer reset, default, themes, gallery, modules, components, utilities;
+@layer normalize, default, themes, gallery, modules, components, utilities;
 
-@import url('node_modules/normalize.css/normalize.css') layer(reset);
+@import url('normalize.css/normalize.css') layer(normalize);
 @import url('react-image-gallery/styles/css/image-gallery.css') layer(gallery);
 
 :root {

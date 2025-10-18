@@ -1,10 +1,12 @@
 .stickyNavbar {
   --sticky-navbar-bg: #c5c5cb;
-  position: sticky;
-  top: 0;
+  position: fixed;
   width: 100%;
+  height: auto;
   color: var(--clr-text);
-  background-color: var(--sticky-navbar-bg);
+  background: var(--sticky-navbar-bg);
+  background: linear-gradient(0deg, var(--sticky-navbar-bg) 0%, rgba(140, 140, 140, 0) 100%);
+  border-bottom: 1px solid rgba(140, 140, 140, 1);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
   @media (max-width: 768px) {
@@ -18,7 +20,7 @@
 
 .navbarContainer {
   display: flex;
-  justify-content: space-between;
+  gap: 80px;
   align-items: center;
   padding-inline: 20px;
 }
@@ -53,9 +55,9 @@
 }
 
 .navLink {
+  margin-top: 8px;
   padding: 8px 12px;
   color: var(--clr-text);
-  background-color: var(--clr-surface);
   text-decoration: none;
   font-size: 1rem;
   border-radius: 4px;
@@ -67,7 +69,7 @@
 }
 
 .activeLink {
-  background-color: rgba(6, 6, 6, 0.15);
+  text-decoration: underline;
 }
 
 .authSection {

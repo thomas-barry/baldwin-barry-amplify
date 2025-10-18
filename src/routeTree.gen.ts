@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as IndexImport } from './routes/index'
+import { Route as GridDemoIndexImport } from './routes/grid-demo/index'
 import { Route as GalleriesIndexImport } from './routes/galleries/index'
 import { Route as AdminIndexImport } from './routes/admin/index'
 import { Route as GalleriesGalleryIdIndexImport } from './routes/galleries/$galleryId/index'
@@ -29,6 +30,12 @@ const LoginRoute = LoginImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const GridDemoIndexRoute = GridDemoIndexImport.update({
+  id: '/grid-demo/',
+  path: '/grid-demo/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -88,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalleriesIndexImport
       parentRoute: typeof rootRoute
     }
+    '/grid-demo/': {
+      id: '/grid-demo/'
+      path: '/grid-demo'
+      fullPath: '/grid-demo'
+      preLoaderRoute: typeof GridDemoIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/galleries/$galleryId/edit': {
       id: '/galleries/$galleryId/edit'
       path: '/galleries/$galleryId/edit'
@@ -112,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/admin': typeof AdminIndexRoute
   '/galleries': typeof GalleriesIndexRoute
+  '/grid-demo': typeof GridDemoIndexRoute
   '/galleries/$galleryId/edit': typeof GalleriesGalleryIdEditRoute
   '/galleries/$galleryId': typeof GalleriesGalleryIdIndexRoute
 }
@@ -121,6 +136,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/admin': typeof AdminIndexRoute
   '/galleries': typeof GalleriesIndexRoute
+  '/grid-demo': typeof GridDemoIndexRoute
   '/galleries/$galleryId/edit': typeof GalleriesGalleryIdEditRoute
   '/galleries/$galleryId': typeof GalleriesGalleryIdIndexRoute
 }
@@ -131,6 +147,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/admin/': typeof AdminIndexRoute
   '/galleries/': typeof GalleriesIndexRoute
+  '/grid-demo/': typeof GridDemoIndexRoute
   '/galleries/$galleryId/edit': typeof GalleriesGalleryIdEditRoute
   '/galleries/$galleryId/': typeof GalleriesGalleryIdIndexRoute
 }
@@ -142,6 +159,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/admin'
     | '/galleries'
+    | '/grid-demo'
     | '/galleries/$galleryId/edit'
     | '/galleries/$galleryId'
   fileRoutesByTo: FileRoutesByTo
@@ -150,6 +168,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/admin'
     | '/galleries'
+    | '/grid-demo'
     | '/galleries/$galleryId/edit'
     | '/galleries/$galleryId'
   id:
@@ -158,6 +177,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/admin/'
     | '/galleries/'
+    | '/grid-demo/'
     | '/galleries/$galleryId/edit'
     | '/galleries/$galleryId/'
   fileRoutesById: FileRoutesById
@@ -168,6 +188,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
   GalleriesIndexRoute: typeof GalleriesIndexRoute
+  GridDemoIndexRoute: typeof GridDemoIndexRoute
   GalleriesGalleryIdEditRoute: typeof GalleriesGalleryIdEditRoute
   GalleriesGalleryIdIndexRoute: typeof GalleriesGalleryIdIndexRoute
 }
@@ -177,6 +198,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   AdminIndexRoute: AdminIndexRoute,
   GalleriesIndexRoute: GalleriesIndexRoute,
+  GridDemoIndexRoute: GridDemoIndexRoute,
   GalleriesGalleryIdEditRoute: GalleriesGalleryIdEditRoute,
   GalleriesGalleryIdIndexRoute: GalleriesGalleryIdIndexRoute,
 }
@@ -195,6 +217,7 @@ export const routeTree = rootRoute
         "/login",
         "/admin/",
         "/galleries/",
+        "/grid-demo/",
         "/galleries/$galleryId/edit",
         "/galleries/$galleryId/"
       ]
@@ -210,6 +233,9 @@ export const routeTree = rootRoute
     },
     "/galleries/": {
       "filePath": "galleries/index.tsx"
+    },
+    "/grid-demo/": {
+      "filePath": "grid-demo/index.tsx"
     },
     "/galleries/$galleryId/edit": {
       "filePath": "galleries/$galleryId/edit.tsx"
