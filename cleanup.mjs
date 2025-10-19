@@ -50,7 +50,9 @@ async function loadAmplifyOutputs() {
 
 /**
  * Get DynamoDB table names (Amplify Gen 2 uses specific naming patterns)
+ * Currently unused but kept for future reference
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getTableNames() {
   // In Amplify Gen 2, table names are auto-generated
   // We'll need to scan for tables with our model names

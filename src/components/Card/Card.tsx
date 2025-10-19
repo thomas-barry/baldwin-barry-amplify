@@ -60,14 +60,14 @@ export const Card: React.FC<CardProps> = ({
   };
 
   return (
-    <div
+    <article
       className={cardClasses}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}>
       {children}
-    </div>
+    </article>
   );
 };
 

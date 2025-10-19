@@ -25,9 +25,15 @@ const initialAuthState: AuthState = {
 
 const AuthContext = createContext<AuthContextType>({
   ...initialAuthState,
-  login: async () => {},
-  logout: async () => {},
-  checkUser: async () => {},
+  login: async () => {
+    throw new Error('AuthContext not initialized');
+  },
+  logout: async () => {
+    throw new Error('AuthContext not initialized');
+  },
+  checkUser: async () => {
+    throw new Error('AuthContext not initialized');
+  },
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -50,7 +56,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isLoading: false,
         error: null,
       });
-    } catch (error) {
+    } catch {
       // Not authenticated
       setAuthState({
         isAuthenticated: false,

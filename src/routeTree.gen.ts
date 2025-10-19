@@ -8,118 +8,50 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as GridDemoIndexRouteImport } from './routes/grid-demo/index'
+import { Route as GalleriesIndexRouteImport } from './routes/galleries/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as GalleriesGalleryIdIndexRouteImport } from './routes/galleries/$galleryId/index'
+import { Route as GalleriesGalleryIdEditRouteImport } from './routes/galleries/$galleryId/edit'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as LoginImport } from './routes/login'
-import { Route as IndexImport } from './routes/index'
-import { Route as GridDemoIndexImport } from './routes/grid-demo/index'
-import { Route as GalleriesIndexImport } from './routes/galleries/index'
-import { Route as AdminIndexImport } from './routes/admin/index'
-import { Route as GalleriesGalleryIdIndexImport } from './routes/galleries/$galleryId/index'
-import { Route as GalleriesGalleryIdEditImport } from './routes/galleries/$galleryId/edit'
-
-// Create/Update Routes
-
-const LoginRoute = LoginImport.update({
+const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const GridDemoIndexRoute = GridDemoIndexImport.update({
+const GridDemoIndexRoute = GridDemoIndexRouteImport.update({
   id: '/grid-demo/',
   path: '/grid-demo/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const GalleriesIndexRoute = GalleriesIndexImport.update({
+const GalleriesIndexRoute = GalleriesIndexRouteImport.update({
   id: '/galleries/',
   path: '/galleries/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AdminIndexRoute = AdminIndexImport.update({
+const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const GalleriesGalleryIdIndexRoute = GalleriesGalleryIdIndexImport.update({
+const GalleriesGalleryIdIndexRoute = GalleriesGalleryIdIndexRouteImport.update({
   id: '/galleries/$galleryId/',
   path: '/galleries/$galleryId/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const GalleriesGalleryIdEditRoute = GalleriesGalleryIdEditImport.update({
+const GalleriesGalleryIdEditRoute = GalleriesGalleryIdEditRouteImport.update({
   id: '/galleries/$galleryId/edit',
   path: '/galleries/$galleryId/edit',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-// Populate the FileRoutesByPath interface
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
-      parentRoute: typeof rootRoute
-    }
-    '/admin/': {
-      id: '/admin/'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/galleries/': {
-      id: '/galleries/'
-      path: '/galleries'
-      fullPath: '/galleries'
-      preLoaderRoute: typeof GalleriesIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/grid-demo/': {
-      id: '/grid-demo/'
-      path: '/grid-demo'
-      fullPath: '/grid-demo'
-      preLoaderRoute: typeof GridDemoIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/galleries/$galleryId/edit': {
-      id: '/galleries/$galleryId/edit'
-      path: '/galleries/$galleryId/edit'
-      fullPath: '/galleries/$galleryId/edit'
-      preLoaderRoute: typeof GalleriesGalleryIdEditImport
-      parentRoute: typeof rootRoute
-    }
-    '/galleries/$galleryId/': {
-      id: '/galleries/$galleryId/'
-      path: '/galleries/$galleryId'
-      fullPath: '/galleries/$galleryId'
-      preLoaderRoute: typeof GalleriesGalleryIdIndexImport
-      parentRoute: typeof rootRoute
-    }
-  }
-}
-
-// Create and export the route tree
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -130,7 +62,6 @@ export interface FileRoutesByFullPath {
   '/galleries/$galleryId/edit': typeof GalleriesGalleryIdEditRoute
   '/galleries/$galleryId': typeof GalleriesGalleryIdIndexRoute
 }
-
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
@@ -140,9 +71,8 @@ export interface FileRoutesByTo {
   '/galleries/$galleryId/edit': typeof GalleriesGalleryIdEditRoute
   '/galleries/$galleryId': typeof GalleriesGalleryIdIndexRoute
 }
-
 export interface FileRoutesById {
-  __root__: typeof rootRoute
+  __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/admin/': typeof AdminIndexRoute
@@ -151,7 +81,6 @@ export interface FileRoutesById {
   '/galleries/$galleryId/edit': typeof GalleriesGalleryIdEditRoute
   '/galleries/$galleryId/': typeof GalleriesGalleryIdIndexRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
@@ -182,7 +111,6 @@ export interface FileRouteTypes {
     | '/galleries/$galleryId/'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
@@ -191,6 +119,60 @@ export interface RootRouteChildren {
   GridDemoIndexRoute: typeof GridDemoIndexRoute
   GalleriesGalleryIdEditRoute: typeof GalleriesGalleryIdEditRoute
   GalleriesGalleryIdIndexRoute: typeof GalleriesGalleryIdIndexRoute
+}
+
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/grid-demo/': {
+      id: '/grid-demo/'
+      path: '/grid-demo'
+      fullPath: '/grid-demo'
+      preLoaderRoute: typeof GridDemoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/galleries/': {
+      id: '/galleries/'
+      path: '/galleries'
+      fullPath: '/galleries'
+      preLoaderRoute: typeof GalleriesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/galleries/$galleryId/': {
+      id: '/galleries/$galleryId/'
+      path: '/galleries/$galleryId'
+      fullPath: '/galleries/$galleryId'
+      preLoaderRoute: typeof GalleriesGalleryIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/galleries/$galleryId/edit': {
+      id: '/galleries/$galleryId/edit'
+      path: '/galleries/$galleryId/edit'
+      fullPath: '/galleries/$galleryId/edit'
+      preLoaderRoute: typeof GalleriesGalleryIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -202,47 +184,6 @@ const rootRouteChildren: RootRouteChildren = {
   GalleriesGalleryIdEditRoute: GalleriesGalleryIdEditRoute,
   GalleriesGalleryIdIndexRoute: GalleriesGalleryIdIndexRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/login",
-        "/admin/",
-        "/galleries/",
-        "/grid-demo/",
-        "/galleries/$galleryId/edit",
-        "/galleries/$galleryId/"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/login": {
-      "filePath": "login.tsx"
-    },
-    "/admin/": {
-      "filePath": "admin/index.tsx"
-    },
-    "/galleries/": {
-      "filePath": "galleries/index.tsx"
-    },
-    "/grid-demo/": {
-      "filePath": "grid-demo/index.tsx"
-    },
-    "/galleries/$galleryId/edit": {
-      "filePath": "galleries/$galleryId/edit.tsx"
-    },
-    "/galleries/$galleryId/": {
-      "filePath": "galleries/$galleryId/index.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */
