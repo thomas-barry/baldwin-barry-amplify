@@ -1,15 +1,18 @@
 @layer modules {
   .homeContainer {
     display: flex;
-    width: 100%;
-    height: 100%;
-    padding-block-start: 80px;
-    justify-content: center;
-    align-items: start;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
   }
 
   .facePalmImage {
-    width: 400px;
+    width: 500px;
+    border-radius: 8px;
+  }
+
+  .facePalmCaption {
+    margin-top: 2rem;
     border-radius: 8px;
   }
 }

@@ -1,4 +1,4 @@
-import facePalmImage from '@/assets/facepalm.png';
+import facePalmImage from '@/assets/facepalm.jpg';
 import { Link } from '@tanstack/react-router';
 import styles from './NavBar.module.css';
 
