@@ -23,7 +23,7 @@ This application provides a complete photo gallery solution with user authentica
 
 - Node.js 18+ and npm
 - AWS Account with appropriate permissions
-- AWS CLI configured (`aws sso login --profile bb-admin`)
+- AWS CLI configured (e.g., `aws sso login --profile <your-aws-profile>`)
 
 ### Installation
 

@@ -17,8 +17,9 @@ Thank you for your interest in contributing to this project! This guide will hel
 
 3. **Set up AWS credentials**
    ```bash
-   aws sso login --profile bb-admin
+   aws sso login --profile <your-aws-profile>
    ```
+   Replace `<your-aws-profile>` with your configured AWS profile name.
 
 4. **Start the development environment**
    ```bash

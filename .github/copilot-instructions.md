@@ -104,8 +104,8 @@ error TS2307: Cannot find module '../amplify_outputs.json'
 
 ### AWS Credentials
 - Required for running the Amplify sandbox
-- Configure with: `aws sso login --profile bb-admin`
-- The profile name `bb-admin` is used for this project
+- Configure with: `aws sso login --profile <your-aws-profile>`
+- Replace `<your-aws-profile>` with your configured AWS profile name
 
 ## Code Style and Conventions
 
