@@ -11,8 +11,8 @@ const schema = a.schema({
       images: a.hasMany('GalleryImage', 'galleryId'),
     })
     .authorization(allow => [
-      allow.publicApiKey(),
-      allow.group('admin').to(['create', 'update', 'delete']), // Only owners can modify
+      allow.publicApiKey().to(['read']),
+      allow.group('admin').to(['create', 'update', 'delete']), // Only admin group can modify
     ]),
 
   Image: a
@@ -48,7 +48,7 @@ const schema = a.schema({
     })
     .authorization(allow => [
       allow.publicApiKey().to(['read']), // Allow public read access
-      allow.group('admin').to(['create', 'update', 'delete']), // Only owners can modify
+      allow.group('admin').to(['create', 'update', 'delete']), // Only admin group can modify
     ]),
 });
 

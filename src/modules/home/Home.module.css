@@ -1,17 +1,42 @@
 @layer modules {
+  @keyframes rotate {
+    from {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+      transform: translate(-50%, -50%) rotate(-360deg);
+    }
+  }
+
   .homeContainer {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: start;
     align-items: center;
+    margin-top: 8rem;
+  }
+
+  .ellipseImage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    opacity: 0.3;
+    animation: rotate 120s linear infinite;
   }
 
   .facePalmImage {
+    position: relative;
+    z-index: 1;
     width: 500px;
     border-radius: 8px;
   }
 
   .facePalmCaption {
+    position: relative;
+    z-index: 1;
     margin-top: 2rem;
     border-radius: 8px;
   }

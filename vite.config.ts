@@ -1,20 +1,22 @@
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
-import browserslist from 'browserslist';
-import { browserslistToTargets } from 'lightningcss';
 import path from 'path';
 import { defineConfig } from 'vite';
-import lightningcss from 'vite-plugin-lightningcss';
 
 export default defineConfig({
-  plugins: [
-    TanStackRouterVite({ target: 'react', autoCodeSplitting: true }),
-    react(),
-    lightningcss({
-      targets: browserslistToTargets(browserslist('>= 0.25%')),
+  plugins: [TanStackRouterVite({ target: 'react', autoCodeSplitting: true }), react()],
+  css: {
+    transformer: 'lightningcss',
+    lightningcss: {
+      targets: {
+        chrome: 110,
+        edge: 110,
+        firefox: 110,
+        safari: 15,
+      },
       minify: true,
-    }),
-  ],
+    },
+  },
   optimizeDeps: {
     include: ['react-image-gallery'],
   },
