@@ -2,64 +2,341 @@
 applyTo: '**'
 ---
 
-# Project general coding standards
-
-# GitHub Copilot Custom Instructions for React, TypeScript, Amplify, and Tanstack Project
+# GitHub Copilot Instructions for Baldwin-Barry Amplify Project
 
 ## Project Overview
 
-This project is a full-stack web application built with React and TypeScript on the frontend, using AWS Amplify for backend services (authentication, data/API, storage), and the Tanstack suite for data fetching and routing.
+This is a full-stack photo gallery application built with **React 18**, **TypeScript**, **Vite**, **AWS Amplify Gen 2**, and the **Tanstack** suite. The application provides authentication, image storage, and gallery management capabilities using AWS backend services.
 
-## Technology Stack & Style Guide
+## Technology Stack
 
-Adhere to the following conventions and technologies:
+### Frontend
+- **Build Tool:** Vite 7.x with TypeScript
+- **UI Framework:** React 18.x (functional components with hooks)
+- **Language:** TypeScript (strict mode enabled)
+- **Styling:** CSS Modules + PrimeReact UI components + PrimeFlex utilities
+- **Routing:** Tanstack Router v1 (file-based routing)
+- **Data Fetching:** Tanstack Query v5 (server state management)
+- **CSS Transformer:** Lightning CSS for optimized builds
 
-- **Language:** Use **TypeScript** for all code, favoring interfaces over types for complex structures.
-- **UI Framework:** Use **React** functional components with TypeScript interfaces for props.
-- **Styling:** Use **CSS Modules** for component styling. Each component should have a corresponding `.module.css` file (e.g., `Button.tsx` with `Button.module.css`). Import styles as `styles` and apply using `className={styles.className}`. The project also uses **PrimeReact** UI components for consistent design patterns.
-- **Data Fetching:** All data fetching should be handled using **Tanstack Query** (e.g., `useQuery`, `useMutation`) for managing server state, including loading and error states.
-- **Backend:** Interact with the backend using the **AWS Amplify** libraries (e.g., `Amplify.API`, `Amplify.Data`, `Amplify.Auth`). Assume the Amplify environment is already configured.
-- **Routing:** Use **Tanstack Router** for all application routing and navigation.
-- **State Management:** For client-side state, use React's `useState` and `useReducer` hooks. For shared complex state, use React Context or a library like mobx if necessary.
-- **Code Style:**
-  - Use `camelCase` for function and variable names, `PascalCase` for component names.
-  - Destructure props in the component's function signature.
-  - Use `<>...</>` or `React.Fragment` to avoid unnecessary DOM wrapper elements.
-  - Extract reusable stateful logic into custom hooks (e.g., `useAuth`, `useApiData`).
-  - Avoid 'todo' comments or placeholders; fully implement requested functionality.
-  - Write comprehensive unit and integration tests covering both success and failure scenarios.
+### Backend
+- **Backend Framework:** AWS Amplify Gen 2
+- **Authentication:** Amazon Cognito (via Amplify Auth)
+- **Database:** Amazon DynamoDB (via Amplify Data)
+- **Storage:** Amazon S3 (via Amplify Storage)
+- **API:** AWS AppSync GraphQL API
 
-## Folder Structure
+### Development Tools
+- **Package Manager:** npm (do NOT use pnpm or yarn)
+- **Linter:** ESLint v9 with TypeScript ESLint
+- **Formatter:** Prettier with plugins for imports and multiline arrays
+- **Type Checking:** TypeScript 5.4.x
 
-- `src/components/`: Reusable UI components.
-- `src/pages/`: Page-level components used by the router.
-- `src/hooks/`: Custom React hooks (e.g., `useAuth.ts`, `useApi.ts`).
-- `src/api/`: Amplify Data/API logic and data models.
-- `src/types/`: TypeScript interfaces and types.
-- `src/utils/`: Utility functions and helpers.
+## Project Structure
 
-## Naming Conventions
+```
+/
+├── src/
+│   ├── components/        # Reusable UI components
+│   ├── routes/           # Tanstack Router pages (file-based routing)
+│   ├── modules/          # Feature modules
+│   ├── context/          # React Context providers (e.g., AuthContext)
+│   ├── lib/              # Utility functions and helpers
+│   ├── assets/           # Static assets (images, fonts)
+│   ├── main.tsx          # Application entry point
+│   └── index.css         # Global styles
+├── amplify/              # Amplify backend definitions
+│   ├── auth/             # Cognito auth configuration
+│   ├── data/             # DynamoDB schema and resolvers
+│   ├── storage/          # S3 storage configuration
+│   ├── functions/        # Lambda functions
+│   └── backend.ts        # Backend resource definitions
+├── public/               # Public static files
+└── schema-check.json/    # GraphQL schema introspection
+```
 
-- Use PascalCase for component names, interfaces, and type aliases
-- Use camelCase for variables, functions, and methods
-- Prefix private class members with underscore (\_)
-- Use ALL_CAPS for constants
-- Component folder names should be kebab-case and match the component name
+## Path Aliases
 
-## Error Handling
+The project uses TypeScript path aliases for cleaner imports:
+- `@/components/*` → `src/components/*`
+- `@/modules/*` → `src/modules/*`
+- `@/context/*` → `src/context/*`
+- `@/lib/*` → `src/lib/*`
+- `@/assets/*` → `src/assets/*`
+- `@/routes/*` → `src/routes/*`
+- `@/*` → `src/*`
 
-- Use try/catch blocks for async operations
-- Implement proper error boundaries in React components
-- Always log errors with contextual information
+Always use path aliases instead of relative imports for files outside the current directory.
 
-## Instructions
+## Development Workflow
 
-- When generating new components, prioritize functional components that use TypeScript interfaces for props.
-- Use react hooks for managing component-level state
-- For data fetching, always use Tanstack Query hooks (`useQuery`, `useMutation`) to handle server state, caching, and background updates.
-- When interacting with backend services, use AWS Amplify libraries (e.g., `Amplify.API`, `Amplify.Data`, `Amplify.Auth`) to perform operations like authentication, data retrieval, and storage.
-- When a task involves data fetching, suggest using Tanstack Query hooks and appropriate data structures from `src/types/`.
-- Ensure all code snippets are complete and runnable within the project context, without leaving missing pieces.
-- Provide clear comments where necessary, but focus primarily on clean, self-documenting code.
-- When writing tests, use the AAA (Arrange, Act, Assert) pattern and ensure async operations are handled properly with `async/await`.
-- If a request seems incomplete or requires additional context, ask clarifying questions instead of guessing.
+### Initial Setup
+1. **Install dependencies:** `npm install`
+2. **Start Amplify sandbox:** `npx ampx sandbox` (requires AWS credentials)
+3. **Start dev server:** `npm run dev` (in a separate terminal)
+
+### Available Scripts
+- `npm run dev` - Start Vite dev server
+- `npm run build` - TypeScript compile + Vite production build
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build
+- `npm run cleanup` - Delete all data from DynamoDB and S3 (destructive!)
+
+### Build Process
+The build command runs **two steps sequentially**:
+1. `tsc` - TypeScript compilation (type checking)
+2. `vite build` - Bundle application for production
+
+## Critical Setup Requirements
+
+### amplify_outputs.json
+- **Location:** Root directory (`/amplify_outputs.json`)
+- **Generated by:** `npx ampx sandbox` command
+- **Purpose:** Contains Amplify backend configuration (API endpoints, auth pools, S3 buckets)
+- **Git ignored:** Yes (see `.gitignore`)
+- **Build failure if missing:** The application imports this file in `src/main.tsx` and will fail to build without it
+
+**Common Build Error:**
+```
+error TS2307: Cannot find module '../amplify_outputs.json'
+```
+**Resolution:** Run `npx ampx sandbox` to generate the file, or create a mock file for type checking only.
+
+### AWS Credentials
+- Required for running the Amplify sandbox
+- Configure with: `aws sso login --profile <your-aws-profile>`
+- Replace `<your-aws-profile>` with your configured AWS profile name
+
+## Code Style and Conventions
+
+### General Principles
+- **Clean Code:** Prioritize readability, maintainability, and reusability
+- **DRY:** Extract reusable logic into functions, hooks, or components
+- **Modularization:** Break down complex features into smaller units
+- **TypeScript First:** All code must be TypeScript with proper type safety
+- **No Placeholders:** Fully implement functionality (no TODO comments)
+
+### Naming Conventions
+- **Components:** PascalCase (e.g., `UserProfile`, `GalleryCard`)
+- **Files:** PascalCase for components (e.g., `UserProfile.tsx`), camelCase for utilities
+- **CSS Modules:** PascalCase with `.module.css` extension (e.g., `Card.module.css`)
+- **Variables/Functions:** camelCase (e.g., `getUserData`, `isAuthenticated`)
+- **Interfaces/Types:** PascalCase (e.g., `User`, `GalleryItem`)
+- **Constants:** ALL_CAPS (e.g., `MAX_FILE_SIZE`)
+- **Private members:** Prefix with underscore (e.g., `_internalState`)
+
+### Component Design
+- **Functional Components:** Always use functional components with hooks
+- **Props:** Destructure in function signature with TypeScript interfaces
+- **Single Responsibility:** Each component should have one clear purpose
+- **Fragments:** Use `<>...</>` or `React.Fragment` to avoid wrapper elements
+- **Custom Hooks:** Extract reusable stateful logic (prefix with `use`)
+
+**Example:**
+```typescript
+interface CardProps {
+  title: string;
+  onClick?: () => void;
+  children: React.ReactNode;
+}
+
+export function Card({ title, onClick, children }: CardProps) {
+  return (
+    <>
+      <h2>{title}</h2>
+      <div onClick={onClick}>{children}</div>
+    </>
+  );
+}
+```
+
+### Styling
+- **CSS Modules:** Each component has a corresponding `.module.css` file
+- **Import as:** `import styles from './Component.module.css'`
+- **Apply classes:** `className={styles.className}`
+- **PrimeReact:** Use PrimeReact components for consistency (Button, Card, Dialog, etc.)
+- **PrimeFlex:** Use utility classes for layout (e.g., `flex`, `justify-content-center`)
+
+**Example:**
+```typescript
+import styles from './Card.module.css';
+
+export function Card({ title }: CardProps) {
+  return <div className={styles.card}>{title}</div>;
+}
+```
+
+### State Management
+- **Local State:** `useState` for component-level state
+- **Reducers:** `useReducer` for complex state logic
+- **Global State:** React Context API (e.g., `AuthContext`)
+- **Server State:** Tanstack Query (never use local state for server data)
+
+### Data Fetching with Tanstack Query
+Always use Tanstack Query for server state management:
+- **Queries:** `useQuery` for GET requests
+- **Mutations:** `useMutation` for POST/PUT/DELETE requests
+- **Handle states:** loading, error, and success states
+- **No direct fetch:** Never use `fetch` or Amplify API methods directly in components
+
+**Example:**
+```typescript
+import { useQuery } from '@tanstack/react-query';
+import { client } from '@/lib/amplify-client';
+
+function useGalleries() {
+  return useQuery({
+    queryKey: ['galleries'],
+    queryFn: async () => {
+      const { data } = await client.models.Gallery.list();
+      return data;
+    },
+  });
+}
+
+function GalleryList() {
+  const { data, isLoading, error } = useGalleries();
+  
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  
+  return <div>{/* render galleries */}</div>;
+}
+```
+
+### Backend Integration with Amplify
+- **Auth:** `import { getCurrentUser } from 'aws-amplify/auth'`
+- **Data:** Use Amplify Data client (GraphQL) with Tanstack Query
+- **Storage:** Use Amplify Storage for S3 operations
+- **Configuration:** Amplify is configured in `src/main.tsx`
+
+**Example:**
+```typescript
+import { uploadData } from 'aws-amplify/storage';
+
+async function uploadImage(file: File) {
+  const result = await uploadData({
+    path: `uploads/${file.name}`,
+    data: file,
+  }).result;
+  return result;
+}
+```
+
+### Routing with Tanstack Router
+- **File-based:** Routes are in `src/routes/` directory
+- **Route files:** `index.tsx` for index routes, `$param.tsx` for dynamic routes
+- **Navigation:** Use `Link` component or `useNavigate` hook
+- **Route tree:** Auto-generated in `src/routeTree.gen.ts` (do not edit manually)
+
+### Error Handling
+- **Async operations:** Wrap in try/catch blocks
+- **Error boundaries:** Implement React error boundaries for component trees
+- **Logging:** Log errors with context (user action, component name, etc.)
+- **User feedback:** Display user-friendly error messages
+
+### TypeScript
+- **Interfaces over types:** Prefer interfaces for object shapes
+- **Strict mode:** `strict: true` is enabled
+- **No `any`:** Avoid `any` type; use `unknown` or proper types
+- **Type imports:** Use `import type` for type-only imports when possible
+
+## Common Build Failures and Resolutions
+
+### Missing amplify_outputs.json
+**Error:** `Cannot find module '../amplify_outputs.json'`
+**Fix:** Run `npx ampx sandbox` to generate, or create mock for CI:
+```json
+{
+  "version": "1",
+  "auth": {},
+  "data": {},
+  "storage": {}
+}
+```
+
+### TypeScript Errors in amplify/ Directory
+**Error:** `error TS2307: Cannot find module '@aws-amplify/backend'`
+**Fix:** The `amplify/` directory has its own `package.json` and `node_modules`:
+```bash
+cd amplify
+npm install
+cd ..
+```
+
+### Missing Dependencies
+**Error:** `Cannot find module 'react'`
+**Fix:** Install dependencies: `npm install`
+
+### Linting Errors
+**Error:** ESLint warnings or errors
+**Fix:** Run `npm run lint` to see all issues; many can be auto-fixed with `npm run lint -- --fix`
+
+### Build Hanging
+**Issue:** `npm run build` appears stuck
+**Cause:** TypeScript compilation can be slow
+**Fix:** Wait or check for type errors with `npx tsc --noEmit`
+
+## Testing Guidelines
+- **Pattern:** Use AAA (Arrange, Act, Assert) pattern
+- **Async:** Handle async operations with `async/await`
+- **Coverage:** Test both success and failure scenarios
+- **Mocking:** Mock Amplify API calls and external dependencies
+
+## When to Ask for Clarification
+- Incomplete requirements or ambiguous user requests
+- Conflicting requirements (e.g., style vs. functionality)
+- Missing context (e.g., which component to modify)
+- Security implications of a requested change
+
+## Anti-Patterns to Avoid
+- ❌ Using class components (use functional components with hooks)
+- ❌ Mutating props or state directly (use immutable updates)
+- ❌ Using `any` type in TypeScript (use proper types or `unknown`)
+- ❌ Prop drilling (use Context or state management)
+- ❌ Fetching data with `fetch` directly (use Tanstack Query)
+- ❌ Mixing Next.js patterns (this is a Vite project, not Next.js)
+- ❌ Using relative imports for cross-directory imports (use path aliases)
+- ❌ Ignoring error states in async operations
+- ❌ Creating TODO comments (implement fully or ask for clarification)
+
+## Quick Reference
+
+### Import Amplify Auth
+```typescript
+import { signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
+```
+
+### Import Amplify Data
+```typescript
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '@/../amplify/data/resource';
+const client = generateClient<Schema>();
+```
+
+### Import Amplify Storage
+```typescript
+import { uploadData, getUrl } from 'aws-amplify/storage';
+```
+
+### Create a Custom Hook
+```typescript
+export function useAuth() {
+  const [user, setUser] = useState<User | null>(null);
+  // implementation
+  return { user, isAuthenticated: !!user };
+}
+```
+
+### Create a Protected Route
+```typescript
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+
+export default function AdminPage() {
+  return (
+    <ProtectedRoute>
+      <div>Admin content</div>
+    </ProtectedRoute>
+  );
+}
+```
