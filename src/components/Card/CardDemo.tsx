@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import React from 'react';
 import { Card } from '../Card';
 import styles from './CardDemo.module.css';
@@ -9,14 +10,23 @@ export const CardDemo: React.FC = () => {
 
   return (
     <div className={styles.demoContainer}>
-      <h2>Card Component Demo</h2>
-
+      <div className={styles.anchorTarget}>Anchor Target</div>
+      <h2 className={styles.gradientHeading}>Card Component Demo</h2>
       <div className={styles.cardGrid}>
         <Card
           variant='default'
           padding='md'>
           <h3>Default Card</h3>
           <p>This is a basic card with default styling and medium padding.</p>
+          <div className={styles.colorBlock}>
+            <span>Color Block</span>
+          </div>
+          <div className={clsx(styles.colorBlock, styles.colorBlockAlt)}>
+            <span>Alt Color Block</span>
+          </div>
+          <div className={clsx(styles.colorBlock, styles.anchorBlock)}>
+            <span>Anchor Block</span>
+          </div>
         </Card>
 
         <Card

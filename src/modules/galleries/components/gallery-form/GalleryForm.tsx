@@ -27,7 +27,9 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
   const toast = useRef<Toast>(null);
 
   // Generate the client for our Amplify data models
-  const client = generateClient<Schema>();
+  const client = generateClient<Schema>({
+    authMode: 'userPool',
+  });
   const queryClient = useQueryClient();
 
   const resetForm = () => {

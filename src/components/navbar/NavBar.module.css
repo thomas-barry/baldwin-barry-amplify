@@ -1,11 +1,12 @@
 .stickyNavbar {
-  --sticky-navbar-bg: #c5c5cb;
+  --sticky-navbar-bg-start: #b8b8ba;
+  --sticky-navbar-bg-end: #eaeaea;
   position: fixed;
   width: 100%;
   height: auto;
   color: var(--clr-text);
   background: var(--sticky-navbar-bg);
-  background: linear-gradient(0deg, var(--sticky-navbar-bg) 0%, rgba(140, 140, 140, 0) 100%);
+  background: linear-gradient(0deg, var(--sticky-navbar-bg-start) 0%, var(--sticky-navbar-bg-end) 100%);
   border-bottom: 1px solid rgba(140, 140, 140, 1);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 

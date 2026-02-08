@@ -8,9 +8,13 @@ import type { Schema } from '../../amplify/data/resource';
 import styles from './GalleryList.module.css';
 
 const GalleryList = () => {
-  // Generate the client for our Amplify data models
-  const client = generateClient<Schema>({
+  // Read operations use the public API key.
+  const clientRead = generateClient<Schema>({
     authMode: 'apiKey',
+  });
+  // Write operations require an authenticated admin user.
+  const clientWrite = generateClient<Schema>({
+    authMode: 'userPool',
   });
   const queryClient = useQueryClient();
 
@@ -22,8 +26,7 @@ const GalleryList = () => {
   } = useQuery({
     queryKey: ['galleries'],
     queryFn: async () => {
-      const response = await client.models.Gallery.list({
-        authMode: 'apiKey',
+      const response = await clientRead.models.Gallery.list({
         selectionSet: ['id', 'name', 'description', 'createdDate', 'thumbnailImage.*'],
       });
       return response.data;
@@ -34,9 +37,8 @@ const GalleryList = () => {
     mutationFn: async (galleryId: string) => {
       console.log('Deleting gallery with ID:', galleryId);
       // First, delete all associated GalleryImage records
-      const galleryImagesResponse = await client.models.GalleryImage.list({
+      const galleryImagesResponse = await clientWrite.models.GalleryImage.list({
         filter: { galleryId: { eq: galleryId } },
-        authMode: 'apiKey',
       });
 
       console.log('Errors', galleryImagesResponse.errors);
@@ -46,12 +48,12 @@ const GalleryList = () => {
       if (galleryImagesResponse.data) {
         // Delete each GalleryImage record
         for (const galleryImage of galleryImagesResponse.data) {
-          await client.models.GalleryImage.delete({ id: galleryImage.id });
+          await clientWrite.models.GalleryImage.delete({ id: galleryImage.id });
         }
       }
 
       // Then delete the Gallery itself
-      const response = await client.models.Gallery.delete({ id: galleryId });
+      const response = await clientWrite.models.Gallery.delete({ id: galleryId });
       return response;
     },
     onSuccess: () => {
