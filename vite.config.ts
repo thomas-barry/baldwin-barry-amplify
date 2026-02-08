@@ -1,5 +1,7 @@
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
+import browserslist from 'browserslist';
+import { browserslistToTargets } from 'lightningcss';
 import path from 'path';
 import { defineConfig } from 'vite';
 
@@ -8,12 +10,7 @@ export default defineConfig({
   css: {
     transformer: 'lightningcss',
     lightningcss: {
-      targets: {
-        chrome: 110,
-        edge: 110,
-        firefox: 110,
-        safari: 15,
-      },
+      targets: browserslistToTargets(browserslist()),
       minify: true,
     },
   },
