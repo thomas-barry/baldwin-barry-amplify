@@ -78,8 +78,10 @@ This is a **React 18 + Vite + AWS Amplify Gen 2** full-stack application for man
 
 **ALWAYS** ensure you have the following before starting development:
 1. AWS CLI configured with appropriate permissions
-2. AWS SSO login: `aws sso login --profile bb-admin`
+2. AWS SSO login: `aws sso login --profile bb-admin` (or your configured AWS profile)
 3. Node.js and npm installed
+
+**Note**: The `bb-admin` profile is specific to this project. Developers should use their own AWS profile with appropriate permissions for Amplify deployment.
 
 ### Development Workflow
 
@@ -187,7 +189,9 @@ GalleryImage {
 ### onUploadHandler
 - **Trigger**: S3 object creation in `uploads/*` prefix
 - **Purpose**: Generate thumbnails, extract EXIF metadata, update DynamoDB
-- **Dependencies**: Sharp layer (ARN: arn:aws:lambda:us-east-1:217260976694:layer:sharp:4)
+- **Dependencies**: Sharp layer for image processing
+  - Current ARN (us-east-1): `arn:aws:lambda:us-east-1:217260976694:layer:sharp:4`
+  - **Note**: This ARN is region-specific. For other regions, use the appropriate Sharp layer ARN
 - **Outputs**: Thumbnail saved to `thumbnails/*` prefix
 
 ### deleteGalleryWithImages
