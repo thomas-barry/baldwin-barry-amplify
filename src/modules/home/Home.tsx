@@ -17,7 +17,8 @@ const Home = () => {
     <div className={styles.homeContainer}>
       <img
         src={ellipse}
-        alt='Ellipse'
+        alt=""
+        aria-hidden="true"
         className={styles.ellipseImage}
         width={1000}
         height={1000}
