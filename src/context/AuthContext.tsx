@@ -74,11 +74,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = async (username: string, password: string) => {
+    console.log('LOGIN');
     setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
     try {
-      await signIn({ username, password });
+      const result = await signIn({ username, password });
+      console.log('SIGNIN RESULT:', result);
+      if (result.isSignedIn) {
+        console.log('Login successful for user:', username);
+        setAuthState(prev => ({ ...prev, isAuthenticated: true }));
+      }
       await checkUser();
     } catch (error) {
+      console.log('Login failed for user:', username, 'Error:', error);
       setAuthState(prev => ({
         ...prev,
         isLoading: false,
@@ -107,6 +114,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }));
     }
   };
+
+  console.log('AuthState changed:', authState);
 
   return (
     <AuthContext.Provider

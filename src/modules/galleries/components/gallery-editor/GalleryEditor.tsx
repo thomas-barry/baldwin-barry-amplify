@@ -1,4 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
+import { useLoginDialog } from '@/context/LoginDialogContext';
 import { StorageImage } from '@aws-amplify/ui-react-storage';
 import {
   DndContext,
@@ -92,6 +93,7 @@ const SortableImageItem = ({ imageItem, index, isGalleryThumbnail, onThumbnailTo
 
 const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   const { isAuthenticated, isAdmin } = useAuth();
+  const { openLogin } = useLoginDialog();
   const toast = useRef<Toast>(null);
   const queryClient = useQueryClient();
 
@@ -316,13 +318,12 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
           style={{ fontSize: '2rem' }}></i>
         <h3>Authentication Required</h3>
         <p>You must be logged in to edit galleries.</p>
-        <Link to='/login'>
-          <Button
-            label='Login'
-            icon='pi pi-sign-in'
-            severity='info'
-          />
-        </Link>
+        <Button
+          label='Login'
+          icon='pi pi-sign-in'
+          severity='info'
+          onClick={openLogin}
+        />
       </div>
     );
   }
