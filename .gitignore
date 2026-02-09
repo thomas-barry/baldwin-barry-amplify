@@ -28,3 +28,4 @@ build
 .amplify
 amplify_outputs*
 amplifyconfiguration*
+.worktrees
