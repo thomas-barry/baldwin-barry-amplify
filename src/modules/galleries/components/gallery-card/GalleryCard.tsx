@@ -26,7 +26,7 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
   return (
     <article>
       <Link
-        to='/galleries/$galleryId'
+        to='/photos/$galleryId'
         params={{ galleryId: gallery.id }}
         className={styles.galleryCardLink}>
         <div className={styles.galleryCard}>
@@ -43,7 +43,7 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
       {isAdmin && (
         <div className={styles.actionButtons}>
           <Link
-            to='/galleries/$galleryId/edit'
+            to='/photos/$galleryId/edit'
             params={{ galleryId: gallery.id }}
             className={styles.editButtonLink}>
             <Button

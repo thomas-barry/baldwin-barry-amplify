@@ -1,12 +1,19 @@
 import { useAuth } from '@/context/AuthContext';
-import { Authenticator } from '@aws-amplify/ui-react';
-import '@aws-amplify/ui-react/styles.css';
+import { useLoginDialog } from '@/context/LoginDialogContext';
 import { Navigate } from '@tanstack/react-router';
-import { Card } from 'primereact/card';
+import { Button } from 'primereact/button';
+import { useEffect } from 'react';
 import styles from './LoginPage.module.css';
 
 const LoginPage = () => {
   const { isAuthenticated, isLoading } = useAuth();
+  const { openLogin } = useLoginDialog();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      openLogin();
+    }
+  }, [isLoading, isAuthenticated, openLogin]);
 
   // If already authenticated, redirect to home
   if (!isLoading && isAuthenticated) {
@@ -15,15 +22,15 @@ const LoginPage = () => {
 
   return (
     <div className={styles.loginContainer}>
-      <Card>
+      <div className={styles.loginCard}>
         <h1>Sign In</h1>
-        <Authenticator hideSignUp>
-          {/* {() => (
-            // This only renders after successful authentication
-            <Navigate to='/' />
-          )} */}
-        </Authenticator>
-      </Card>
+        <p>The login dialog has been opened. If it is not visible, use the button below.</p>
+        <Button
+          label='Open Login Dialog'
+          icon='pi pi-sign-in'
+          onClick={openLogin}
+        />
+      </div>
     </div>
   );
 };

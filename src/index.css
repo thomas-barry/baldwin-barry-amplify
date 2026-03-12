@@ -3,53 +3,92 @@
 @import url('normalize.css/normalize.css') layer(normalize);
 @import url('react-image-gallery/styles/css/image-gallery.css') layer(gallery);
 
+/* ── Tokyo Night: Dark (default) ──────────────────────────────────── */
 :root {
-  /* colors */
-  --clr-white: hsl(220, 37%, 100%);
-  --clr-surface: hsl(240, 5%, 89%);
-  --clr-text: hsl(244, 44%, 14%);
+  --tn-bg: #1a1b26;
+  --tn-surface: #24283b;
+  --tn-surface2: #2f334d;
+  --tn-border: #414868;
+  --tn-text: #c0caf5;
+  --tn-text-muted: #565f89;
+  --tn-blue: #7aa2f7;
+  --tn-cyan: #7dcfff;
+  --tn-green: #9ece6a;
+  --tn-yellow: #e0af68;
+  --tn-red: #f7768e;
+  --tn-purple: #bb9af7;
 
-  /* font weights */
+  /* Sidebar geometry */
+  --sidebar-width: 240px;
+  --sidebar-width-collapsed: 64px;
+  --sidebar-current-width: var(--sidebar-width);
+  --sidebar-transition: 250ms ease;
+
+  /* Shared header geometry — sidebar header and page header must match */
+  --header-height: 73px;
+  --header-logo-size: 40px;
+
+  /* Font weights */
   --fw-light: 200;
-  --fw-regular: 500;
+  --fw-regular: 400;
   --fw-bold: 600;
   --fw-black: 700;
 
-  /* font sizes */
-  --fs-300: 1rem;
-  --fs-400: 1.125rem;
-  --fs-500: 1.375rem;
-  --fs-600: 1.75rem;
-  --fs-700: 2.25rem;
-  --font-size: 16px;
+  /* Font sizes */
+  --fs-300: 0.875rem;
+  --fs-400: 1rem;
+  --fs-500: 1.125rem;
+  --fs-600: 1.375rem;
+  --fs-700: 1.75rem;
+  --fs-800: 2.25rem;
 
-  @media (prefers-color-scheme: dark) {
-    --clr-surface: hsl(240, 5%, 15%);
-    --clr-text: hsl(240, 5%, 90%);
-  }
+  /* Legacy aliases kept for backward compatibility */
+  --clr-white: #fff;
+  --clr-surface: var(--tn-bg);
+  --clr-text: var(--tn-text);
+}
+
+/* ── Tokyo Night: Light ───────────────────────────────────────────── */
+[data-theme='light'] {
+  --tn-bg: #d5d6db;
+  --tn-surface: #e1e2e7;
+  --tn-surface2: #cbccd1;
+  --tn-border: #9699a3;
+  --tn-text: #3760bf;
+  --tn-text-muted: #6172b0;
+  --tn-blue: #2e7de9;
+  --tn-cyan: #007197;
+  --tn-green: #587539;
+  --tn-yellow: #8c6c3e;
+  --tn-red: #f52a65;
+  --tn-purple: #7847bd;
+
+  --clr-surface: var(--tn-bg);
+  --clr-text: var(--tn-text);
 }
 
 html {
-  color-scheme: light dark;
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-content: center;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  font-size: var(--fw-regular);
+  font-size: var(--fs-400);
   font-weight: var(--fw-regular);
-  background-color: var(--clr-surface);
-  height: 100dvh;
-  width: 100vw;
+  background-color: var(--tn-bg);
+  color: var(--tn-text);
+  min-height: 100dvh;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 #root {
   width: 100%;
-  height: 100%;
+  min-height: 100dvh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
 }

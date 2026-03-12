@@ -11,15 +11,13 @@ import AmplifyFileUploader from '../amplify-file-uploader/AmplifyFileUploader';
 import ImageGalleryComponent from '../image-gallery/ImageGallery';
 import styles from './Gallery.module.css';
 
+const clientApiKey = generateClient<Schema>({ authMode: 'apiKey' });
+
 const Gallery = ({ galleryId }: { galleryId: string }) => {
   const toast = useRef<Toast>(null);
   const { isAdmin } = useAuth();
   const queryClient = useQueryClient();
   const [slideIndex, setSlideIndex] = useState(0);
-
-  const clientApiKey = generateClient<Schema>({
-    authMode: 'apiKey',
-  });
 
   const { data: galleryImages, isLoading } = useQuery({
     queryKey: ['galleryImages', galleryId],
@@ -64,9 +62,7 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
 
   const onUploadSuccess = async (event: { key?: string; fileType?: string }) => {
     try {
-      // Check if user is authenticated
       const currentUser = await getCurrentUser();
-      console.log('Current authenticated user:', currentUser);
 
       if (!currentUser) {
         throw new Error('User must be authenticated to upload images');
@@ -98,26 +94,17 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
   return (
     <div>
       <div className={styles.galleryTitle}>
-        <h3 style={{ margin: 0, color: '#495057' }}>
+        <h3 className={styles.galleryHeading}>
           {isGalleryLoading ? 'Loading...' : gallery?.name || 'Gallery Images'}
         </h3>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '14px',
-            color: '#6c757d',
-          }}>
-          <i
-            className='pi pi-images'
-            style={{ fontSize: '16px' }}></i>
+        <div className={styles.galleryMeta}>
+          <i className={`pi pi-images ${styles.galleryMetaIcon}`}></i>
           <span>{isLoading ? 'Loading...' : `${slideIndex + 1} of ${imageCount}`}</span>
           {isAdmin && (
             <Link
-              to='/galleries/$galleryId/edit'
+              to='/photos/$galleryId/edit'
               params={{ galleryId }}
-              style={{ marginLeft: '12px' }}>
+              className={styles.galleryEditLink}>
               <Button
                 icon='pi pi-pencil'
                 size='small'

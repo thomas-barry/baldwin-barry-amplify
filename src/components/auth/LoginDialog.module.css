@@ -1,0 +1,82 @@
+.dialog {
+  border: none;
+  border-radius: 16px;
+  padding: 0;
+  max-width: min(92vw, 480px);
+  width: 100%;
+  color: var(--clr-text, #1c1c1c);
+  background: #f8f5ef;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+}
+
+.dialog::backdrop {
+  background: rgba(19, 16, 12, 0.6);
+  backdrop-filter: blur(3px);
+}
+
+.dialogContent {
+  padding: 28px 28px 24px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: 0.01em;
+}
+
+.closeButton {
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+  color: inherit;
+}
+
+.primaryButton,
+.secondaryButton {
+  border-radius: 10px;
+  font-size: 0.95rem;
+  padding: 8px 16px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.primaryButton {
+  background: #1a56db;
+  color: #fff;
+}
+
+.secondaryButton {
+  background: transparent;
+  border-color: rgba(28, 28, 28, 0.3);
+  color: inherit;
+}
+
+.statusBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.username {
+  font-weight: 600;
+}
+
+.authenticatorWrap {
+  --amplify-components-authenticator-router-box-shadow: none;
+  --amplify-components-authenticator-router-border-width: 0;
+  --amplify-components-authenticator-router-background-color: transparent;
+  --amplify-components-authenticator-router-padding: 0;
+  --amplify-components-authenticator-form-padding: 0;
+  --amplify-components-authenticator-container-padding: 0;
+}

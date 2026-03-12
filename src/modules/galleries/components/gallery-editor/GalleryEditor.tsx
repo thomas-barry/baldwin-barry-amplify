@@ -1,4 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
+import { useLoginDialog } from '@/context/LoginDialogContext';
 import { StorageImage } from '@aws-amplify/ui-react-storage';
 import {
   DndContext,
@@ -90,20 +91,14 @@ const SortableImageItem = ({ imageItem, index, isGalleryThumbnail, onThumbnailTo
   );
 };
 
+const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
+const clientWrite = generateClient<Schema>({ authMode: 'userPool' });
+
 const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   const { isAuthenticated, isAdmin } = useAuth();
+  const { openLogin } = useLoginDialog();
   const toast = useRef<Toast>(null);
   const queryClient = useQueryClient();
-
-  // Client for read operations (public API key)
-  const clientRead = generateClient<Schema>({
-    authMode: 'apiKey',
-  });
-
-  // Client for write operations (authenticated)
-  const clientWrite = generateClient<Schema>({
-    authMode: 'userPool',
-  });
 
   const [sortedImages, setSortedImages] = useState<ImageWithDetails[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -239,7 +234,6 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   // Mutation to update image order
   const updateOrderMutation = useMutation({
     mutationFn: async (updates: { id: string; order: number }[]) => {
-      console.log('updating image order with updates:', updates);
       const promises = updates.map(async update => {
         try {
           const result = await clientWrite.models.GalleryImage.update({
@@ -312,17 +306,15 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
     return (
       <div className={styles.errorContainer}>
         <i
-          className='pi pi-lock'
-          style={{ fontSize: '2rem' }}></i>
+          className={`pi pi-lock ${styles.errorIcon}`}></i>
         <h3>Authentication Required</h3>
         <p>You must be logged in to edit galleries.</p>
-        <Link to='/login'>
-          <Button
-            label='Login'
-            icon='pi pi-sign-in'
-            severity='info'
-          />
-        </Link>
+        <Button
+          label='Login'
+          icon='pi pi-sign-in'
+          severity='info'
+          onClick={openLogin}
+        />
       </div>
     );
   }
@@ -331,11 +323,10 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
     return (
       <div className={styles.errorContainer}>
         <i
-          className='pi pi-ban'
-          style={{ fontSize: '2rem' }}></i>
+          className={`pi pi-ban ${styles.errorIcon}`}></i>
         <h3>Access Denied</h3>
         <p>You need admin privileges to edit galleries.</p>
-        <Link to='/galleries'>
+        <Link to='/photos'>
           <Button
             label='Back to Galleries'
             icon='pi pi-arrow-left'
@@ -358,12 +349,10 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   if (galleryError) {
     return (
       <div className={styles.errorContainer}>
-        <i
-          className='pi pi-exclamation-triangle'
-          style={{ fontSize: '2rem' }}></i>
+        <i className={`pi pi-exclamation-triangle ${styles.errorIcon}`}></i>
         <h3>Error loading gallery</h3>
         <p>Failed to load gallery: {galleryError.message}</p>
-        <Link to='/galleries'>
+        <Link to='/photos'>
           <Button
             label='Back to Galleries'
             icon='pi pi-arrow-left'
@@ -377,9 +366,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   if (imagesError) {
     return (
       <div className={styles.errorContainer}>
-        <i
-          className='pi pi-exclamation-triangle'
-          style={{ fontSize: '2rem' }}></i>
+        <i className={`pi pi-exclamation-triangle ${styles.errorIcon}`}></i>
         <p>Error loading gallery images.</p>
       </div>
     );
@@ -388,12 +375,10 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   if (!gallery) {
     return (
       <div className={styles.errorContainer}>
-        <i
-          className='pi pi-exclamation-triangle'
-          style={{ fontSize: '2rem' }}></i>
+        <i className={`pi pi-exclamation-triangle ${styles.errorIcon}`}></i>
         <h3>Gallery not found</h3>
         <p>Gallery with ID "{galleryId}" does not exist or you don't have access to it.</p>
-        <Link to='/galleries'>
+        <Link to='/photos'>
           <Button
             label='Back to Galleries'
             icon='pi pi-arrow-left'
@@ -409,7 +394,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
       <div className={styles.editorContainer}>
         <div className={styles.header}>
           <h2 className={styles.title}>Edit Gallery: {gallery.name}</h2>
-          <Link to='/galleries'>
+          <Link to='/photos'>
             <Button
               label='Back to Galleries'
               icon='pi pi-arrow-left'
@@ -419,9 +404,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
           </Link>
         </div>
         <div className={styles.emptyContainer}>
-          <i
-            className='pi pi-images'
-            style={{ fontSize: '3rem', color: '#6c757d' }}></i>
+          <i className={`pi pi-images ${styles.emptyIcon}`}></i>
           <h3>No Images Found</h3>
           <p>This gallery doesn't contain any images yet. Add some images first before editing.</p>
         </div>
@@ -434,7 +417,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
     <div className={styles.editorContainer}>
       <div className={styles.header}>
         <h2 className={styles.title}>Edit Gallery: {gallery.name}</h2>
-        <Link to='/galleries'>
+        <Link to='/photos'>
           <Button
             label='Back to Galleries'
             icon='pi pi-arrow-left'
