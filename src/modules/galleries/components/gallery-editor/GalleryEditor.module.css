@@ -317,6 +317,15 @@
   color: #6c757d;
 }
 
+.errorIcon {
+  font-size: 2rem;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  color: #6c757d;
+}
+
 @media (max-width: 768px) {
   .editorContainer {
     margin: 10px;

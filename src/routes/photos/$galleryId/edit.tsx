@@ -1,7 +1,7 @@
 import GalleryEditor from '@/modules/galleries/components/gallery-editor/GalleryEditor';
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/galleries/$galleryId/edit')({
+export const Route = createFileRoute('/photos/$galleryId/edit')({
   component: RouteComponent,
 });
 

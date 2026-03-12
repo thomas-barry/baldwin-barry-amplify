@@ -11,11 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PhotosIndexRouteImport } from './routes/photos/index'
 import { Route as GridDemoIndexRouteImport } from './routes/grid-demo/index'
-import { Route as GalleriesIndexRouteImport } from './routes/galleries/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as GalleriesGalleryIdIndexRouteImport } from './routes/galleries/$galleryId/index'
-import { Route as GalleriesGalleryIdEditRouteImport } from './routes/galleries/$galleryId/edit'
+import { Route as PhotosGalleryIdIndexRouteImport } from './routes/photos/$galleryId/index'
+import { Route as PhotosGalleryIdEditRouteImport } from './routes/photos/$galleryId/edit'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -27,14 +27,14 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PhotosIndexRoute = PhotosIndexRouteImport.update({
+  id: '/photos/',
+  path: '/photos/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GridDemoIndexRoute = GridDemoIndexRouteImport.update({
   id: '/grid-demo/',
   path: '/grid-demo/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GalleriesIndexRoute = GalleriesIndexRouteImport.update({
-  id: '/galleries/',
-  path: '/galleries/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -42,14 +42,14 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GalleriesGalleryIdIndexRoute = GalleriesGalleryIdIndexRouteImport.update({
-  id: '/galleries/$galleryId/',
-  path: '/galleries/$galleryId/',
+const PhotosGalleryIdIndexRoute = PhotosGalleryIdIndexRouteImport.update({
+  id: '/photos/$galleryId/',
+  path: '/photos/$galleryId/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GalleriesGalleryIdEditRoute = GalleriesGalleryIdEditRouteImport.update({
-  id: '/galleries/$galleryId/edit',
-  path: '/galleries/$galleryId/edit',
+const PhotosGalleryIdEditRoute = PhotosGalleryIdEditRouteImport.update({
+  id: '/photos/$galleryId/edit',
+  path: '/photos/$galleryId/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -57,29 +57,29 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/admin': typeof AdminIndexRoute
-  '/galleries': typeof GalleriesIndexRoute
   '/grid-demo': typeof GridDemoIndexRoute
-  '/galleries/$galleryId/edit': typeof GalleriesGalleryIdEditRoute
-  '/galleries/$galleryId': typeof GalleriesGalleryIdIndexRoute
+  '/photos': typeof PhotosIndexRoute
+  '/photos/$galleryId/edit': typeof PhotosGalleryIdEditRoute
+  '/photos/$galleryId': typeof PhotosGalleryIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/admin': typeof AdminIndexRoute
-  '/galleries': typeof GalleriesIndexRoute
   '/grid-demo': typeof GridDemoIndexRoute
-  '/galleries/$galleryId/edit': typeof GalleriesGalleryIdEditRoute
-  '/galleries/$galleryId': typeof GalleriesGalleryIdIndexRoute
+  '/photos': typeof PhotosIndexRoute
+  '/photos/$galleryId/edit': typeof PhotosGalleryIdEditRoute
+  '/photos/$galleryId': typeof PhotosGalleryIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/admin/': typeof AdminIndexRoute
-  '/galleries/': typeof GalleriesIndexRoute
   '/grid-demo/': typeof GridDemoIndexRoute
-  '/galleries/$galleryId/edit': typeof GalleriesGalleryIdEditRoute
-  '/galleries/$galleryId/': typeof GalleriesGalleryIdIndexRoute
+  '/photos/': typeof PhotosIndexRoute
+  '/photos/$galleryId/edit': typeof PhotosGalleryIdEditRoute
+  '/photos/$galleryId/': typeof PhotosGalleryIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,38 +87,38 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/admin'
-    | '/galleries'
     | '/grid-demo'
-    | '/galleries/$galleryId/edit'
-    | '/galleries/$galleryId'
+    | '/photos'
+    | '/photos/$galleryId/edit'
+    | '/photos/$galleryId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/admin'
-    | '/galleries'
     | '/grid-demo'
-    | '/galleries/$galleryId/edit'
-    | '/galleries/$galleryId'
+    | '/photos'
+    | '/photos/$galleryId/edit'
+    | '/photos/$galleryId'
   id:
     | '__root__'
     | '/'
     | '/login'
     | '/admin/'
-    | '/galleries/'
     | '/grid-demo/'
-    | '/galleries/$galleryId/edit'
-    | '/galleries/$galleryId/'
+    | '/photos/'
+    | '/photos/$galleryId/edit'
+    | '/photos/$galleryId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
-  GalleriesIndexRoute: typeof GalleriesIndexRoute
   GridDemoIndexRoute: typeof GridDemoIndexRoute
-  GalleriesGalleryIdEditRoute: typeof GalleriesGalleryIdEditRoute
-  GalleriesGalleryIdIndexRoute: typeof GalleriesGalleryIdIndexRoute
+  PhotosIndexRoute: typeof PhotosIndexRoute
+  PhotosGalleryIdEditRoute: typeof PhotosGalleryIdEditRoute
+  PhotosGalleryIdIndexRoute: typeof PhotosGalleryIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -137,18 +137,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/photos/': {
+      id: '/photos/'
+      path: '/photos'
+      fullPath: '/photos'
+      preLoaderRoute: typeof PhotosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/grid-demo/': {
       id: '/grid-demo/'
       path: '/grid-demo'
       fullPath: '/grid-demo'
       preLoaderRoute: typeof GridDemoIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/galleries/': {
-      id: '/galleries/'
-      path: '/galleries'
-      fullPath: '/galleries'
-      preLoaderRoute: typeof GalleriesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -158,18 +158,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/galleries/$galleryId/': {
-      id: '/galleries/$galleryId/'
-      path: '/galleries/$galleryId'
-      fullPath: '/galleries/$galleryId'
-      preLoaderRoute: typeof GalleriesGalleryIdIndexRouteImport
+    '/photos/$galleryId/': {
+      id: '/photos/$galleryId/'
+      path: '/photos/$galleryId'
+      fullPath: '/photos/$galleryId'
+      preLoaderRoute: typeof PhotosGalleryIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/galleries/$galleryId/edit': {
-      id: '/galleries/$galleryId/edit'
-      path: '/galleries/$galleryId/edit'
-      fullPath: '/galleries/$galleryId/edit'
-      preLoaderRoute: typeof GalleriesGalleryIdEditRouteImport
+    '/photos/$galleryId/edit': {
+      id: '/photos/$galleryId/edit'
+      path: '/photos/$galleryId/edit'
+      fullPath: '/photos/$galleryId/edit'
+      preLoaderRoute: typeof PhotosGalleryIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -179,10 +179,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   AdminIndexRoute: AdminIndexRoute,
-  GalleriesIndexRoute: GalleriesIndexRoute,
   GridDemoIndexRoute: GridDemoIndexRoute,
-  GalleriesGalleryIdEditRoute: GalleriesGalleryIdEditRoute,
-  GalleriesGalleryIdIndexRoute: GalleriesGalleryIdIndexRoute,
+  PhotosIndexRoute: PhotosIndexRoute,
+  PhotosGalleryIdEditRoute: PhotosGalleryIdEditRoute,
+  PhotosGalleryIdIndexRoute: PhotosGalleryIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

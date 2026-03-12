@@ -12,7 +12,7 @@ import styles from './GalleryForm.module.css';
 interface GalleryFormProps {
   visible: boolean;
   onHide: () => void;
-  onSave: (gallery: Gallery) => void;
+  onSave?: (gallery: Gallery) => void;
   initialValues?: Partial<Gallery>;
   isEdit?: boolean;
 }
@@ -101,7 +101,7 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
         // Refresh the galleries list
         queryClient.invalidateQueries({ queryKey: ['galleries'] });
 
-        onSave(savedGallery);
+        onSave?.(savedGallery);
         handleHide();
       }
     } catch (error) {

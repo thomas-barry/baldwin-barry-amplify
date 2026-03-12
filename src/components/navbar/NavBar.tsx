@@ -43,10 +43,10 @@ const NavBar = () => {
         </Link>
         <div className={styles.navLinks}>
           <Link
-            to='/galleries'
+            to='/photos'
             activeProps={{ className: styles.activeLink }}
             className={styles.navLink}>
-            Galleries
+            Photos
           </Link>
         </div>
         <div className={styles.navLinks}>

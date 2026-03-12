@@ -4,23 +4,18 @@ import { Button } from 'primereact/button';
 import GalleryForm from './components/gallery-form/GalleryForm';
 import styles from './Galleries.module.css';
 import { useGalleryForm } from './hooks/useGalleryForm';
-import { Gallery } from './types';
-
-const handleSave = (gallery: Gallery) => {
-  console.log('gallery saved:', gallery);
-};
 
 const Galleries = () => {
   const { isAdmin } = useAuth();
   const { isOpen, editGallery, openCreateForm, closeForm } = useGalleryForm();
   return (
     <>
+      <h1 className={styles.pageHeading}>Photos</h1>
       {isAdmin && (
         <div className={styles.galleryAdmin}>
           <GalleryForm
             visible={isOpen}
             onHide={closeForm}
-            onSave={handleSave}
             initialValues={editGallery || undefined}
             isEdit={!!editGallery}
           />

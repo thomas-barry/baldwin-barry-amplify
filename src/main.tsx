@@ -13,9 +13,10 @@ import './index.css';
 import 'primeflex/primeflex.css'; // flex utilities
 import 'primeicons/primeicons.css'; // icons
 import 'primereact/resources/primereact.min.css'; // core css
-import 'primereact/resources/themes/saga-blue/theme.css'; // theme
+import 'primereact/resources/themes/lara-dark-blue/theme.css'; // theme
 
 import { AuthProvider } from '@/context/AuthContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 import { routeTree } from './routeTree.gen';
 
 const router = createRouter({ routeTree });
@@ -37,7 +38,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <Authenticator.Provider>
         <PrimeReactProvider>
           <AuthProvider>
-            <RouterProvider router={router} />
+            <ThemeProvider>
+              <RouterProvider router={router} />
+            </ThemeProvider>
           </AuthProvider>
         </PrimeReactProvider>
       </Authenticator.Provider>

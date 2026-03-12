@@ -1,21 +1,36 @@
 import LoginDialog from '@/components/auth/LoginDialog';
-import NavBar from '@/components/navbar/NavBar';
+import PageHeader from '@/components/PageHeader/PageHeader';
+import Sidebar from '@/components/Sidebar';
 import { LoginDialogProvider } from '@/context/LoginDialogContext';
-import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { SidebarProvider, useSidebar } from '@/context/SidebarContext';
+import { createRootRoute, Outlet, useRouterState } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import styles from './RootLayout.module.css';
 
-export const Route = createRootRoute({
-  component: () => (
+const RootLayout = () => {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { collapsed } = useSidebar();
+  const isHome = pathname === '/';
+
+  return (
     <LoginDialogProvider>
-      <NavBar />
-      <div className={styles.pageGridContainer}>
-        <div className={styles.mainContent}>
+      <div className={styles.appLayout}>
+        <Sidebar />
+        <main className={styles.mainContent}>
+          {!isHome && collapsed && <PageHeader />}
           <Outlet />
-        </div>
+        </main>
       </div>
       <LoginDialog />
-      <TanStackRouterDevtools />
+      {import.meta.env.DEV && <TanStackRouterDevtools />}
     </LoginDialogProvider>
+  );
+};
+
+export const Route = createRootRoute({
+  component: () => (
+    <SidebarProvider>
+      <RootLayout />
+    </SidebarProvider>
   ),
 });
