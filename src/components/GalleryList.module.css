@@ -1,14 +1,19 @@
 .galleryListContainer {
   width: 100%;
-  max-width: 1000px;
-  margin: 20px auto;
 }
 
 .galleryGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  place-content: center;
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, 280px);
+  gap: var(--space-2);
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(auto-fill, 240px);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, 160px);
+  }
 }
 
 .loaderContainer {
@@ -24,7 +29,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--red-500);
+  color: var(--color-destructive);
   padding: 20px;
   text-align: center;
 }
@@ -36,20 +41,4 @@
   background-color: var(--surface-card);
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-@media (max-width: 768px) {
-  .galleryGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .galleryHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .sortContainer {
-    width: 100%;
-  }
 }

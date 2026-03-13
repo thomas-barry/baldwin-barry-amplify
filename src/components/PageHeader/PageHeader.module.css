@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   padding-inline: 1.5rem;
-  border-bottom: 1px solid var(--tn-border);
+  border-bottom: 1px solid var(--color-border);
   animation: fadeSlideIn 0.2s ease both;
 }
 
@@ -13,14 +13,14 @@
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
-  color: var(--tn-text);
+  color: var(--color-text);
 
   &:hover .logo {
-    border-color: var(--tn-blue);
+    border-color: var(--color-accent);
   }
 
   &:hover .name {
-    color: var(--tn-blue);
+    color: var(--color-accent);
   }
 }
 
@@ -29,7 +29,7 @@
   height: var(--header-logo-size);
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--tn-border);
+  border: 2px solid var(--color-border);
   flex-shrink: 0;
   transition: border-color 0.2s;
 }
@@ -37,7 +37,7 @@
 .name {
   font-size: 0.9rem;
   font-weight: var(--fw-bold);
-  color: var(--tn-text);
+  color: var(--color-text);
   white-space: nowrap;
   transition: color 0.2s;
 }

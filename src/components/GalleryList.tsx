@@ -4,18 +4,19 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
 import { Card } from 'primereact/card';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { useMemo } from 'react';
 import type { Schema } from '../../amplify/data/resource';
 import styles from './GalleryList.module.css';
 
-const GalleryList = () => {
-  // Read operations use the public API key.
-  const clientRead = generateClient<Schema>({
-    authMode: 'apiKey',
-  });
-  // Write operations require an authenticated admin user.
-  const clientWrite = generateClient<Schema>({
-    authMode: 'userPool',
-  });
+type SortValue = 'newest' | 'alpha';
+
+interface GalleryListProps {
+  sort?: SortValue;
+}
+
+const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
+  const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
+  const clientWrite = generateClient<Schema>({ authMode: 'userPool' });
   const queryClient = useQueryClient();
 
   const {
@@ -27,42 +28,42 @@ const GalleryList = () => {
     queryKey: ['galleries'],
     queryFn: async () => {
       const response = await clientRead.models.Gallery.list({
-        selectionSet: ['id', 'name', 'description', 'createdDate', 'thumbnailImage.*'],
+        selectionSet: ['id', 'name', 'description', 'createdDate', 'thumbnailImage.*', 'images.id'],
       });
       return response.data;
     },
   });
 
+  const sortedGalleries = useMemo(() => {
+    if (!galleries) return [];
+    const copy = [...galleries];
+    if (sort === 'alpha') {
+      copy.sort((a, b) => a.name.localeCompare(b.name));
+    } else {
+      copy.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
+    }
+    return copy;
+  }, [galleries, sort]);
+
   const deleteMutation = useMutation({
     mutationFn: async (galleryId: string) => {
-      console.log('Deleting gallery with ID:', galleryId);
-      // First, delete all associated GalleryImage records
       const galleryImagesResponse = await clientWrite.models.GalleryImage.list({
         filter: { galleryId: { eq: galleryId } },
       });
 
-      console.log('Errors', galleryImagesResponse.errors);
-
-      console.log('Gallery images to delete:', galleryImagesResponse.data);
-
       if (galleryImagesResponse.data) {
-        // Delete each GalleryImage record
         for (const galleryImage of galleryImagesResponse.data) {
           await clientWrite.models.GalleryImage.delete({ id: galleryImage.id });
         }
       }
 
-      // Then delete the Gallery itself
-      const response = await clientWrite.models.Gallery.delete({ id: galleryId });
-      return response;
+      return clientWrite.models.Gallery.delete({ id: galleryId });
     },
     onSuccess: () => {
-      // Refetch the galleries list after successful deletion
       queryClient.invalidateQueries({ queryKey: ['galleries'] });
     },
     onError: error => {
       console.error('Error deleting gallery:', error);
-      // You could add a toast notification here if you have a toast library
     },
   });
 
@@ -83,19 +84,15 @@ const GalleryList = () => {
   if (isErrorQuery) {
     return (
       <div className={styles.errorContainer}>
-        <i
-          className='pi pi-exclamation-triangle'
-          style={{ fontSize: '2rem', color: 'var(--red-500)' }}></i>
+        <i className='pi pi-exclamation-triangle' style={{ fontSize: '2rem', color: 'var(--red-500)' }} />
         <p>Error loading galleries: {error?.message || 'Unknown error'}</p>
       </div>
     );
   }
 
-  if (!galleries?.length) {
+  if (!sortedGalleries.length) {
     return (
-      <Card
-        className={styles.emptyStateCard}
-        title='No Galleries Found'>
+      <Card className={styles.emptyStateCard} title='No Galleries Found'>
         <p>No galleries have been created yet. Use the "Create New Gallery" button to add one.</p>
       </Card>
     );
@@ -104,7 +101,7 @@ const GalleryList = () => {
   return (
     <div className={styles.galleryListContainer}>
       <div className={styles.galleryGrid}>
-        {galleries.map(gallery => (
+        {sortedGalleries.map(gallery => (
           <GalleryCard
             key={gallery.id}
             gallery={gallery}

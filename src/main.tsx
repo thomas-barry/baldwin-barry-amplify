@@ -13,7 +13,7 @@ import './index.css';
 import 'primeflex/primeflex.css'; // flex utilities
 import 'primeicons/primeicons.css'; // icons
 import 'primereact/resources/primereact.min.css'; // core css
-import 'primereact/resources/themes/lara-dark-blue/theme.css'; // theme
+import 'primereact/resources/themes/lara-light-teal/theme.css'; // theme
 
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';

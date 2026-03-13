@@ -1,12 +1,17 @@
 .dialog {
   border: none;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   padding: 0;
   max-width: min(92vw, 480px);
   width: 100%;
-  color: var(--clr-text, #1c1c1c);
-  background: #f8f5ef;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  color: var(--color-text);
+  background: var(--color-bg);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='dark'] .dialog {
+  background: var(--color-surface);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
 }
 
 .dialog::backdrop {
@@ -52,8 +57,8 @@
 }
 
 .primaryButton {
-  background: #1a56db;
-  color: #fff;
+  background: var(--color-accent);
+  color: #0D1F2D;
 }
 
 .secondaryButton {

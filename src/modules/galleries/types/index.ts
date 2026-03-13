@@ -17,4 +17,5 @@ export interface Gallery {
     height?: number | null;
     contentType?: string | null;
   } | null;
+  images?: { id: string }[] | null;
 }

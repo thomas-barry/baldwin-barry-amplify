@@ -1,528 +1,83 @@
 @layer modules {
-  /* ── Keyframes ───────────────────────────────────────────────────── */
-
-  @keyframes rotate {
-    to {
-      transform: translate(-50%, -50%) rotate(-360deg);
-    }
-  }
-
-  @keyframes fadeUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes scrollBounce {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(5px);
-    }
-  }
-
-  @keyframes cardReveal {
-    from {
-      opacity: 0;
-      transform: translateY(28px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* ── Page ────────────────────────────────────────────────────────── */
-
   .page {
-    position: relative;
-    min-height: 100dvh;
-    overflow-x: hidden;
+    min-height: calc(100dvh - var(--header-height));
+    display: flex;
+    align-items: stretch;
   }
-
-  /* ── Ellipse ─────────────────────────────────────────────────────── */
-
-  .ellipse {
-    position: fixed;
-    top: 40%;
-    left: 50%;
-    width: 900px;
-    height: 900px;
-    transform: translate(-50%, -50%);
-    z-index: 0;
-    opacity: 0.1;
-    animation: rotate 120s linear infinite;
-    pointer-events: none;
-  }
-
-  /* ── Hero ────────────────────────────────────────────────────────── */
 
   .hero {
-    position: relative;
-    min-height: 100dvh;
+    flex: 1;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    padding: 5rem 3.5rem 7rem;
-    z-index: 1;
-  }
+    align-items: start;
+    gap: var(--space-4);
+    padding: var(--space-4) min(var(--space-3), 80px);
+    max-width: 1100px;
+    width: 100%;
 
-  /* Scanline texture */
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 3px,
-      rgba(0, 0, 0, 0.035) 3px,
-      rgba(0, 0, 0, 0.035) 4px
-    );
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .heroInner {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    position: relative;
-    z-index: 1;
-  }
-
-  .heroNameRow {
-    display: flex;
-    align-items: flex-start;
-    gap: 2.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .heroName {
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-size: clamp(3.25rem, 6.5vw, 6.75rem);
-    font-weight: 800;
-    line-height: 0.9;
-    color: var(--tn-text);
-    margin: 0;
-    letter-spacing: 0.02em;
-    opacity: 0;
-    animation: fadeUp 0.7s ease 0.2s both;
-  }
-
-  .heroNameAccent {
-    color: var(--tn-blue);
-  }
-
-  .heroRole {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    color: var(--tn-cyan);
-    margin: 0 0 0.75rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    opacity: 0;
-    animation: fadeUp 0.7s ease 0.35s both;
-  }
-
-  .heroBio {
-    font-size: 0.95rem;
-    color: var(--tn-text-muted);
-    margin: 0 0 2rem;
-    max-width: 44ch;
-    line-height: 1.65;
-    opacity: 0;
-    animation: fadeUp 0.7s ease 0.45s both;
-  }
-
-  .badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    opacity: 0;
-    animation: fadeUp 0.7s ease 0.55s both;
-  }
-
-  .badge {
-    font-family: 'JetBrains Mono', monospace;
-    text-decoration: none;
-    font-size: 0.68rem;
-    font-weight: 700;
-    color: var(--tn-text-muted);
-    background: var(--tn-surface);
-    border: 1px solid var(--tn-border);
-    padding: 0.28rem 0.7rem;
-    border-radius: 4px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    transition:
-      border-color 0.2s,
-      color 0.2s;
-
-    &:hover {
-      border-color: var(--tn-blue);
-      color: var(--tn-blue);
+    @media (max-width: 768px) {
+      flex-direction: column-reverse;
+      align-items: flex-start;
+      padding: var(--space-3) var(--space-2);
+      gap: var(--space-3);
     }
   }
 
-  /* Profile photo */
+  .heroContent {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
 
-  .heroImageFrame {
+  .overline {
+    font-family: var(--font-display);
+    font-size: var(--fs-h6);
+    font-weight: var(--fw-bold);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-accent-2);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .headline {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5.5vw, var(--fs-h1));
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  .body {
+    font-size: var(--fs-400);
+    line-height: 1.65;
+    color: var(--color-text-muted);
+    max-width: 42ch;
+    margin: 0;
+  }
+
+  .heroPhoto {
     flex-shrink: 0;
-    position: relative;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.4s both;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
   }
 
   .heroImage {
-    width: 300px;
-    height: 300px;
+    width: clamp(220px, 25vw, 320px);
+    height: clamp(220px, 25vw, 320px);
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     display: block;
-    filter: contrast(1.05) saturate(0.85);
-    border: 1px solid var(--tn-border);
-  }
 
-  .heroImageGlow {
-    position: absolute;
-    inset: -1px;
-    border-radius: 12px;
-    box-shadow: 0 0 70px rgba(122, 162, 247, 0.18);
-    pointer-events: none;
-  }
-
-  /* Scroll cue */
-
-  .scrollCue {
-    position: absolute;
-    bottom: 2.25rem;
-    left: 3.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.68rem;
-    color: var(--tn-text-muted);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    opacity: 0;
-    animation: fadeIn 1s ease 1.1s both;
-    z-index: 1;
-
-    & i {
-      animation: scrollBounce 1.6s ease-in-out infinite;
-    }
-  }
-
-  /* ── Tech Demos section ──────────────────────────────────────────── */
-
-  .demos {
-    position: relative;
-    z-index: 1;
-    padding: 4rem 3.5rem 6rem;
-  }
-
-  .demosHeader {
-    margin-bottom: 2.5rem;
-  }
-
-  .demosHeading {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--tn-text);
-    margin: 0 0 0.5rem;
-    letter-spacing: -0.01em;
-  }
-
-  .demosComment {
-    color: var(--tn-text-muted);
-  }
-
-  .demosSubhead {
-    font-size: 0.85rem;
-    color: var(--tn-text-muted);
-    margin: 0;
-    max-width: 58ch;
-    line-height: 1.6;
-  }
-
-  /* ── Card grid ───────────────────────────────────────────────────── */
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.125rem;
-  }
-
-  /* ── Card ────────────────────────────────────────────────────────── */
-
-  .card {
-    position: relative;
-    background: var(--tn-surface);
-    border: 1px solid var(--tn-border);
-    border-radius: 10px;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    overflow: hidden;
-    opacity: 0;
-    animation: cardReveal 0.55s ease both;
-    transition:
-      border-color 0.2s,
-      box-shadow 0.2s,
-      transform 0.2s;
-
-    /* Top-left corner bracket */
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 16px;
-      height: 16px;
-      border-top: 2px solid var(--tn-blue);
-      border-left: 2px solid var(--tn-blue);
-      border-radius: 2px 0 0 0;
-      opacity: 0;
-      transition: opacity 0.2s;
-      z-index: 2;
-    }
-
-    /* Bottom-right corner bracket */
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 16px;
-      height: 16px;
-      border-bottom: 2px solid var(--tn-blue);
-      border-right: 2px solid var(--tn-blue);
-      border-radius: 0 0 2px 0;
-      opacity: 0;
-      transition: opacity 0.2s;
-      z-index: 2;
-    }
-
-    &:hover {
-      border-color: color-mix(in srgb, var(--tn-blue) 45%, transparent);
-      box-shadow:
-        0 0 28px rgba(122, 162, 247, 0.1),
-        0 6px 24px rgba(0, 0, 0, 0.3);
-      transform: translateY(-2px);
-    }
-
-    &:hover::before,
-    &:hover::after {
-      opacity: 1;
-    }
-  }
-
-  /* Staggered entrance */
-  .card:nth-child(1) {
-    animation-delay: 0.05s;
-  }
-  .card:nth-child(2) {
-    animation-delay: 0.15s;
-  }
-  .card:nth-child(3) {
-    animation-delay: 0.25s;
-  }
-  .card:nth-child(4) {
-    animation-delay: 0.35s;
-  }
-  .card:nth-child(5) {
-    animation-delay: 0.45s;
-  }
-
-  .cardInner {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    box-sizing: border-box;
-  }
-
-  .cardMeta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.25rem;
-  }
-
-  .cardNum {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.68rem;
-    color: var(--tn-text-muted);
-    letter-spacing: 0.1em;
-  }
-
-  .cardStatus {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.58rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    padding: 2px 8px;
-    border-radius: 3px;
-  }
-
-  .statusLive {
-    color: var(--tn-green);
-    background: color-mix(in srgb, var(--tn-green) 12%, transparent);
-    border: 1px solid color-mix(in srgb, var(--tn-green) 28%, transparent);
-  }
-
-  .statusDemo {
-    color: var(--tn-cyan);
-    background: color-mix(in srgb, var(--tn-cyan) 12%, transparent);
-    border: 1px solid color-mix(in srgb, var(--tn-cyan) 28%, transparent);
-  }
-
-  .statusSoon {
-    color: var(--tn-text-muted);
-    background: color-mix(in srgb, var(--tn-text-muted) 8%, transparent);
-    border: 1px solid var(--tn-border);
-  }
-
-  .cardIcon {
-    font-size: 1.625rem;
-    color: var(--tn-blue);
-    margin-bottom: 0.875rem;
-  }
-
-  .cardIconMuted {
-    color: var(--tn-text-muted);
-    opacity: 0.45;
-  }
-
-  .cardTitle {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.975rem;
-    font-weight: 700;
-    color: var(--tn-text);
-    margin: 0 0 0.5rem;
-  }
-
-  .cardTitleMuted {
-    color: var(--tn-text-muted);
-  }
-
-  .cardDesc {
-    font-size: 0.8rem;
-    color: var(--tn-text-muted);
-    line-height: 1.65;
-    margin: 0 0 1.25rem;
-    flex: 1;
-  }
-
-  .cardDescMuted {
-    opacity: 0.55;
-  }
-
-  .cardAction {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--tn-blue);
-    letter-spacing: 0.02em;
-    margin-top: auto;
-    transition: color 0.15s;
-  }
-
-  .card:hover .cardAction {
-    color: var(--tn-cyan);
-  }
-
-  /* Locked / coming-soon cards */
-  .cardLocked {
-    border-style: dashed;
-    cursor: default;
-
-    &:hover {
-      border-color: var(--tn-border);
-      border-style: dashed;
-      box-shadow: none;
-      transform: none;
-    }
-
-    &:hover::before,
-    &:hover::after {
-      opacity: 0;
-    }
-  }
-
-  /* Demo card — interactive but not a link */
-  .cardNoLink {
-    cursor: default;
-
-    &:hover {
-      transform: none;
-    }
-  }
-
-  .knobWrapper {
-    display: flex;
-    justify-content: center;
-    padding: 0.5rem 0 0;
-  }
-
-  /* ── Responsive ─────────────────────────────────────────────────── */
-
-  @media (max-width: 1024px) {
-    .grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (max-width: 768px) {
-    .hero {
-      padding: 2.5rem 1.5rem 4rem;
-      min-height: auto;
-    }
-
-    .heroNameRow {
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-
-    .heroImage {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-    }
-
-    .heroName {
-      font-size: clamp(2.75rem, 13vw, 4.5rem);
-    }
-
-    .scrollCue {
-      left: 1.5rem;
-      bottom: 1.5rem;
-    }
-
-    .demos {
-      padding: 2.5rem 1.5rem 4rem;
-    }
-
-    .grid {
-      grid-template-columns: 1fr;
+    @media (max-width: 768px) {
+      width: 100%;
+      height: 240px;
+      border-radius: var(--radius-lg);
     }
   }
 }

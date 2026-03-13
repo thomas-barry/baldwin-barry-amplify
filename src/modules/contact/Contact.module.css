@@ -1,0 +1,20 @@
+.page {
+  padding: var(--space-4);
+  max-width: 640px;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-black);
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+  margin: 0 0 var(--space-3);
+}
+
+.body {
+  font-size: var(--fs-400);
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  margin: 0;
+}

@@ -13,7 +13,9 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PhotosIndexRouteImport } from './routes/photos/index'
 import { Route as GridDemoIndexRouteImport } from './routes/grid-demo/index'
+import { Route as ContactIndexRouteImport } from './routes/contact/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as PhotosGalleryIdIndexRouteImport } from './routes/photos/$galleryId/index'
 import { Route as PhotosGalleryIdEditRouteImport } from './routes/photos/$galleryId/edit'
 
@@ -37,9 +39,19 @@ const GridDemoIndexRoute = GridDemoIndexRouteImport.update({
   path: '/grid-demo/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactIndexRoute = ContactIndexRouteImport.update({
+  id: '/contact/',
+  path: '/contact/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutIndexRoute = AboutIndexRouteImport.update({
+  id: '/about/',
+  path: '/about/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PhotosGalleryIdIndexRoute = PhotosGalleryIdIndexRouteImport.update({
@@ -56,7 +68,9 @@ const PhotosGalleryIdEditRoute = PhotosGalleryIdEditRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/contact': typeof ContactIndexRoute
   '/grid-demo': typeof GridDemoIndexRoute
   '/photos': typeof PhotosIndexRoute
   '/photos/$galleryId/edit': typeof PhotosGalleryIdEditRoute
@@ -65,7 +79,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/contact': typeof ContactIndexRoute
   '/grid-demo': typeof GridDemoIndexRoute
   '/photos': typeof PhotosIndexRoute
   '/photos/$galleryId/edit': typeof PhotosGalleryIdEditRoute
@@ -75,7 +91,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/contact/': typeof ContactIndexRoute
   '/grid-demo/': typeof GridDemoIndexRoute
   '/photos/': typeof PhotosIndexRoute
   '/photos/$galleryId/edit': typeof PhotosGalleryIdEditRoute
@@ -86,7 +104,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/about'
     | '/admin'
+    | '/contact'
     | '/grid-demo'
     | '/photos'
     | '/photos/$galleryId/edit'
@@ -95,7 +115,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/about'
     | '/admin'
+    | '/contact'
     | '/grid-demo'
     | '/photos'
     | '/photos/$galleryId/edit'
@@ -104,7 +126,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/login'
+    | '/about/'
     | '/admin/'
+    | '/contact/'
     | '/grid-demo/'
     | '/photos/'
     | '/photos/$galleryId/edit'
@@ -114,7 +138,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
+  AboutIndexRoute: typeof AboutIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  ContactIndexRoute: typeof ContactIndexRoute
   GridDemoIndexRoute: typeof GridDemoIndexRoute
   PhotosIndexRoute: typeof PhotosIndexRoute
   PhotosGalleryIdEditRoute: typeof PhotosGalleryIdEditRoute
@@ -151,11 +177,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GridDemoIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contact/': {
+      id: '/contact/'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/': {
+      id: '/about/'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/photos/$galleryId/': {
@@ -178,7 +218,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
+  AboutIndexRoute: AboutIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
+  ContactIndexRoute: ContactIndexRoute,
   GridDemoIndexRoute: GridDemoIndexRoute,
   PhotosIndexRoute: PhotosIndexRoute,
   PhotosGalleryIdEditRoute: PhotosGalleryIdEditRoute,

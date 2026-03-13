@@ -10,10 +10,12 @@
     margin-left: var(--sidebar-current-width, var(--sidebar-width));
     transition: margin-left var(--sidebar-transition);
     min-width: 0;
+    display: flex;
+    flex-direction: column;
 
     @media (max-width: 768px) {
       margin-left: 0;
-      padding-top: 56px;
+      padding-top: var(--header-height);
     }
   }
 }

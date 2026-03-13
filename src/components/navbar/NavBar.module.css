@@ -1,21 +1,14 @@
 .stickyNavbar {
-  --sticky-navbar-bg-start: #b8b8ba;
-  --sticky-navbar-bg-end: #eaeaea;
   position: fixed;
   width: 100%;
   height: auto;
-  color: var(--clr-text);
-  background: var(--sticky-navbar-bg);
-  background: linear-gradient(0deg, var(--sticky-navbar-bg-start) 0%, var(--sticky-navbar-bg-end) 100%);
-  border-bottom: 1px solid rgba(140, 140, 140, 1);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
 
   @media (max-width: 768px) {
     display: none;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    --sticky-navbar-bg: #383840;
   }
 }
 
@@ -32,7 +25,7 @@
   align-items: center;
   padding-block: 16px;
   gap: 20px;
-  color: var(--clr-text);
+  color: var(--color-text);
   text-decoration: none;
   font-size: 1.5rem;
   font-weight: var(--fw-light);
@@ -41,13 +34,13 @@
 }
 
 .navbarLogoLink {
-  color: var(--clr-text);
+  color: var(--color-text);
   text-decoration: none;
 }
 
 .facePalmImage {
   max-width: 40px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
 }
 
 .navLinks {
@@ -58,15 +51,15 @@
 .navLink {
   margin-top: 8px;
   padding: 8px 12px;
-  color: var(--clr-text);
+  color: var(--color-text);
   text-decoration: none;
   font-size: 1rem;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   transition: all 0.2s ease;
 }
 
 .navLink:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--color-surface-raised);
 }
 
 .activeLink {
@@ -86,13 +79,13 @@
 }
 
 .username {
-  color: white;
+  color: var(--color-text);
   font-size: 0.9rem;
 }
 
 .adminBadge {
-  background-color: #ff9800;
-  color: #303037;
+  background-color: var(--color-badge);
+  color: #fff;
   font-size: 0.7rem;
   font-weight: bold;
   padding: 2px 6px;
@@ -102,11 +95,11 @@
 
 .loginButton,
 .logoutButton {
-  background-color: #1976d2;
-  color: white;
+  background-color: var(--color-accent);
+  color: #0D1F2D;
   border: none;
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 0.9rem;
   text-decoration: none;
@@ -115,19 +108,20 @@
 
 .loginButton:hover,
 .logoutButton:hover {
-  background-color: #1565c0;
+  background-color: color-mix(in srgb, var(--color-accent) 85%, #000);
 }
 
 .logoutButton {
-  background-color: #f44336;
+  background-color: var(--color-destructive);
+  color: #fff;
 }
 
 .logoutButton:hover {
-  background-color: #d32f2f;
+  background-color: color-mix(in srgb, var(--color-destructive) 85%, #000);
 }
 
 .authLoading {
-  color: white;
+  color: var(--color-text-muted);
   font-size: 0.9rem;
   opacity: 0.8;
 }

@@ -37,7 +37,7 @@ const NavBar = () => {
               onClick={handleLogoShiftClick}
             />
             <div>
-              <p>Thomas Baldwin Barry</p>
+              <p>xxx Thomas Baldwin Barry</p>
             </div>
           </div>
         </Link>
