@@ -3,6 +3,7 @@ export interface Gallery {
   name: string;
   description: string | null;
   createdDate: string;
+  updatedAt?: string | null;
   thumbnailImageId?: string | null;
   thumbnailImage?: {
     id: string;
@@ -18,4 +19,5 @@ export interface Gallery {
     contentType?: string | null;
   } | null;
   images?: { id: string }[] | null;
+  thumbnailCrop?: unknown;
 }

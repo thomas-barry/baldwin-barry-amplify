@@ -1,4 +1,5 @@
 import { defineBackend } from '@aws-amplify/backend';
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { onUploadHandler } from './functions/onUploadHandler/resource';
@@ -25,6 +26,19 @@ backend.onUploadHandler.addEnvironment('IMAGE_TABLE_NAME', backend.data.resource
 backend.onUploadHandler.addEnvironment(
   'GALLERY_IMAGE_TABLE_NAME',
   backend.data.resources.tables['GalleryImage'].tableName,
+);
+
+// CloudFront invalidation: set CLOUDFRONT_DISTRIBUTION_ID in your environment before running
+// `npx ampx sandbox` (or in CI secrets). The Lambda will skip invalidation if unset.
+backend.onUploadHandler.addEnvironment(
+  'CLOUDFRONT_DISTRIBUTION_ID',
+  process.env.CLOUDFRONT_DISTRIBUTION_ID ?? '',
+);
+backend.onUploadHandler.resources.lambda.addToRolePolicy(
+  new PolicyStatement({
+    actions: ['cloudfront:CreateInvalidation'],
+    resources: ['*'],
+  }),
 );
 
 // Export function name for debugging/monitoring purposes

@@ -49,10 +49,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const groups = session.tokens?.accessToken.payload['cognito:groups'] as string[] | undefined;
       const isAdmin = groups ? groups.includes('admin') : false;
 
+      // Prefer a human-readable name from the ID token claims over the raw
+      // Cognito username, which may be a UUID in Amplify Gen 2.
+      const idPayload = session.tokens?.idToken?.payload;
+      const rawName =
+        (idPayload?.['preferred_username'] as string | undefined) ||
+        (idPayload?.['name'] as string | undefined) ||
+        (idPayload?.['email'] as string | undefined) ||
+        currentUser.signInDetails?.loginId ||
+        currentUser.username;
+      const displayName = rawName?.includes('@') ? rawName.split('@')[0] : rawName;
+
       setAuthState({
         isAuthenticated: true,
         isAdmin,
-        username: currentUser.username,
+        username: displayName ?? null,
         isLoading: false,
         error: null,
       });

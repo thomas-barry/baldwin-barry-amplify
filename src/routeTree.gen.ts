@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PhotosIndexRouteImport } from './routes/photos/index'
 import { Route as GridDemoIndexRouteImport } from './routes/grid-demo/index'
 import { Route as ContactIndexRouteImport } from './routes/contact/index'
+import { Route as ComponentsIndexRouteImport } from './routes/components/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as PhotosGalleryIdIndexRouteImport } from './routes/photos/$galleryId/index'
@@ -44,6 +45,11 @@ const ContactIndexRoute = ContactIndexRouteImport.update({
   path: '/contact/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ComponentsIndexRoute = ComponentsIndexRouteImport.update({
+  id: '/components/',
+  path: '/components/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/components': typeof ComponentsIndexRoute
   '/contact': typeof ContactIndexRoute
   '/grid-demo': typeof GridDemoIndexRoute
   '/photos': typeof PhotosIndexRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/components': typeof ComponentsIndexRoute
   '/contact': typeof ContactIndexRoute
   '/grid-demo': typeof GridDemoIndexRoute
   '/photos': typeof PhotosIndexRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/components/': typeof ComponentsIndexRoute
   '/contact/': typeof ContactIndexRoute
   '/grid-demo/': typeof GridDemoIndexRoute
   '/photos/': typeof PhotosIndexRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/about'
     | '/admin'
+    | '/components'
     | '/contact'
     | '/grid-demo'
     | '/photos'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/about'
     | '/admin'
+    | '/components'
     | '/contact'
     | '/grid-demo'
     | '/photos'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/about/'
     | '/admin/'
+    | '/components/'
     | '/contact/'
     | '/grid-demo/'
     | '/photos/'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   AboutIndexRoute: typeof AboutIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  ComponentsIndexRoute: typeof ComponentsIndexRoute
   ContactIndexRoute: typeof ContactIndexRoute
   GridDemoIndexRoute: typeof GridDemoIndexRoute
   PhotosIndexRoute: typeof PhotosIndexRoute
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/components/': {
+      id: '/components/'
+      path: '/components'
+      fullPath: '/components'
+      preLoaderRoute: typeof ComponentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/admin'
@@ -220,6 +240,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   AboutIndexRoute: AboutIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
+  ComponentsIndexRoute: ComponentsIndexRoute,
   ContactIndexRoute: ContactIndexRoute,
   GridDemoIndexRoute: GridDemoIndexRoute,
   PhotosIndexRoute: PhotosIndexRoute,

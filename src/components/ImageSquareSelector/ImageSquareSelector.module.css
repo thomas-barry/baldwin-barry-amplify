@@ -1,0 +1,59 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ── Main canvas ── */
+
+.canvas {
+  position: relative;
+  cursor: crosshair;
+  user-select: none;
+  overflow: hidden;
+  border-radius: 6px;
+  touch-action: none;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Selection overlay ── */
+
+.selectionBox {
+  position: absolute;
+  aspect-ratio: 1 / 1;
+  /* box-shadow darkens everything outside the box; overflow:hidden on .canvas clips it */
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  cursor: move;
+}
+
+/* ── Preview ── */
+
+.previewWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.previewLabel {
+  font-size: var(--fs-300);
+  color: var(--color-text-muted);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.preview {
+  width: 280px;
+  height: 280px;
+  border-radius: 6px;
+  background-repeat: no-repeat;
+  background-color: var(--color-surface-alt, #f0f0f0);
+}

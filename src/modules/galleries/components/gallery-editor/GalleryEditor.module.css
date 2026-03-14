@@ -22,12 +22,6 @@
   font-size: 24px;
 }
 
-.backButton {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .thumbnailSelectionSection {
   margin-bottom: 40px;
 }
@@ -56,7 +50,9 @@
   position: relative;
   border-radius: var(--radius-md);
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   cursor: pointer;
   border: 3px solid transparent;
 }
@@ -119,7 +115,36 @@
 }
 
 .reorderSection {
+  margin-bottom: 24px;
+}
+
+.reorderSection :global(.p-card-body) {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.reorderSection :global(.p-card-content) {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+:global([data-theme='dark']) .reorderSection {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+
+.uploadSection {
   margin-bottom: 40px;
+}
+
+.uploadSection :global(.p-card-body) {
+  padding-top: 0.5rem;
+  padding-bottom: 1rem;
+}
+
+:global([data-theme='dark']) .uploadSection {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
 }
 
 .sortableGrid {
@@ -209,7 +234,21 @@
   color: white !important;
 }
 
+.imageClickArea {
+  cursor: pointer;
+  position: relative;
+
+  &:hover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.15);
+    pointer-events: none;
+  }
+}
+
 .sortableItemImage {
+  display: block;
   width: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
@@ -234,18 +273,28 @@
   flex: 1;
 }
 
-.orderNumber {
-  background-color: var(--color-accent);
-  color: #0D1F2D;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
+.deleteBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
-  font-weight: bold;
   flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    background 0.15s;
+
+  &:hover {
+    color: var(--color-destructive);
+    background: color-mix(in srgb, var(--color-destructive) 10%, transparent);
+  }
 }
 
 .dragHandle {
@@ -270,9 +319,6 @@
   gap: 12px;
   justify-content: flex-end;
   padding: 20px;
-  background-color: var(--color-surface);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
 }
 
 .loadingContainer {

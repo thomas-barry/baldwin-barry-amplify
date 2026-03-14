@@ -283,3 +283,23 @@
   display: flex;
   align-items: center;
 }
+
+/* ── Dark mode contrast fix ───────────────────────────────────────── */
+/* --color-text-subtle (#4A6070) on --color-surface-nav (#091520) = ~2.9:1, fails WCAG AA.
+   Override to --color-text-muted (#8FA8B5) = ~7.6:1. */
+
+:global([data-theme='dark']) .navItem {
+  color: var(--color-text-muted);
+
+  &:hover {
+    color: var(--color-text);
+  }
+}
+
+:global([data-theme='dark']) .collapseBtn {
+  color: var(--color-text-muted);
+
+  &:hover {
+    color: var(--color-text);
+  }
+}

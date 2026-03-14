@@ -9,8 +9,9 @@ const AuthButton = () => {
   if (isAuthenticated) {
     return (
       <div className={styles.wrapper}>
-        <span className={styles.username}>{username}</span>
-        {isAdmin && <span className={styles.adminBadge}>admin</span>}
+        <span className={`${styles.userBadge} ${isAdmin ? styles.userBadgeAdmin : styles.userBadgeGuest}`}>
+          {username}
+        </span>
         <button className={styles.iconBtn} onClick={logout} aria-label='Sign out' title='Sign out'>
           <i className='pi pi-sign-out' />
         </button>

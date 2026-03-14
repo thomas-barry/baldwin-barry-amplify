@@ -140,7 +140,7 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
     <>
       <Toast ref={toast} />
       <Dialog
-        header={isEdit ? 'Edit Gallery' : 'Create New Gallery'}
+        header={isEdit ? 'Edit Gallery' : 'New Gallery'}
         visible={visible}
         style={{ width: '500px' }}
         modal

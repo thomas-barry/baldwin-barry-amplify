@@ -5,25 +5,28 @@
   flex-shrink: 0;
 }
 
-.username {
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
+.userBadge {
+  font-size: 0.7rem;
+  font-weight: var(--fw-bold);
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 120px;
-}
-
-.adminBadge {
-  font-size: 0.58rem;
-  font-weight: var(--fw-bold);
-  color: #fff;
-  background: var(--color-badge);
-  padding: 2px 6px;
+  padding: 2px 8px;
   border-radius: 10px;
   flex-shrink: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+}
+
+.userBadgeAdmin {
+  background: color-mix(in srgb, #E8722A 18%, transparent);
+  color: #E8722A;
+}
+
+.userBadgeGuest {
+  background: color-mix(in srgb, var(--color-positive) 18%, transparent);
+  color: var(--color-positive);
 }
 
 .iconBtn {

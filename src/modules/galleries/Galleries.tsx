@@ -20,7 +20,19 @@ const Galleries = () => {
         <div>
           <h1 className={styles.pageHeading}>Photography</h1>
         </div>
-        <SortSelect value={sort} onChange={setSort} />
+        <div className={styles.headerControls}>
+          <SortSelect
+            value={sort}
+            onChange={setSort}
+          />
+          {isAdmin && (
+            <Button
+              label='New Gallery'
+              icon='pi pi-plus'
+              onClick={openCreateForm}
+            />
+          )}
+        </div>
       </div>
 
       {isAdmin && (
@@ -31,7 +43,6 @@ const Galleries = () => {
             initialValues={editGallery || undefined}
             isEdit={!!editGallery}
           />
-          <Button label='Create New Gallery' icon='pi pi-plus' onClick={openCreateForm} />
         </div>
       )}
 

@@ -1,6 +1,6 @@
+import type React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Link } from '@tanstack/react-router';
-import { Button } from 'primereact/button';
 import { Gallery } from '../../types';
 import styles from './GalleryCard.module.css';
 
@@ -15,6 +15,20 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
   const { isAdmin } = useAuth();
   const photoCount = gallery.images?.length ?? 0;
 
+  const crop = gallery.thumbnailCrop as { x: number; y: number; size: number } | null | undefined;
+  const W = gallery.thumbnailImage?.width;
+  const H = gallery.thumbnailImage?.height;
+  const cropStyle: React.CSSProperties =
+    crop && W && H
+      ? {
+          position: 'absolute',
+          width: `${100 / crop.size}%`,
+          height: 'auto',
+          left: `${(-crop.x * 100) / crop.size}%`,
+          top: `${(-crop.y * (H / W) * 100) / crop.size}%`,
+        }
+      : {};
+
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -23,60 +37,55 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
 
   return (
     <article className={styles.card}>
-      <Link
-        to='/photos/$galleryId'
-        params={{ galleryId: gallery.id }}
-        className={styles.cardLink}
-      >
-        <div className={styles.imageWrapper}>
-          {gallery.thumbnailImage ? (
-            <img
-              src={`https://${CLOUDFRONT_DOMAIN}/${gallery.thumbnailImage.s3ThumbnailKey}`}
-              alt={gallery.thumbnailImage.title || 'Gallery thumbnail'}
-              className={styles.cardImage}
-            />
-          ) : (
-            <div className={styles.imagePlaceholder}>
-              <i className='pi pi-images' />
-            </div>
-          )}
-          {isAdmin && (
-            <div className={styles.adminOverlay}>
-              <Link
-                to='/photos/$galleryId/edit'
-                params={{ galleryId: gallery.id }}
-                className={styles.adminLinkBtn}
-                onClick={e => e.stopPropagation()}
+      <div className={styles.imageWrapper}>
+        {gallery.thumbnailImage ? (
+          <img
+            src={`https://${CLOUDFRONT_DOMAIN}/${gallery.thumbnailImage.s3ThumbnailKey}${gallery.updatedAt ? `?v=${gallery.updatedAt}` : ''}`}
+            alt={gallery.thumbnailImage.title || 'Gallery thumbnail'}
+            className={crop && W && H ? undefined : styles.cardImage}
+            style={cropStyle}
+          />
+        ) : (
+          <div className={styles.imagePlaceholder}>
+            <i className='pi pi-images' />
+          </div>
+        )}
+        {isAdmin && (
+          <div className={styles.adminOverlay}>
+            <Link
+              to='/photos/$galleryId/edit'
+              params={{ galleryId: gallery.id }}
+              className='p-button p-component p-button-icon-only p-button-sm p-button-info p-button-rounded'
+              aria-label='Edit gallery'
+            >
+              <span className='p-button-icon pi pi-pencil' aria-hidden='true' />
+            </Link>
+            {onDelete && (
+              <button
+                className='p-button p-component p-button-icon-only p-button-sm p-button-danger p-button-rounded'
+                aria-label='Delete gallery'
+                onClick={handleDelete}
               >
-                <Button
-                  icon='pi pi-pencil'
-                  severity='info'
-                  size='small'
-                  rounded
-                  aria-label='Edit gallery'
-                  onClick={e => e.stopPropagation()}
-                />
-              </Link>
-              {onDelete && (
-                <Button
-                  icon='pi pi-trash'
-                  severity='danger'
-                  size='small'
-                  rounded
-                  aria-label='Delete gallery'
-                  onClick={handleDelete}
-                />
-              )}
-            </div>
-          )}
-        </div>
-        <div className={styles.cardBody}>
-          <h3 className={styles.cardTitle}>{gallery.name}</h3>
-          <span className={styles.cardCount}>
-            {photoCount === 1 ? '1 photo' : `${photoCount} photos`}
-          </span>
-        </div>
-      </Link>
+                <span className='p-button-icon pi pi-trash' aria-hidden='true' />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+      <div className={styles.cardBody}>
+        <h3 className={styles.cardTitle}>
+          <Link
+            to='/photos/$galleryId'
+            params={{ galleryId: gallery.id }}
+            className={styles.cardLink}
+          >
+            {gallery.name}
+          </Link>
+        </h3>
+        <span className={styles.cardCount}>
+          {photoCount === 1 ? '1 photo' : `${photoCount} photos`}
+        </span>
+      </div>
     </article>
   );
 };

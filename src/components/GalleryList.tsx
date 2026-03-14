@@ -28,7 +28,7 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
     queryKey: ['galleries'],
     queryFn: async () => {
       const response = await clientRead.models.Gallery.list({
-        selectionSet: ['id', 'name', 'description', 'createdDate', 'thumbnailImage.*', 'images.id'],
+        selectionSet: ['id', 'name', 'description', 'createdDate', 'updatedAt', 'thumbnailImage.*', 'images.id', 'thumbnailCrop'],
       });
       return response.data;
     },

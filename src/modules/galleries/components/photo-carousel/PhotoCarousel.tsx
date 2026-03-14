@@ -150,15 +150,6 @@ const PhotoCarousel = forwardRef<PhotoCarouselHandle, PhotoCarouselProps>(
                   >
                     <i className='pi pi-expand' />
                   </button>
-                  <a
-                    className={styles.actionBtn}
-                    href={`https://${CLOUDFRONT_DOMAIN}/${item.original}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    aria-label='Open image'
-                  >
-                    <i className='pi pi-external-link' />
-                  </a>
                 </div>
               </div>
             </div>

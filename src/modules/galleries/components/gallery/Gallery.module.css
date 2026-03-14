@@ -4,8 +4,8 @@
   justify-content: space-between;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-3);
   border-bottom: 1px solid var(--color-border);
-  background: var(--color-surface);
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -44,32 +44,26 @@
 .slideshowBtn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text-muted);
-  font-family: var(--font-body);
-  font-size: 0.875rem;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 6px;
+  border: 1.5px solid rgb(13 31 45 / 0.2);
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 16px;
   cursor: pointer;
   transition:
     border-color 0.2s,
     color 0.2s,
     background 0.2s;
 
-  & i {
-    font-size: 0.75rem;
-    color: var(--color-accent);
-  }
-
   &:hover {
     border-color: var(--color-accent);
-    color: var(--color-text);
-    background: color-mix(in srgb, var(--color-accent) 6%, var(--color-surface));
+    background: color-mix(in srgb, var(--color-accent) 6%, transparent);
   }
 }
 
-.galleryEditLink {
-  text-decoration: none;
-}

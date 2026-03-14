@@ -9,6 +9,7 @@ const ROUTE_LABELS: Record<string, string> = {
   '/contact': 'Contact',
   '/admin': 'Admin',
   '/grid-demo': 'Grid Demo',
+  '/components': 'Components',
 };
 
 const Topbar = () => {
