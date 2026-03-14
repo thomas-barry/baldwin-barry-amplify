@@ -17,7 +17,8 @@
       "@/lib/*": ["src/lib/*"],
       "@/assets/*": ["src/assets/*"],
       "@/routes/*": ["src/routes/*"],
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@/schema": ["amplify/data/resource"]
     },
     "ignoreDeprecations": "5.0"
   },

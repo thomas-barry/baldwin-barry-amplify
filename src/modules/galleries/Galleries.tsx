@@ -1,13 +1,12 @@
 import GalleryList from '@/components/GalleryList';
 import SortSelect from '@/components/SortSelect';
+import type { SortValue } from '@/components/SortSelect';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from 'primereact/button';
 import { useState } from 'react';
 import GalleryForm from './components/gallery-form/GalleryForm';
 import styles from './Galleries.module.css';
 import { useGalleryForm } from './hooks/useGalleryForm';
-
-type SortValue = 'newest' | 'alpha';
 
 const Galleries = () => {
   const { isAdmin } = useAuth();

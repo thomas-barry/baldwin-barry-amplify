@@ -1,22 +1,22 @@
 import GalleryCard from '@/modules/galleries/components/gallery-card/GalleryCard';
 import { Gallery } from '@/modules/galleries/types';
+import type { SortValue } from '@/components/SortSelect';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
 import { Card } from 'primereact/card';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useMemo } from 'react';
-import type { Schema } from '../../amplify/data/resource';
+import type { Schema } from '@/schema';
 import styles from './GalleryList.module.css';
-
-type SortValue = 'newest' | 'alpha';
 
 interface GalleryListProps {
   sort?: SortValue;
 }
 
+const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
+const clientWrite = generateClient<Schema>({ authMode: 'userPool' });
+
 const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
-  const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
-  const clientWrite = generateClient<Schema>({ authMode: 'userPool' });
   const queryClient = useQueryClient();
 
   const {
@@ -30,7 +30,7 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
       const response = await clientRead.models.Gallery.list({
         selectionSet: ['id', 'name', 'description', 'createdDate', 'updatedAt', 'thumbnailImage.*', 'images.id', 'thumbnailCrop'],
       });
-      return response.data;
+      return response.data as unknown as Gallery[];
     },
   });
 

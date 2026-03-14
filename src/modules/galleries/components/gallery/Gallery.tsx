@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { generateClient } from 'aws-amplify/data';
 import { useRef } from 'react';
-import type { Schema } from '../../../../../amplify/data/resource';
+import type { Schema } from '@/schema';
 import PhotoCarousel, { type PhotoCarouselHandle } from '../photo-carousel/PhotoCarousel';
 import styles from './Gallery.module.css';
 

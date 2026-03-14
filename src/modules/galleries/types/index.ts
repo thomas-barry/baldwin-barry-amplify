@@ -1,3 +1,5 @@
+import type { SquareSelection } from '@/components/ImageSquareSelector';
+
 export interface Gallery {
   id: string;
   name: string;
@@ -19,5 +21,5 @@ export interface Gallery {
     contentType?: string | null;
   } | null;
   images?: { id: string }[] | null;
-  thumbnailCrop?: unknown;
+  thumbnailCrop?: SquareSelection | null;
 }

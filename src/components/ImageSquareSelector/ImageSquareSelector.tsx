@@ -7,7 +7,7 @@ export interface SquareSelection {
   size: number; // side length 0–1 (fraction of display width)
 }
 
-interface Props {
+interface ImageSquareSelectorProps {
   imageUrl: string;
   selection: SquareSelection | null;
   onSelectionChange: (sel: SquareSelection | null) => void;
@@ -17,7 +17,7 @@ type DragMode = 'draw' | 'move';
 
 const MIN_SIDE_PX = 8;
 
-const ImageSquareSelector = ({ imageUrl, selection, onSelectionChange }: Props) => {
+const ImageSquareSelector = ({ imageUrl, selection, onSelectionChange }: ImageSquareSelectorProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Shared drag state

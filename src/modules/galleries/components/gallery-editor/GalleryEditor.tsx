@@ -26,7 +26,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { SquareSelection } from '@/components/ImageSquareSelector';
 import AmplifyFileUploader from '../amplify-file-uploader/AmplifyFileUploader';
 import ThumbnailCropDialog from '../thumbnail-crop-dialog/ThumbnailCropDialog';
-import type { Schema } from '../../../../../amplify/data/resource';
+import type { Schema } from '@/schema';
 import styles from './GalleryEditor.module.css';
 
 interface GalleryEditorProps {
@@ -42,14 +42,13 @@ interface ImageWithDetails {
 
 interface SortableImageItemProps {
   imageItem: ImageWithDetails;
-  index: number;
   isGalleryThumbnail: boolean;
   onThumbnailToggle: (imageId: string) => void;
   onImageClick?: () => void;
   onDelete: (imageItem: ImageWithDetails) => void;
 }
 
-const SortableImageItem = ({ imageItem, index: _index, isGalleryThumbnail, onThumbnailToggle, onImageClick, onDelete }: SortableImageItemProps) => {
+const SortableImageItem = ({ imageItem, isGalleryThumbnail, onThumbnailToggle, onImageClick, onDelete }: SortableImageItemProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: imageItem.galleryImage.id,
   });
@@ -196,29 +195,13 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   } = useQuery({
     queryKey: ['galleryImagesWithDetails', galleryId],
     queryFn: async () => {
-      try {
-        const response = await clientRead.models.GalleryImage.list({
-          filter: { galleryId: { eq: galleryId } },
-        });
-        const imagesWithDetails = await Promise.all(
-          response.data?.map(async (galleryImage: Schema['GalleryImage']['type']) => {
-            if (galleryImage.imageId) {
-              const imageResponse = await clientRead.models.Image.get({ id: galleryImage.imageId });
-              return {
-                galleryImage,
-                image: imageResponse.data,
-              };
-            }
-            return null;
-          }) || [],
-        );
-
-        const filteredImages = imagesWithDetails.filter(Boolean) as ImageWithDetails[];
-        return filteredImages;
-      } catch (error) {
-        console.error('Error fetching gallery images:', error);
-        throw error;
-      }
+      const response = await clientRead.models.GalleryImage.list({
+        filter: { galleryId: { eq: galleryId } },
+        selectionSet: ['id', 'galleryId', 'imageId', 'addedDate', 'order', 'image.*'],
+      });
+      return response.data
+        .filter(item => item.image != null)
+        .map(item => ({ galleryImage: item, image: item.image! })) as unknown as ImageWithDetails[];
     },
   });
 
@@ -343,7 +326,8 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
       setSortedImages(prev => prev.filter(i => i.galleryImage.id !== imageItem.galleryImage.id));
       queryClient.invalidateQueries({ queryKey: ['galleryImagesWithDetails', galleryId] });
       if (gallery?.thumbnailImageId === imageItem.image.id) {
-        clientWrite.models.Gallery.update({ id: galleryId, thumbnailImageId: null });
+        clientWrite.models.Gallery.update({ id: galleryId, thumbnailImageId: null })
+          .catch(err => console.error('Error clearing thumbnail:', err));
         queryClient.invalidateQueries({ queryKey: ['gallery', galleryId] });
       }
       toast.current?.show({ severity: 'success', summary: 'Image deleted', life: 3000 });
@@ -531,11 +515,10 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
             items={sortedImages.map(item => item.galleryImage.id)}
             strategy={rectSortingStrategy}>
             <div className={styles.sortableGrid}>
-              {sortedImages.map((item, index) => (
+              {sortedImages.map(item => (
                 <SortableImageItem
                   key={item.galleryImage.id}
                   imageItem={item}
-                  index={index}
                   isGalleryThumbnail={gallery.thumbnailImageId === item.image.id}
                   onThumbnailToggle={handleThumbnailToggle}
                   onImageClick={() => setCropDialogImage(item)}
@@ -594,7 +577,6 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
 
       {cropDialogImage && (
         <ThumbnailCropDialog
-          visible={!!cropDialogImage}
           onHide={() => setCropDialogImage(null)}
           imageUrl={cropDialogImage.imageUrl ?? ''}
           imageTitle={cropDialogImage.image.title}

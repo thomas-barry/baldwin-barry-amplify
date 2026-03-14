@@ -1,6 +1,6 @@
 import styles from './SortSelect.module.css';
 
-type SortValue = 'newest' | 'alpha';
+export type SortValue = 'newest' | 'alpha';
 
 interface SortSelectProps {
   value: SortValue;

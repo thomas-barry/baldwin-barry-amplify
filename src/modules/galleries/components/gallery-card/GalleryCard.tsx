@@ -1,7 +1,8 @@
-import type React from 'react';
+import type { CSSProperties, MouseEvent } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { cfUrl } from '@/lib/cloudfront';
 import { Link } from '@tanstack/react-router';
-import { Gallery } from '../../types';
+import { Gallery } from '@/modules/galleries/types';
 import styles from './GalleryCard.module.css';
 
 interface GalleryCardProps {
@@ -9,16 +10,14 @@ interface GalleryCardProps {
   onDelete?: (gallery: Gallery) => void;
 }
 
-const CLOUDFRONT_DOMAIN = import.meta.env.VITE_CLOUDFRONT_DOMAIN || 'd3v1ijc4huf10a.cloudfront.net';
-
 const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
   const { isAdmin } = useAuth();
   const photoCount = gallery.images?.length ?? 0;
 
-  const crop = gallery.thumbnailCrop as { x: number; y: number; size: number } | null | undefined;
+  const crop = gallery.thumbnailCrop;
   const W = gallery.thumbnailImage?.width;
   const H = gallery.thumbnailImage?.height;
-  const cropStyle: React.CSSProperties =
+  const cropStyle: CSSProperties =
     crop && W && H
       ? {
           position: 'absolute',
@@ -29,7 +28,7 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
         }
       : {};
 
-  const handleDelete = (e: React.MouseEvent) => {
+  const handleDelete = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     onDelete?.(gallery);
@@ -40,7 +39,7 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
       <div className={styles.imageWrapper}>
         {gallery.thumbnailImage ? (
           <img
-            src={`https://${CLOUDFRONT_DOMAIN}/${gallery.thumbnailImage.s3ThumbnailKey}${gallery.updatedAt ? `?v=${gallery.updatedAt}` : ''}`}
+            src={`${cfUrl(gallery.thumbnailImage.s3ThumbnailKey!)}${gallery.updatedAt ? `?v=${gallery.updatedAt}` : ''}`}
             alt={gallery.thumbnailImage.title || 'Gallery thumbnail'}
             className={crop && W && H ? undefined : styles.cardImage}
             style={cropStyle}

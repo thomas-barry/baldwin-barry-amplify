@@ -1,3 +1,4 @@
+import { cfUrl } from '@/lib/cloudfront';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { forwardRef, memo, useImperativeHandle, useRef, useState } from 'react';
 import ReactImageGallery, { ReactImageGalleryItem } from 'react-image-gallery';
@@ -5,8 +6,6 @@ import 'react-image-gallery/styles/css/image-gallery.css';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { THUMBNAIL_PREFIX, UPLOADS_PREFIX } from '../../../../../constants';
 import styles from './PhotoCarousel.module.css';
-
-const CLOUDFRONT_DOMAIN = import.meta.env.VITE_CLOUDFRONT_DOMAIN || 'd3v1ijc4huf10a.cloudfront.net';
 
 interface GalleryImage {
   id: string;
@@ -134,7 +133,7 @@ const PhotoCarousel = forwardRef<PhotoCarouselHandle, PhotoCarouselProps>(
           renderItem={(item: ReactImageGalleryItem) => (
             <div className={styles.imageContainer}>
               <LazyLoadImage
-                src={`https://${CLOUDFRONT_DOMAIN}/${item.original}`}
+                src={cfUrl(item.original)}
                 alt={item.originalTitle || item.description || 'Gallery image'}
                 className={styles.image}
               />
@@ -157,7 +156,7 @@ const PhotoCarousel = forwardRef<PhotoCarouselHandle, PhotoCarouselProps>(
           renderThumbInner={(item: ReactImageGalleryItem) => (
             <div className={styles.thumbnailContainer}>
               <LazyLoadImage
-                src={`https://${CLOUDFRONT_DOMAIN}/${item.thumbnail}`}
+                src={cfUrl(item.thumbnail!)}
                 alt={item.originalTitle || item.description || 'Gallery thumbnail'}
                 className={styles.thumbnailImage}
               />

@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import styles from './ThumbnailCropDialog.module.css';
 
 interface ThumbnailCropDialogProps {
-  visible: boolean;
   onHide: () => void;
   imageUrl: string;
   imageTitle: string;
@@ -15,7 +14,6 @@ interface ThumbnailCropDialogProps {
 }
 
 const ThumbnailCropDialog = ({
-  visible,
   onHide,
   imageUrl,
   imageTitle,
@@ -26,10 +24,8 @@ const ThumbnailCropDialog = ({
   const [selection, setSelection] = useState<SquareSelection | null>(initialCrop);
 
   useEffect(() => {
-    if (visible) {
-      setSelection(initialCrop);
-    }
-  }, [visible, initialCrop]);
+    setSelection(initialCrop);
+  }, [initialCrop]);
 
   const footer = (
     <div className={styles.footer}>
@@ -45,7 +41,7 @@ const ThumbnailCropDialog = ({
 
   return (
     <Dialog
-      visible={visible}
+      visible
       onHide={onHide}
       header={`Crop thumbnail — ${imageTitle}`}
       footer={footer}
