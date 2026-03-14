@@ -26,6 +26,7 @@ export default defineConfig({
       '@/assets': path.resolve(__dirname, './src/assets'),
       '@/routes': path.resolve(__dirname, './src/routes'),
       '@': path.resolve(__dirname, './src'),
+      '@/schema': path.resolve(__dirname, './amplify/data/resource'),
     },
   },
 });

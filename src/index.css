@@ -3,53 +3,144 @@
 @import url('normalize.css/normalize.css') layer(normalize);
 @import url('react-image-gallery/styles/css/image-gallery.css') layer(gallery);
 
+/* ── Paper Design System: Light (default) ────────────────────────── */
 :root {
-  /* colors */
-  --clr-white: hsl(220, 37%, 100%);
-  --clr-surface: hsl(240, 5%, 89%);
-  --clr-text: hsl(244, 44%, 14%);
+  /* Color tokens — light mode */
+  --color-bg: #F4EDE4;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #EDE6DD;
+  --color-surface-nav: #0D1F2D;
+  --color-border: rgba(13, 31, 45, 0.10);
+  --color-text: #0D1F2D;
+  --color-text-muted: #4A6070;
+  --color-text-subtle: #8FA8B5;
+  --color-accent: #3DBFB8;
+  --color-accent-2: #E8722A;
+  --color-positive: #2F9E6B;
+  --color-warning: #E8722A;
+  --color-destructive: #B54040;
+  --color-badge: #E8722A;
 
-  /* font weights */
+  /* Sidebar geometry */
+  --sidebar-width: 204px;
+  --sidebar-width-collapsed: 64px;
+  --sidebar-current-width: var(--sidebar-width);
+  --sidebar-transition: 250ms ease;
+
+  /* Shared header geometry */
+  --header-height: 64px;
+
+  /* Font families */
+  --font-display: 'Inter Tight', 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+
+  /* Font weights */
   --fw-light: 200;
-  --fw-regular: 500;
+  --fw-regular: 400;
   --fw-bold: 600;
   --fw-black: 700;
 
-  /* font sizes */
-  --fs-300: 1rem;
-  --fs-400: 1.125rem;
-  --fs-500: 1.375rem;
-  --fs-600: 1.75rem;
-  --fs-700: 2.25rem;
-  --font-size: 16px;
+  /* Font sizes — heading scale */
+  --fs-h1: 4.5rem;   /* 72px */
+  --fs-h2: 3rem;     /* 48px */
+  --fs-h3: 2rem;     /* 32px */
+  --fs-h4: 1.5rem;   /* 24px */
+  --fs-h5: 1.125rem; /* 18px */
+  --fs-h6: 0.9375rem;/* 15px */
 
-  @media (prefers-color-scheme: dark) {
-    --clr-surface: hsl(240, 5%, 15%);
-    --clr-text: hsl(240, 5%, 90%);
-  }
+  /* Font sizes — legacy scale */
+  --fs-300: 0.875rem;
+  --fs-400: 1rem;
+  --fs-500: 1.125rem;
+  --fs-600: 1.375rem;
+  --fs-700: 1.75rem;
+  --fs-800: 2.25rem;
+
+  /* Geometry tokens */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --input-height: 44px;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+
+  /* PrimeReact overrides — light */
+  --primary-color: #3DBFB8;
+  --primary-color-text: #0D1F2D;
+  --border-radius: 8px;
+
+  /* Legacy aliases */
+  --clr-white: #fff;
+  --clr-surface: var(--color-bg);
+  --clr-text: var(--color-text);
+}
+
+/* ── Paper Design System: Dark ────────────────────────────────────── */
+[data-theme='dark'] {
+  --color-bg: #0C1C28;
+  --color-surface: #152B3A;
+  --color-surface-raised: #1E3A4D;
+  --color-surface-nav: #091520;
+  --color-border: rgba(240, 235, 225, 0.10);
+  --color-text: #F0EBE1;
+  --color-text-muted: #8FA8B5;
+  --color-text-subtle: #4A6070;
+  --color-accent: #3DBFB8;
+  --color-accent-2: #E8722A;
+  --color-positive: #3DBFB8;
+  --color-warning: #E8722A;
+  --color-destructive: #E05252;
+  --color-badge: #E8722A;
+
+  --clr-surface: var(--color-bg);
+  --clr-text: var(--color-text);
+
+  color-scheme: dark;
+
+  /* PrimeReact dark surface overrides */
+  --surface-a: #152B3A;
+  --surface-b: #0C1C28;
+  --surface-card: #152B3A;
+  --surface-overlay: #1E3A4D;
+  --surface-border: rgba(240, 235, 225, 0.10);
+  --surface-hover: #1E3A4D;
+  --text-color: #F0EBE1;
+  --text-color-secondary: #8FA8B5;
+  --surface-0: #0C1C28;
+  --surface-50: #0C1C28;
+  --surface-100: #152B3A;
+  --surface-200: #1E3A4D;
+  --surface-300: #2A4D64;
+  --surface-400: #4A6070;
+  --surface-500: #8FA8B5;
+  --surface-600: #B0C8D4;
+  --surface-700: #D0DFE6;
+  --surface-800: #E8F0F4;
+  --surface-900: #F0EBE1;
 }
 
 html {
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-content: center;
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  font-size: var(--fw-regular);
+  font-family: var(--font-body);
+  font-size: var(--fs-400);
   font-weight: var(--fw-regular);
-  background-color: var(--clr-surface);
-  height: 100dvh;
-  width: 100vw;
+  line-height: 1.625;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100dvh;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 #root {
   width: 100%;
-  height: 100%;
+  min-height: 100dvh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
 }

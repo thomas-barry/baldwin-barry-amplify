@@ -1,3 +1,4 @@
+import { CloudFrontClient, CreateInvalidationCommand } from '@aws-sdk/client-cloudfront';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
@@ -191,6 +192,25 @@ async function insertGalleryImageRecord(docClient: DynamoDBDocumentClient, galle
   }
 }
 
+async function invalidateCloudFront(key: string): Promise<void> {
+  const distributionId = process.env.CLOUDFRONT_DISTRIBUTION_ID;
+  if (!distributionId) {
+    console.warn('CLOUDFRONT_DISTRIBUTION_ID not set, skipping CloudFront invalidation');
+    return;
+  }
+  const cf = new CloudFrontClient({});
+  await cf.send(
+    new CreateInvalidationCommand({
+      DistributionId: distributionId,
+      InvalidationBatch: {
+        CallerReference: `thumbnail-${Date.now()}`,
+        Paths: { Quantity: 1, Items: [`/${key}`] },
+      },
+    }),
+  );
+  console.log(`CloudFront cache invalidated for: /${key}`);
+}
+
 export const handler = async (event: S3Event) => {
   console.log('received S3 event:', JSON.stringify(event, null, 2));
 
@@ -210,9 +230,16 @@ export const handler = async (event: S3Event) => {
 
       console.log(`processing file: ${key} in bucket: ${bucket}`);
 
-      // skip if not an image or already in thumbnails folder
-      if (key.startsWith(THUMBNAIL_PREFIX) || !key.startsWith(UPLOADS_PREFIX)) {
-        console.log(`skipping non-image or thumbnail file: ${key}`);
+      // Thumbnail overwrites: just invalidate CloudFront cache and move on
+      if (key.startsWith(THUMBNAIL_PREFIX)) {
+        console.log(`thumbnail updated, invalidating CloudFront cache: ${key}`);
+        await invalidateCloudFront(key);
+        continue;
+      }
+
+      // skip anything outside uploads/
+      if (!key.startsWith(UPLOADS_PREFIX)) {
+        console.log(`skipping non-uploads file: ${key}`);
         continue;
       }
 

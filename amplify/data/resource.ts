@@ -8,6 +8,7 @@ const schema = a.schema({
       createdDate: a.datetime().required(),
       thumbnailImageId: a.id(),
       thumbnailImage: a.belongsTo('Image', 'thumbnailImageId'),
+      thumbnailCrop: a.json(),
       images: a.hasMany('GalleryImage', 'galleryId'),
     })
     .authorization(allow => [

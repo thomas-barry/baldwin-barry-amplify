@@ -24,7 +24,12 @@ build
 *.sln
 *.sw?
 
+# Claude Code
+.worktrees/
+.claude/
+
 # amplify
 .amplify
 amplify_outputs*
 amplifyconfiguration*
+.worktrees

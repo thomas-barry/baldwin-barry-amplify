@@ -1,0 +1,29 @@
+.uploader {
+  width: 100%;
+}
+
+/* ── Amplify FileUploader overrides — dark mode ───────────────────── */
+:global([data-theme='dark']) .uploader :global(.amplify-fileuploader) {
+  color: var(--color-text);
+}
+
+:global([data-theme='dark']) .uploader :global(.amplify-dropzone) {
+  background-color: var(--color-surface-raised);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+:global([data-theme='dark']) .uploader :global(.amplify-text) {
+  color: var(--color-text-muted);
+}
+
+:global([data-theme='dark']) .uploader :global(.amplify-fileuploader__file) {
+  background-color: var(--color-surface-raised);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+:global([data-theme='dark']) .uploader :global(.amplify-fileuploader__file-name),
+:global([data-theme='dark']) .uploader :global(.amplify-fileuploader__file-size) {
+  color: var(--color-text-muted);
+}

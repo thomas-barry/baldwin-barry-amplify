@@ -1,8 +1,28 @@
 import facePalmImage from '@/assets/facepalm.jpg';
+import { useAuth } from '@/context/AuthContext';
+import { useLoginDialog } from '@/context/LoginDialogContext';
 import { Link } from '@tanstack/react-router';
 import styles from './NavBar.module.css';
 
 const NavBar = () => {
+  const { openLogin } = useLoginDialog();
+  const { isAuthenticated } = useAuth();
+
+  const handleLogoShiftClick = (event: React.MouseEvent<HTMLImageElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!event.shiftKey) {
+      return;
+    }
+
+    if (isAuthenticated) {
+      return;
+    }
+
+    openLogin();
+  };
+
   return (
     <header className={styles.stickyNavbar}>
       <nav className={styles.navbarContainer}>
@@ -14,18 +34,19 @@ const NavBar = () => {
               src={facePalmImage}
               alt='face palm portrait'
               className={styles.facePalmImage}
+              onClick={handleLogoShiftClick}
             />
             <div>
-              <p>Thomas Baldwin Barry</p>
+              <p>xxx Thomas Baldwin Barry</p>
             </div>
           </div>
         </Link>
         <div className={styles.navLinks}>
           <Link
-            to='/galleries'
+            to='/photos'
             activeProps={{ className: styles.activeLink }}
             className={styles.navLink}>
-            Galleries
+            Photos
           </Link>
         </div>
         <div className={styles.navLinks}>

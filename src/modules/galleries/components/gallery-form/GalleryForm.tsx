@@ -5,36 +5,29 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { useRef, useState } from 'react';
-import type { Schema } from '../../../../../amplify/data/resource';
+import type { Schema } from '@/schema';
 import { Gallery } from '../../types';
 import styles from './GalleryForm.module.css';
+
+const client = generateClient<Schema>({ authMode: 'userPool' });
 
 interface GalleryFormProps {
   visible: boolean;
   onHide: () => void;
-  onSave: (gallery: Gallery) => void;
+  onSave?: (gallery: Gallery) => void;
   initialValues?: Partial<Gallery>;
   isEdit?: boolean;
 }
 
 const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }: GalleryFormProps) => {
   const [name, setName] = useState<string>(initialValues?.name || '');
-  const [createdDate, setCreatedDate] = useState<Date>(
-    initialValues?.createdDate ? new Date(initialValues.createdDate) : new Date(),
-  );
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [nameError, setNameError] = useState<string>('');
   const toast = useRef<Toast>(null);
-
-  // Generate the client for our Amplify data models
-  const client = generateClient<Schema>({
-    authMode: 'userPool',
-  });
   const queryClient = useQueryClient();
 
   const resetForm = () => {
     setName(initialValues?.name || '');
-    setCreatedDate(initialValues?.createdDate ? new Date(initialValues.createdDate) : new Date());
     setNameError('');
   };
 
@@ -64,22 +57,18 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
     try {
       setIsSubmitting(true);
 
-      const galleryData = {
-        name: name.trim(),
-        createdDate: createdDate.toISOString(),
-      };
-
       let result;
 
       if (isEdit && initialValues?.id) {
-        // Update existing gallery
         result = await client.models.Gallery.update({
           id: initialValues.id,
-          ...galleryData,
+          name: name.trim(),
         });
       } else {
-        // Create new gallery
-        result = await client.models.Gallery.create(galleryData);
+        result = await client.models.Gallery.create({
+          name: name.trim(),
+          createdDate: new Date().toISOString(),
+        });
       }
 
       if (result.data) {
@@ -101,7 +90,7 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
         // Refresh the galleries list
         queryClient.invalidateQueries({ queryKey: ['galleries'] });
 
-        onSave(savedGallery);
+        onSave?.(savedGallery);
         handleHide();
       }
     } catch (error) {
@@ -140,7 +129,7 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
     <>
       <Toast ref={toast} />
       <Dialog
-        header={isEdit ? 'Edit Gallery' : 'Create New Gallery'}
+        header={isEdit ? 'Edit Gallery' : 'New Gallery'}
         visible={visible}
         style={{ width: '500px' }}
         modal

@@ -1,41 +1,32 @@
-import ellipse from '@/assets/Ellipse.svg';
 import facePalmImage from '@/assets/facepalm.jpg';
-import resist from '@/assets/resist.png';
-import { useRouter } from '@tanstack/react-router';
 import styles from './Home.module.css';
 
-const Home = () => {
-  const router = useRouter();
-
-  const onLogoClick = (event: React.MouseEvent) => {
-    if (event.shiftKey) {
-      router.navigate({ to: '/login' });
-    }
-  };
-
-  return (
-    <div className={styles.homeContainer}>
-      <img
-        src={ellipse}
-        alt=""
-        aria-hidden="true"
-        className={styles.ellipseImage}
-        width={1000}
-        height={1000}
-      />
-      <img
-        src={facePalmImage}
-        alt='Facepalm'
-        className={styles.facePalmImage}
-        onClick={onLogoClick}
-      />
-      <img
-        className={styles.facePalmCaption}
-        src={resist}
-        alt='Resist'
-      />
-    </div>
-  );
-};
+const Home = () => (
+  <div className={styles.page}>
+    <section className={styles.hero}>
+      <div className={styles.heroContent}>
+        <p className={styles.overline}>Retired Software Engineer · Amateur Photographer · Borderline Misanthrope</p>
+        <h1 className={styles.headline}>
+          Building things.
+          <br />
+          Photographing stuff.
+          <br />
+          Coping with reality.
+        </h1>
+        <p className={styles.body}>
+          A sandbox for exploring web technologies, with a side of photography. This site is as much about the making as
+          it is about the showing.
+        </p>
+      </div>
+      <div className={styles.heroPhoto}>
+        <img
+          src={facePalmImage}
+          alt='Thomas Baldwin Barry'
+          className={styles.heroImage}
+        />
+      </div>
+    </section>
+  </div>
+);
 
 export default Home;
