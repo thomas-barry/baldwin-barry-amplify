@@ -28,6 +28,10 @@ build
 .worktrees/
 .claude/
 
+# AWS infrastructure artifacts
+dev-permissions.json
+prod-permissions.json
+
 # amplify
 .amplify
 amplify_outputs*
