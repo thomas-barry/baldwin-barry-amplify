@@ -415,10 +415,10 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
 
   const backButton = (
     <Button
-      label='Back to Galleries'
+      label='Done'
       icon='pi pi-arrow-left'
       severity='secondary'
-      onClick={() => navigate({ to: '/photos' })}
+      onClick={() => navigate({ to: '/photos/$galleryId', params: { galleryId } })}
     />
   );
 

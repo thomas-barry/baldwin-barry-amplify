@@ -72,7 +72,7 @@ const LoginDialog = () => {
           </div>
         ) : (
           <div className={styles.authenticatorWrap}>
-            <Authenticator />
+            <Authenticator hideSignUp />
           </div>
         )}
       </div>

@@ -2,7 +2,8 @@
   border: none;
   border-radius: var(--radius-lg);
   padding: 0;
-  max-width: min(92vw, 480px);
+  max-width: min(92vw, 560px);
+  overflow: hidden;
   width: 100%;
   color: var(--color-text);
   background: var(--color-bg);
@@ -15,7 +16,7 @@
 }
 
 .dialog::backdrop {
-  background: rgba(19, 16, 12, 0.6);
+  background: rgba(13, 31, 45, 0.65);
   backdrop-filter: blur(3px);
 }
 
@@ -58,12 +59,12 @@
 
 .primaryButton {
   background: var(--color-accent);
-  color: #0D1F2D;
+  color: var(--color-surface-nav);
 }
 
 .secondaryButton {
   background: transparent;
-  border-color: rgba(28, 28, 28, 0.3);
+  border-color: var(--color-border);
   color: inherit;
 }
 
@@ -78,10 +79,62 @@
 }
 
 .authenticatorWrap {
+  /* Remove Amplify chrome */
   --amplify-components-authenticator-router-box-shadow: none;
   --amplify-components-authenticator-router-border-width: 0;
   --amplify-components-authenticator-router-background-color: transparent;
   --amplify-components-authenticator-router-padding: 0;
   --amplify-components-authenticator-form-padding: 0;
   --amplify-components-authenticator-container-padding: 0;
+
+  /* Fonts */
+  --amplify-fonts-default-variable: var(--font-body);
+  --amplify-fonts-default-static: var(--font-body);
+
+  /* Brand primary → Teal */
+  --amplify-colors-brand-primary-10: #e6f7f7;
+  --amplify-colors-brand-primary-20: #c0ecea;
+  --amplify-colors-brand-primary-40: #8adbd8;
+  --amplify-colors-brand-primary-60: #60cec9;
+  --amplify-colors-brand-primary-80: #3DBFB8;
+  --amplify-colors-brand-primary-90: #2da89f;
+  --amplify-colors-brand-primary-100: #1d918a;
+
+  /* Backgrounds */
+  --amplify-colors-background-primary: transparent;
+  --amplify-colors-background-secondary: transparent;
+
+  /* Text */
+  --amplify-colors-font-primary: var(--color-text);
+  --amplify-colors-font-secondary: var(--color-text-muted);
+  --amplify-colors-font-interactive: var(--color-accent);
+
+  /* Borders */
+  --amplify-colors-border-primary: var(--color-border);
+  --amplify-colors-border-secondary: var(--color-border);
+  --amplify-colors-border-focus: var(--color-accent);
+  --amplify-colors-border-error: var(--color-destructive);
+
+  /* Inputs */
+  --amplify-components-fieldcontrol-color: var(--color-text);
+  --amplify-components-fieldcontrol-background-color: var(--color-surface);
+  --amplify-components-fieldcontrol-border-color: var(--color-border);
+  --amplify-components-fieldcontrol-focus-border-color: var(--color-accent);
+  --amplify-components-fieldcontrol-border-radius: var(--radius-md);
+
+  /* Labels */
+  --amplify-components-field-label-color: var(--color-text-muted);
+
+  /* Primary button */
+  --amplify-components-button-primary-background-color: var(--color-accent);
+  --amplify-components-button-primary-color: var(--color-surface-nav);
+  --amplify-components-button-primary-hover-background-color: #2da89f;
+  --amplify-components-button-primary-hover-color: var(--color-surface-nav);
+  --amplify-components-button-primary-active-background-color: #1d918a;
+  --amplify-components-button-border-radius: var(--radius-md);
+
+  /* Default/link button */
+  --amplify-components-button-color: var(--color-accent);
+  --amplify-components-button-hover-color: #2da89f;
+  --amplify-components-button-hover-background-color: transparent;
 }

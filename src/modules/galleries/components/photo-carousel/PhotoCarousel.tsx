@@ -1,6 +1,6 @@
 import { cfUrl } from '@/lib/cloudfront';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { forwardRef, memo, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import ReactImageGallery, { ReactImageGalleryItem } from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
@@ -49,7 +49,7 @@ const PhotoCarousel = forwardRef<PhotoCarouselHandle, PhotoCarouselProps>(
       pause: () => galleryRef.current?.pause(),
     }));
 
-    const galleryItems = galleryImages.map(gi => ({
+    const galleryItems = useMemo(() => galleryImages.map(gi => ({
       original: gi.image.s3Key,
       thumbnail:
         gi.image.s3ThumbnailKey ||
@@ -58,12 +58,21 @@ const PhotoCarousel = forwardRef<PhotoCarouselHandle, PhotoCarouselProps>(
       originalTitle: gi.image.title,
       originalHeight: gi.image.height || 0,
       originalWidth: gi.image.width || 0,
-    }));
+    })), [galleryImages]);
 
     const handleSlide = (index: number) => {
       setCurrentIndex(index);
       onSlide?.(index);
     };
+
+    useEffect(() => {
+      [currentIndex - 1, currentIndex + 2]
+        .filter(i => i >= 0 && i < galleryItems.length)
+        .forEach(i => {
+          const img = new Image();
+          img.src = cfUrl(galleryItems[i].original);
+        });
+    }, [currentIndex, galleryItems]);
 
     if (isLoading) {
       return (

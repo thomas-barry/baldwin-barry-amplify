@@ -75,6 +75,7 @@
   .imageContainer {
     position: relative;
     height: 75vh;
+    padding-inline: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -82,6 +83,11 @@
 
     :fullscreen & {
       height: 100vh;
+      padding-inline: 0;
+    }
+
+    @media (max-width: 768px) {
+      padding-inline: 0;
     }
   }
 
