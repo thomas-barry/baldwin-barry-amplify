@@ -51,6 +51,20 @@ const schema = a.schema({
       allow.publicApiKey().to(['read']), // Allow public read access
       allow.group('admin').to(['create', 'update', 'delete']), // Only admin group can modify
     ]),
+
+  BlogPost: a
+    .model({
+      title: a.string().required(),
+      content: a.string().required(),
+      excerpt: a.string(),
+      tags: a.string().array(),
+      published: a.boolean().required(),
+      publishedDate: a.datetime(),
+    })
+    .authorization(allow => [
+      allow.publicApiKey().to(['read']),
+      allow.group('admin').to(['create', 'update', 'delete']),
+    ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

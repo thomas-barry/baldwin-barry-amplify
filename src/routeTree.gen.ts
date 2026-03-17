@@ -15,9 +15,11 @@ import { Route as PhotosIndexRouteImport } from './routes/photos/index'
 import { Route as GridDemoIndexRouteImport } from './routes/grid-demo/index'
 import { Route as ContactIndexRouteImport } from './routes/contact/index'
 import { Route as ComponentsIndexRouteImport } from './routes/components/index'
+import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as PhotosGalleryIdIndexRouteImport } from './routes/photos/$galleryId/index'
+import { Route as BlogPostIdIndexRouteImport } from './routes/blog/$postId/index'
 import { Route as PhotosGalleryIdEditRouteImport } from './routes/photos/$galleryId/edit'
 
 const LoginRoute = LoginRouteImport.update({
@@ -50,6 +52,11 @@ const ComponentsIndexRoute = ComponentsIndexRouteImport.update({
   path: '/components/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -65,6 +72,11 @@ const PhotosGalleryIdIndexRoute = PhotosGalleryIdIndexRouteImport.update({
   path: '/photos/$galleryId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogPostIdIndexRoute = BlogPostIdIndexRouteImport.update({
+  id: '/blog/$postId/',
+  path: '/blog/$postId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PhotosGalleryIdEditRoute = PhotosGalleryIdEditRouteImport.update({
   id: '/photos/$galleryId/edit',
   path: '/photos/$galleryId/edit',
@@ -76,11 +88,13 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/blog': typeof BlogIndexRoute
   '/components': typeof ComponentsIndexRoute
   '/contact': typeof ContactIndexRoute
   '/grid-demo': typeof GridDemoIndexRoute
   '/photos': typeof PhotosIndexRoute
   '/photos/$galleryId/edit': typeof PhotosGalleryIdEditRoute
+  '/blog/$postId': typeof BlogPostIdIndexRoute
   '/photos/$galleryId': typeof PhotosGalleryIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -88,11 +102,13 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/blog': typeof BlogIndexRoute
   '/components': typeof ComponentsIndexRoute
   '/contact': typeof ContactIndexRoute
   '/grid-demo': typeof GridDemoIndexRoute
   '/photos': typeof PhotosIndexRoute
   '/photos/$galleryId/edit': typeof PhotosGalleryIdEditRoute
+  '/blog/$postId': typeof BlogPostIdIndexRoute
   '/photos/$galleryId': typeof PhotosGalleryIdIndexRoute
 }
 export interface FileRoutesById {
@@ -101,11 +117,13 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/blog/': typeof BlogIndexRoute
   '/components/': typeof ComponentsIndexRoute
   '/contact/': typeof ContactIndexRoute
   '/grid-demo/': typeof GridDemoIndexRoute
   '/photos/': typeof PhotosIndexRoute
   '/photos/$galleryId/edit': typeof PhotosGalleryIdEditRoute
+  '/blog/$postId/': typeof BlogPostIdIndexRoute
   '/photos/$galleryId/': typeof PhotosGalleryIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -115,11 +133,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/about'
     | '/admin'
+    | '/blog'
     | '/components'
     | '/contact'
     | '/grid-demo'
     | '/photos'
     | '/photos/$galleryId/edit'
+    | '/blog/$postId'
     | '/photos/$galleryId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -127,11 +147,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/about'
     | '/admin'
+    | '/blog'
     | '/components'
     | '/contact'
     | '/grid-demo'
     | '/photos'
     | '/photos/$galleryId/edit'
+    | '/blog/$postId'
     | '/photos/$galleryId'
   id:
     | '__root__'
@@ -139,11 +161,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/about/'
     | '/admin/'
+    | '/blog/'
     | '/components/'
     | '/contact/'
     | '/grid-demo/'
     | '/photos/'
     | '/photos/$galleryId/edit'
+    | '/blog/$postId/'
     | '/photos/$galleryId/'
   fileRoutesById: FileRoutesById
 }
@@ -152,11 +176,13 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   AboutIndexRoute: typeof AboutIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   ComponentsIndexRoute: typeof ComponentsIndexRoute
   ContactIndexRoute: typeof ContactIndexRoute
   GridDemoIndexRoute: typeof GridDemoIndexRoute
   PhotosIndexRoute: typeof PhotosIndexRoute
   PhotosGalleryIdEditRoute: typeof PhotosGalleryIdEditRoute
+  BlogPostIdIndexRoute: typeof BlogPostIdIndexRoute
   PhotosGalleryIdIndexRoute: typeof PhotosGalleryIdIndexRoute
 }
 
@@ -204,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ComponentsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/admin'
@@ -225,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PhotosGalleryIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/$postId/': {
+      id: '/blog/$postId/'
+      path: '/blog/$postId'
+      fullPath: '/blog/$postId'
+      preLoaderRoute: typeof BlogPostIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/photos/$galleryId/edit': {
       id: '/photos/$galleryId/edit'
       path: '/photos/$galleryId/edit'
@@ -240,11 +280,13 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   AboutIndexRoute: AboutIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
+  BlogIndexRoute: BlogIndexRoute,
   ComponentsIndexRoute: ComponentsIndexRoute,
   ContactIndexRoute: ContactIndexRoute,
   GridDemoIndexRoute: GridDemoIndexRoute,
   PhotosIndexRoute: PhotosIndexRoute,
   PhotosGalleryIdEditRoute: PhotosGalleryIdEditRoute,
+  BlogPostIdIndexRoute: BlogPostIdIndexRoute,
   PhotosGalleryIdIndexRoute: PhotosGalleryIdIndexRoute,
 }
 export const routeTree = rootRouteImport

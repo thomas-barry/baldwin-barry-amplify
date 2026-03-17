@@ -1,0 +1,113 @@
+.card {
+  position: relative;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+
+  &:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+}
+
+.cardHeader {
+  position: relative;
+  min-height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: var(--space-1) var(--space-2) 0;
+}
+
+.draftBadge {
+  font-size: var(--fs-300);
+  font-weight: var(--fw-bold);
+  color: var(--color-warning, #b45309);
+  background: var(--color-warning-subtle, #fef3c7);
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: auto;
+}
+
+.adminOverlay {
+  display: flex;
+  gap: 0.375rem;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.2s;
+
+  .card:hover & {
+    opacity: 1;
+  }
+}
+
+.cardBody {
+  padding: var(--space-2);
+}
+
+.cardLink {
+  text-decoration: none;
+  color: inherit;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+}
+
+.cardTitle {
+  font-family: var(--font-display);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-bold);
+  color: var(--color-text);
+  margin: 0 0 var(--space-1);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.cardExcerpt {
+  font-size: var(--fs-400);
+  color: var(--color-text-subtle);
+  margin: 0 0 var(--space-2);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.cardDate {
+  font-size: var(--fs-300);
+  color: var(--color-text-subtle);
+}
+
+.cardTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.tag {
+  font-size: var(--fs-300);
+  color: var(--color-accent);
+  background: var(--color-accent-subtle, rgba(var(--color-accent-rgb, 0 0 0) / 0.08));
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
