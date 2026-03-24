@@ -1,0 +1,7 @@
+.canvas {
+  /* --dice-size is set by the parent DiceCubeDemo container and cascades in */
+  width: var(--dice-size, 300px);
+  height: var(--dice-size, 300px);
+  display: block;
+  border-radius: var(--radius-lg);
+}

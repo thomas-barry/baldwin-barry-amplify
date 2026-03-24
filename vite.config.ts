@@ -15,7 +15,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['react-image-gallery'],
+    include: ['react-image-gallery', 'quill'],
   },
   resolve: {
     alias: {

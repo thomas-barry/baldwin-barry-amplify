@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "cleanup": "node cleanup.mjs"
+    "cleanup": "node cleanup.mjs",
+    "playwright": "playwright-cli"
   },
   "dependencies": {
     "@aws-amplify/core": "^6.11.4",
@@ -21,16 +22,19 @@
     "@tanstack/react-query": "^5.80.6",
     "@tanstack/react-router": "^1.120.20",
     "@tanstack/react-router-devtools": "^1.120.20",
+    "@types/three": "^0.183.1",
     "aws-amplify": "^6.6.6",
     "clsx": "^2.1.1",
     "normalize.css": "^8.0.1",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.5",
+    "quill": "^2.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-image-gallery": "^1.4.0",
-    "react-lazy-load-image-component": "^1.6.3"
+    "react-lazy-load-image-component": "^1.6.3",
+    "three": "^0.183.2"
   },
   "devDependencies": {
     "@aws-amplify/backend": "^1.5.0",
@@ -39,6 +43,7 @@
     "@aws-sdk/client-s3": "^3.0.0",
     "@aws-sdk/lib-dynamodb": "^3.0.0",
     "@eslint/js": "^9.26.0",
+    "@playwright/cli": "^0.1.1",
     "@tanstack/react-query-devtools": "^5.80.6",
     "@tanstack/router-plugin": "^1.120.20",
     "@types/node": "^22.15.16",

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 320" width="200" height="320">
+  <defs>
+    <!-- Warm glow cone from lamp head -->
+    <radialGradient id="glow-cone" cx="50%" cy="0%" r="100%" fx="50%" fy="0%">
+      <stop offset="0%"   stop-color="#ffe08a" stop-opacity="0.55"/>
+      <stop offset="55%"  stop-color="#ffbe3c" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#ff9900" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Warm pool of light on the floor -->
+    <radialGradient id="floor-pool" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#ffe08a" stop-opacity="0.7"/>
+      <stop offset="40%"  stop-color="#ffbe3c" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ff9900" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Bulb glow -->
+    <radialGradient id="bulb-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#fff9d6" stop-opacity="1"/>
+      <stop offset="40%"  stop-color="#ffe08a" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ffbe3c" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="soft-glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Floor -->
+  <rect x="0" y="272" width="200" height="48" fill="#1a1612"/>
+
+  <!-- Floor light pool -->
+  <ellipse cx="88" cy="276" rx="70" ry="14" fill="url(#floor-pool)"/>
+
+  <!-- Light cone from shade -->
+  <polygon points="68,118 108,118 148,272 28,272" fill="url(#glow-cone)"/>
+
+  <!-- Lamp base -->
+  <rect x="80" y="256" width="16" height="16" rx="3" fill="#3a3028"/>
+  <!-- Base plate -->
+  <rect x="68" y="268" width="40" height="6" rx="3" fill="#2e261e"/>
+
+  <!-- Lamp pole -->
+  <rect x="86" y="140" width="6" height="118" rx="3" fill="#3a3028"/>
+
+  <!-- Arm bend -->
+  <path d="M89,140 Q89,118 108,118" stroke="#3a3028" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+  <!-- Shade outer -->
+  <path d="M68,118 L108,118 L118,96 L58,96 Z" fill="#2e261e"/>
+  <!-- Shade inner highlight -->
+  <path d="M72,116 L104,116 L112,100 L64,100 Z" fill="#3d3020"/>
+  <!-- Shade rim -->
+  <rect x="58" y="93" width="62" height="5" rx="2.5" fill="#4a3c28"/>
+
+  <!-- Bulb glow halo -->
+  <ellipse cx="88" cy="112" rx="22" ry="10" fill="url(#bulb-glow)" filter="url(#soft-glow)"/>
+
+  <!-- Bulb -->
+  <ellipse cx="88" cy="113" rx="6" ry="7" fill="#fff9d6"/>
+</svg>

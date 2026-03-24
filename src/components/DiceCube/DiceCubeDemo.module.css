@@ -1,0 +1,94 @@
+.container {
+  --dice-size: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: fit-content;
+}
+
+.diceRow {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-3);
+}
+
+.loading {
+  width: var(--dice-size);
+  height: var(--dice-size);
+  border-radius: var(--radius-lg);
+  background: transparent;
+}
+
+.rollBtn {
+  align-self: flex-start;
+  padding: 0.5rem 1.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--fs-400);
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    opacity 0.15s;
+
+  &:hover {
+    background: var(--color-surface-raised);
+    border-color: var(--color-accent);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+.controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.result {
+  display: flex;
+  align-items: center;
+}
+
+.readout {
+  line-height: 1;
+  margin: 0;
+  color: var(--color-text);
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.spinnerRing {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-text);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
