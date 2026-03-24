@@ -2,7 +2,7 @@ import { CloudFrontClient, CreateInvalidationCommand } from '@aws-sdk/client-clo
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
-import exifr from 'exifr';
+import exifReader from 'exif-reader';
 import sharp from 'sharp';
 import { Readable } from 'stream';
 import { THUMBNAIL_HEIGHT, THUMBNAIL_PREFIX, THUMBNAIL_WIDTH, UPLOADS_PREFIX } from '../../../constants';
@@ -69,9 +69,6 @@ async function extractImageMetadata(imageBuffer: Buffer): Promise<ExtractedImage
   const image = sharp(imageBuffer);
   const metadata = await image.metadata();
 
-  // Use exifr to extract EXIF data
-  const exifData = await exifr.parse(imageBuffer);
-
   const extractedMetadata: ExtractedImageMetadata = {
     width: metadata.width,
     height: metadata.height,
@@ -84,7 +81,7 @@ async function extractImageMetadata(imageBuffer: Buffer): Promise<ExtractedImage
     hasProfile: metadata.hasProfile,
     hasAlpha: metadata.hasAlpha,
     orientation: metadata.orientation,
-    exif: exifData || {},
+    exif: metadata.exif ? exifReader(metadata.exif) : {},
   };
 
   return extractedMetadata;
