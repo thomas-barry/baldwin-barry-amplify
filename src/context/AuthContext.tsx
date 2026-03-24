@@ -67,8 +67,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isLoading: false,
         error: null,
       });
-    } catch {
-      // Not authenticated
+    } catch (err) {
+      console.error('[AuthContext] checkUser failed:', err);
       setAuthState({
         isAuthenticated: false,
         isAdmin: false,

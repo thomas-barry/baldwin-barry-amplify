@@ -37,3 +37,6 @@ prod-permissions.json
 amplify_outputs*
 amplifyconfiguration*
 .worktrees
+
+#playwright
+.playwright-cli/

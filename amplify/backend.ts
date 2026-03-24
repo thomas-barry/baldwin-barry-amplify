@@ -41,10 +41,10 @@ backend.onUploadHandler.resources.lambda.addToRolePolicy(
   }),
 );
 
-// Export function name for debugging/monitoring purposes
 backend.addOutput({
   custom: {
     onUploadHandlerFunctionName: backend.onUploadHandler.resources.lambda.functionName,
+    cloudfrontDomain: process.env.CLOUDFRONT_DOMAIN ?? '',
   },
 });
 
