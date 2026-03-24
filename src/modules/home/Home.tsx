@@ -1,5 +1,14 @@
+import { LoremIpsum } from 'lorem-ipsum';
 import facePalmImage from '@/assets/facepalm.jpg';
 import styles from './Home.module.css';
+
+const lorem = new LoremIpsum();
+
+const SECTIONS = [
+  { heading: 'On Building Things', paragraphs: [lorem.generateParagraphs(2), lorem.generateParagraphs(2)] },
+  { heading: 'On Photographing Stuff', paragraphs: [lorem.generateParagraphs(2), lorem.generateParagraphs(1)] },
+  { heading: 'On Coping with Reality', paragraphs: [lorem.generateParagraphs(1), lorem.generateParagraphs(2)] },
+];
 
 const Home = () => (
   <div className={styles.page}>
@@ -26,6 +35,16 @@ const Home = () => (
         />
       </div>
     </section>
+    <div className={styles.prose}>
+      {SECTIONS.map(({ heading, paragraphs }) => (
+        <section key={heading} className={styles.proseSection}>
+          <h2 className={styles.proseHeading}>{heading}</h2>
+          {paragraphs.map((p, i) => (
+            <p key={i} className={styles.proseParagraph}>{p}</p>
+          ))}
+        </section>
+      ))}
+    </div>
   </div>
 );
 

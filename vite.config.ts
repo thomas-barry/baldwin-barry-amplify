@@ -7,6 +7,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [TanStackRouterVite({ target: 'react', autoCodeSplitting: true }), react()],
+  server: {
+    allowedHosts: ['marina-superorbital-interferingly.ngrok-free.dev'],
+  },
   css: {
     transformer: 'lightningcss',
     lightningcss: {

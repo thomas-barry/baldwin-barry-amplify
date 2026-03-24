@@ -28,6 +28,8 @@ const ADMIN_NAV_ITEMS: NavItem[] = [
   { to: '/admin', icon: 'pi pi-cog', label: 'Admin' },
 ];
 
+const ADMIN_CAMERA_NAV_ITEM: NavItem = { to: '/admin/camera', icon: 'pi pi-camera', label: 'Camera Upload' };
+
 const NavLink = ({ item, showLabel, onClick }: { item: NavItem; showLabel: boolean; onClick?: () => void }) => (
   <Link
     to={item.to}
@@ -145,6 +147,11 @@ const Sidebar = () => {
                 onClick={closeMobile}
               />
             ))}
+            <NavLink
+              item={ADMIN_CAMERA_NAV_ITEM}
+              showLabel
+              onClick={closeMobile}
+            />
           </>
         )}
         <div className={styles.divider} />

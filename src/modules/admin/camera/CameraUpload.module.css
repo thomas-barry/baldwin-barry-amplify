@@ -1,0 +1,55 @@
+.page {
+  padding: var(--space-4) var(--space-3);
+  max-width: 480px;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-black);
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+  margin: 0 0 var(--space-4);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.label {
+  font-size: var(--fs-300);
+  font-weight: var(--fw-bold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dropdown {
+  width: 100%;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.cameraBtn {
+  width: 100%;
+}
+
+.preview {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.previewImage {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.uploadBtn {
+  width: 100%;
+}
