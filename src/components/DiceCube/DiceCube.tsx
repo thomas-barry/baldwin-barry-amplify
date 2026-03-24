@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
+import type React from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import styles from './DiceCube.module.css';
 
 const PIP_LAYOUTS: Record<number, [number, number][]> = {
@@ -28,9 +28,10 @@ function makeFaceTexture(value: number): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
   canvas.width = size;
   canvas.height = size;
-  const ctx = canvas.getContext('2d')!;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Failed to get 2D canvas context');
 
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = '#cc0000';
   ctx.fillRect(0, 0, size, size);
 
   ctx.strokeStyle = 'rgba(0, 0, 0, 0.06)';
@@ -38,7 +39,7 @@ function makeFaceTexture(value: number): THREE.CanvasTexture {
   ctx.strokeRect(10, 10, size - 20, size - 20);
 
   const pipR = size * 0.082;
-  ctx.fillStyle = '#111111';
+  ctx.fillStyle = '#ffffff';
   for (const [fx, fy] of PIP_LAYOUTS[value]) {
     ctx.beginPath();
     ctx.arc(fx * size, fy * size, pipR, 0, Math.PI * 2);
@@ -50,15 +51,18 @@ function makeFaceTexture(value: number): THREE.CanvasTexture {
 
 interface DiceCubeProps {
   onFaceChange?: (face: number) => void;
+  onRollEnd?: () => void;
+  rollRef?: React.MutableRefObject<(() => void) | null>;
 }
 
-const DiceCube = ({ onFaceChange }: DiceCubeProps) => {
+type DieState = 'idle' | 'spinning' | 'settling';
+
+const DiceCube = ({ onFaceChange, onRollEnd, rollRef }: DiceCubeProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const cubeRef = useRef<THREE.Mesh | null>(null);
-  // Keep callback in a ref so the animation loop always calls the latest version
-  // without needing to be re-created when the prop changes
   const onFaceChangeRef = useRef(onFaceChange);
   onFaceChangeRef.current = onFaceChange;
+  const onRollEndRef = useRef(onRollEnd);
+  onRollEndRef.current = onRollEnd;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -70,41 +74,72 @@ const DiceCube = ({ onFaceChange }: DiceCubeProps) => {
     // Scene
     const scene = new THREE.Scene();
 
-    // Camera
+    // Camera — fixed; we rotate the cube, not the camera
     const camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
-    camera.position.set(2.8, 2.2, 3.2);
+    camera.position.set(2.2, 1.75, 2.5);
+    camera.lookAt(0, 0, 0);
 
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    // Renderer — transparent background
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setSize(w, h);
-    renderer.setClearColor(0x0f0f1a);
+    renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
     // Cube
+    const geometry = new THREE.BoxGeometry(1.6, 1.6, 1.6);
     const faceMaterials = [1, 6, 2, 5, 3, 4].map(
       v => new THREE.MeshPhongMaterial({ map: makeFaceTexture(v) })
     );
-    const cube = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, 1.6), faceMaterials);
+    const cube = new THREE.Mesh(geometry, faceMaterials);
+    cube.rotation.set(
+      Math.random() * Math.PI * 2,
+      Math.random() * Math.PI * 2,
+      Math.random() * Math.PI * 2,
+    );
     scene.add(cube);
-    cubeRef.current = cube;
 
-    // Lights
-    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-    const key = new THREE.DirectionalLight(0xffffff, 1.3);
+    // Lights — fixed in world space; cube rotates through them
+    scene.add(new THREE.AmbientLight(0xffffff, 0.66));
+    const key = new THREE.DirectionalLight(0xffffff, 1.56);
     key.position.set(4, 6, 5);
     scene.add(key);
-    const fill = new THREE.DirectionalLight(0xffffff, 0.35);
+    const fill = new THREE.DirectionalLight(0xffffff, 0.42);
     fill.position.set(-4, -2, -4);
     scene.add(fill);
 
-    // Controls
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.07;
-    controls.enablePan = false;
-    controls.minDistance = 1.5;
-    controls.maxDistance = 12;
+    // ── Physics state ───────────────────────────────────────────────────────
+    let dieState: DieState = 'idle';
+    const angularVelocity = new THREE.Vector3();
+    const targetQ = new THREE.Quaternion();
+    const DAMPING = 0.97;          // per-frame factor at 60 fps; scaled by dt at runtime
+    const SETTLE_THRESHOLD = 0.1;  // rad/s
+    const SLERP_SPEED = 0.1;       // per-frame factor at 60 fps; scaled by dt at runtime
+
+    let secondImpulseTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    if (rollRef) {
+      rollRef.current = () => {
+        if (secondImpulseTimeout !== null) clearTimeout(secondImpulseTimeout);
+
+        const speed = 16 + Math.random() * 24;
+        angularVelocity
+          .set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
+          .normalize()
+          .multiplyScalar(speed);
+        dieState = 'spinning';
+
+        secondImpulseTimeout = setTimeout(() => {
+          const speed2 = (16 + Math.random() * 24) * 0.5;
+          angularVelocity.add(
+            new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
+              .normalize()
+              .multiplyScalar(speed2)
+          );
+          dieState = 'spinning';
+        }, 500);
+      };
+    }
 
     // Resize observer
     const ro = new ResizeObserver(() => {
@@ -116,21 +151,50 @@ const DiceCube = ({ onFaceChange }: DiceCubeProps) => {
     });
     ro.observe(container);
 
-    // Pre-allocated vectors to avoid per-frame allocations
+    // Pre-allocated vectors
     const toCamera = new THREE.Vector3();
     const worldNormal = new THREE.Vector3();
+    const bestWorldNormal = new THREE.Vector3();
+    const rotAxis = new THREE.Vector3();
+    const alignQ = new THREE.Quaternion();
     let currentFace = -1;
 
-    // Render loop
+    // ── Render loop ─────────────────────────────────────────────────────────
     let rafId: number;
-    const animate = () => {
+    let lastTime: number | null = null;
+
+    const animate = (time: number) => {
       rafId = requestAnimationFrame(animate);
-      controls.update();
+      const dt = lastTime !== null ? Math.min((time - lastTime) / 1000, 0.05) : 1 / 60;
+      lastTime = time;
+
+      // Flag set when spinning crosses the settle threshold this frame
+      let needsSettleSetup = false;
+
+      if (dieState === 'spinning') {
+        const speed = angularVelocity.length();
+        rotAxis.copy(angularVelocity).normalize();
+        cube.rotateOnWorldAxis(rotAxis, speed * dt);
+        angularVelocity.multiplyScalar(Math.pow(DAMPING, dt * 60));
+
+        if (speed < SETTLE_THRESHOLD) {
+          needsSettleSetup = true;
+          dieState = 'settling';
+        }
+      } else if (dieState === 'settling') {
+        const slerpFactor = 1 - Math.pow(1 - SLERP_SPEED, dt * 60);
+        cube.quaternion.slerp(targetQ, slerpFactor);
+        if (cube.quaternion.angleTo(targetQ) < 0.001) {
+          cube.quaternion.copy(targetQ);
+          dieState = 'idle';
+          onRollEndRef.current?.();
+        }
+      }
+
       renderer.render(scene, camera);
 
-      // Determine which face most directly faces the camera
+      // ── Single face-detection pass (uses matrixWorld updated by render) ──
       toCamera.copy(camera.position).normalize();
-
       let maxDot = -Infinity;
       let closestFace = 1;
       for (const { normal, value } of FACE_NORMALS) {
@@ -139,7 +203,14 @@ const DiceCube = ({ onFaceChange }: DiceCubeProps) => {
         if (dot > maxDot) {
           maxDot = dot;
           closestFace = value;
+          bestWorldNormal.copy(worldNormal);
         }
+      }
+
+      // Complete settle setup using the face-detection result
+      if (needsSettleSetup) {
+        alignQ.setFromUnitVectors(bestWorldNormal, toCamera);
+        targetQ.multiplyQuaternions(alignQ, cube.quaternion);
       }
 
       if (closestFace !== currentFace) {
@@ -147,27 +218,22 @@ const DiceCube = ({ onFaceChange }: DiceCubeProps) => {
         onFaceChangeRef.current?.(closestFace);
       }
     };
-    animate();
+
+    animate(0);
 
     return () => {
       cancelAnimationFrame(rafId);
+      if (secondImpulseTimeout !== null) clearTimeout(secondImpulseTimeout);
       ro.disconnect();
-      controls.dispose();
+      faceMaterials.forEach(m => { m.map?.dispose(); m.dispose(); });
+      geometry.dispose();
       renderer.dispose();
       container.removeChild(renderer.domElement);
-      cubeRef.current = null;
+      if (rollRef) rollRef.current = null;
     };
   }, []);
 
-  return (
-    <div className={styles.wrapper}>
-      <div
-        ref={containerRef}
-        className={styles.canvas}
-      />
-      <p className={styles.hint}>Drag to rotate · Scroll to zoom</p>
-    </div>
-  );
+  return <div ref={containerRef} className={styles.canvas} />;
 };
 
 export default DiceCube;

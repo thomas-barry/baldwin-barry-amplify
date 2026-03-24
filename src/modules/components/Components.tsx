@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import DiceCube from '@/components/DiceCube';
+import { DiceCubeDemo } from '@/components/DiceCube';
+import KnobDemo from '@/components/KnobDemo';
 import ImageSquareSelector from '@/components/ImageSquareSelector';
 import type { SquareSelection } from '@/components/ImageSquareSelector';
 import styles from './Components.module.css';
@@ -8,7 +9,6 @@ const DEMO_IMAGE = 'https://picsum.photos/seed/demo/1200/800';
 
 const Components = () => {
   const [selection, setSelection] = useState<SquareSelection | null>(null);
-  const [face, setFace] = useState<number | null>(null);
 
   return (
     <div className={styles.page}>
@@ -16,12 +16,14 @@ const Components = () => {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>The die is cast</h2>
         <div className={styles.demo}>
-          <DiceCube onFaceChange={setFace} />
-          {face !== null && (
-            <p className={styles.dieReadout}>
-              {'⚀⚁⚂⚃⚄⚅'[face - 1]}&ensp;{['one', 'two', 'three', 'four', 'five', 'six'][face - 1]}
-            </p>
-          )}
+          <DiceCubeDemo />
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Reading lamp</h2>
+        <div className={styles.demo}>
+          <KnobDemo />
         </div>
       </section>
 

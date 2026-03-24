@@ -126,6 +126,10 @@ html {
   color-scheme: light;
 }
 
+p + p {
+  margin-top: var(--space-3);
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);
