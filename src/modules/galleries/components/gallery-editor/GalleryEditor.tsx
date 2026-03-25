@@ -20,6 +20,7 @@ import { getUrl, remove, uploadData } from 'aws-amplify/storage';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { InputSwitch } from 'primereact/inputswitch';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Toast } from 'primereact/toast';
 import { useEffect, useRef, useState } from 'react';
@@ -277,6 +278,26 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
     },
   });
 
+  // Mutation to toggle admin-only visibility
+  const updateAdminOnlyMutation = useMutation({
+    mutationFn: async (adminOnly: boolean) => {
+      return clientWrite.models.Gallery.update({ id: galleryId, adminOnly });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['gallery', galleryId] });
+      queryClient.invalidateQueries({ queryKey: ['galleries'] });
+    },
+    onError: error => {
+      console.error('Error updating admin-only flag:', error);
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to update gallery visibility',
+        life: 5000,
+      });
+    },
+  });
+
   // Mutation to save thumbnail with crop
   const saveCropMutation = useMutation({
     mutationFn: async ({ imageId, crop }: { imageId: string; crop: SquareSelection | null }) => {
@@ -494,6 +515,14 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
     <div className={styles.editorContainer}>
       <div className={styles.header}>
         <h2 className={styles.title}>Edit Gallery: {gallery.name}</h2>
+        <label className={styles.adminOnlyToggle}>
+          <InputSwitch
+            checked={gallery.adminOnly ?? false}
+            onChange={e => updateAdminOnlyMutation.mutate(e.value)}
+            disabled={updateAdminOnlyMutation.isPending}
+          />
+          <span>Admin only</span>
+        </label>
         {backButton}
       </div>
 

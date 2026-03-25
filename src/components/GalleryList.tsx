@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
 import { Card } from 'primereact/card';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { useAuth } from '@/context/AuthContext';
 import { useMemo } from 'react';
 import type { Schema } from '@/schema';
 import styles from './GalleryList.module.css';
@@ -18,6 +19,7 @@ const clientWrite = generateClient<Schema>({ authMode: 'userPool' });
 
 const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
   const queryClient = useQueryClient();
+  const { isAdmin } = useAuth();
 
   const {
     data: galleries,
@@ -28,7 +30,7 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
     queryKey: ['galleries'],
     queryFn: async () => {
       const response = await clientRead.models.Gallery.list({
-        selectionSet: ['id', 'name', 'description', 'createdDate', 'updatedAt', 'thumbnailImage.*', 'images.id', 'thumbnailCrop'],
+        selectionSet: ['id', 'name', 'description', 'createdDate', 'updatedAt', 'thumbnailImage.*', 'images.id', 'thumbnailCrop', 'adminOnly'],
       });
       return response.data as unknown as Gallery[];
     },
@@ -36,14 +38,14 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
 
   const sortedGalleries = useMemo(() => {
     if (!galleries) return [];
-    const copy = [...galleries];
+    const copy = galleries.filter(g => isAdmin || !g.adminOnly);
     if (sort === 'alpha') {
       copy.sort((a, b) => a.name.localeCompare(b.name));
     } else {
       copy.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
     }
     return copy;
-  }, [galleries, sort]);
+  }, [galleries, sort, isAdmin]);
 
   const deleteMutation = useMutation({
     mutationFn: async (galleryId: string) => {

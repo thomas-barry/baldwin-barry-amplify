@@ -45,7 +45,7 @@ const Knob = ({
     const el = wheelRef.current;
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
-      onChange?.(Math.min(Math.max(valueRef.current + e.deltaY, minValue), maxValue));
+      onChange?.(Math.min(Math.max(valueRef.current + e.deltaY * 0.5, minValue), maxValue));
       e.preventDefault();
     };
     el.addEventListener('wheel', onWheel, { passive: false });
@@ -80,7 +80,7 @@ const Knob = ({
 
     const onMouseMove = (ev: MouseEvent) => {
       const delta = dragStartY.current - ev.clientY;
-      onChange?.(Math.min(Math.max(dragStartValue.current + delta * 3.5, minValue), maxValue));
+      onChange?.(Math.min(Math.max(dragStartValue.current + delta * 1.75, minValue), maxValue));
     };
 
     const onMouseUp = () => {
@@ -98,7 +98,7 @@ const Knob = ({
 
   const onTouchMove = (e: React.TouchEvent) => {
     const delta = lastTouchMoveY.current - e.touches[0].clientY;
-    onChange?.(Math.min(Math.max(value + delta * 3.5, minValue), maxValue));
+    onChange?.(Math.min(Math.max(value + delta * 1.75, minValue), maxValue));
     lastTouchMoveY.current = e.touches[0].clientY;
   };
 

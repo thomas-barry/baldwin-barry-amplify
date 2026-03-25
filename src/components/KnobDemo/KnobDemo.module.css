@@ -7,4 +7,12 @@
   background-color: #475569;
   border-radius: var(--radius-lg);
   width: fit-content;
+  max-width: 100%;
+}
+
+@media (max-width: 767px) {
+  .container {
+    flex-direction: column-reverse;
+    width: 100%;
+  }
 }

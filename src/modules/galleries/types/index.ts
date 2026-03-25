@@ -22,4 +22,5 @@ export interface Gallery {
   } | null;
   images?: { id: string }[] | null;
   thumbnailCrop?: SquareSelection | null;
+  adminOnly?: boolean | null;
 }

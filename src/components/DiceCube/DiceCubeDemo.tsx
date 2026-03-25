@@ -27,6 +27,7 @@ const DiceCubeDemo = () => {
   const sum = face1 !== null && face2 !== null ? face1 + face2 : null;
 
   return (
+    <div className={styles.wrapper}>
     <div className={styles.container}>
       <Suspense
         fallback={
@@ -55,6 +56,7 @@ const DiceCubeDemo = () => {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 };

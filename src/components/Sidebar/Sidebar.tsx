@@ -17,7 +17,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/', icon: 'pi pi-home', label: 'Home', exact: true },
   { to: '/photos', icon: 'pi pi-images', label: 'Photography' },
   { to: '/blog', icon: 'pi pi-book', label: 'Musings' },
-  { to: '/components', icon: 'pi pi-th-large', label: 'Components' },
+  { to: '/sandbox', icon: 'pi pi-th-large', label: 'Sandbox' },
   { to: '/about', icon: 'pi pi-user', label: 'About' },
   { to: '/contact', icon: 'pi pi-envelope', label: 'Contact' },
 ];

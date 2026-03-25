@@ -12,6 +12,17 @@
   font-weight: 500;
 }
 
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkboxRow .formLabel {
+  display: inline;
+  margin-bottom: 0;
+}
+
 .requiredMark {
   color: var(--red-500);
 }

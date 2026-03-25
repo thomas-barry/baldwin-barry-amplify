@@ -49,6 +49,12 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
             <i className='pi pi-images' />
           </div>
         )}
+        {isAdmin && gallery.adminOnly && (
+          <div className={styles.privateBadge}>
+            <i className='pi pi-lock' />
+            Private
+          </div>
+        )}
         {isAdmin && (
           <div className={styles.adminOverlay}>
             <Link
