@@ -138,3 +138,15 @@
   --amplify-components-button-hover-color: #2da89f;
   --amplify-components-button-hover-background-color: transparent;
 }
+
+[data-theme='dark'] .authenticatorWrap input,
+[data-theme='dark'] .authenticatorWrap select,
+[data-theme='dark'] .authenticatorWrap textarea {
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  color-scheme: dark;
+}
+
+[data-theme='dark'] .authenticatorWrap :global(.amplify-icon) {
+  color: var(--color-text-muted);
+}

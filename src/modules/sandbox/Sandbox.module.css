@@ -12,18 +12,6 @@
   margin: 0 0 var(--space-3);
 }
 
-.section {
-  margin-bottom: var(--space-4);
-}
-
-.sectionTitle {
-  font-family: var(--font-display);
-  font-size: var(--fs-h4);
-  font-weight: var(--fw-bold);
-  color: var(--color-text);
-  margin: 0 0 var(--space-2);
-}
-
 .description {
   font-size: var(--fs-300);
   color: var(--color-text-muted);
@@ -41,4 +29,20 @@
   color: var(--color-text-muted);
   margin: 0;
   font-variant-numeric: tabular-nums;
+}
+
+.curtainBack {
+  background: var(--color-surface-raised);
+}
+
+.curtainRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+@media (max-width: 600px) {
+  .curtainRow {
+    grid-template-columns: 1fr;
+  }
 }

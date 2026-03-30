@@ -69,6 +69,18 @@
     0 0.5em 0.65em 0 rgba(0, 0, 0, 0.3);
 }
 
+.valueDisplay {
+  position: absolute;
+  color: rgba(var(--color-knob-light), 0.95);
+  font-size: 2em;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  pointer-events: none;
+  user-select: none;
+  z-index: 5;
+  text-shadow: 0 0 0.4em rgba(var(--color-knob-light), 0.4);
+}
+
 .knob {
   position: absolute;
   width: 100%;

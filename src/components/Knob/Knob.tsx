@@ -124,6 +124,7 @@ const Knob = ({
         <div className={styles.knob} style={{ transform: `rotate(${angle}deg)` }} />
         <div className={styles.focusRing} />
         <Ticks ticks={ticks} angle={angle} />
+        <span className={styles.valueDisplay}>{Math.round(value)}</span>
       </div>
       {minMaxLabels && <span className={styles.min}>{minLabel}</span>}
       {minMaxLabels && <span className={styles.max}>{maxLabel}</span>}

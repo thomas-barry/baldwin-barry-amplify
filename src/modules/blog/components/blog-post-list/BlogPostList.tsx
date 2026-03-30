@@ -75,8 +75,8 @@ const BlogPostList = ({ onEdit }: BlogPostListProps) => {
 
   if (!sortedPosts.length) {
     return (
-      <Card className={styles.emptyStateCard} title='No Musings Found'>
-        <p>{isAdmin ? 'No musings yet. Use "New Post" to create one.' : 'No musings published yet.'}</p>
+      <Card className={styles.emptyStateCard} title='No Musings Mused'>
+        {isAdmin && <p>No musings yet. Use &quot;New Post&quot; to create one.</p>}
       </Card>
     );
   }

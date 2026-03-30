@@ -1,0 +1,100 @@
+/* ── CurtainCard ──────────────────────────────────────────────────── */
+
+.curtainCard {
+  position: relative;
+  overflow: hidden;
+  height: var(--curtain-height, 240px);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  border: 1px solid transparent;
+}
+
+/* ── Variants ─────────────────────────────────────────────────────── */
+
+.default {
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.08),
+    0 1px 2px 0 rgba(0, 0, 0, 0.04);
+}
+
+.elevated {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.08),
+    0 2px 4px -1px rgba(0, 0, 0, 0.04);
+}
+
+.outlined {
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+
+/* ── Panels ───────────────────────────────────────────────────────── */
+
+.front,
+.back {
+  position: absolute;
+  inset: 0;
+}
+
+.back {
+  z-index: 0;
+}
+
+.front {
+  z-index: 1;
+  background-color: var(--color-surface);
+  transform: translateY(0);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.curtainCard:hover .front {
+  transform: translateY(-100%);
+  transition-delay: var(--curtain-enter-delay, 0s);
+}
+
+/* ── Padding applied to panels ────────────────────────────────────── */
+
+.padding-sm .front,
+.padding-sm .back {
+  padding: 0.75rem;
+}
+
+.padding-md .front,
+.padding-md .back {
+  padding: 1rem;
+}
+
+.padding-lg .front,
+.padding-lg .back {
+  padding: 1.5rem;
+}
+
+/* ── Dark mode ────────────────────────────────────────────────────── */
+
+[data-theme='dark'] .curtainCard {
+  background-color: var(--color-surface);
+}
+
+[data-theme='dark'] .front {
+  background-color: var(--color-surface);
+}
+
+[data-theme='dark'] .outlined {
+  border-color: var(--color-border);
+}
+
+/* ── Reduced motion ───────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .front {
+    transition: none;
+  }
+}
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .curtainCard {
+    border-radius: var(--radius-md);
+  }
+}
