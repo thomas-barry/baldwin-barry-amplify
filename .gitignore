@@ -40,3 +40,6 @@ amplifyconfiguration*
 
 #playwright
 .playwright-cli/
+
+# TanStack tooling
+.tanstack/
