@@ -1,6 +1,6 @@
 import { cfUrl } from '@/lib/cloudfront';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import ReactImageGallery, { ReactImageGalleryItem } from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
@@ -32,22 +32,10 @@ interface PhotoCarouselProps {
   onSlide?: (index: number) => void;
 }
 
-export interface PhotoCarouselHandle {
-  play: () => void;
-  pause: () => void;
-}
-
-const PhotoCarousel = forwardRef<PhotoCarouselHandle, PhotoCarouselProps>(
-  ({ galleryImages, isLoading, onSlide }, ref) => {
+const PhotoCarousel = ({ galleryImages, isLoading, onSlide }: PhotoCarouselProps) => {
     const galleryRef = useRef<ReactImageGallery>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const total = galleryImages.length;
-
-    useImperativeHandle(ref, () => ({
-      play: () => galleryRef.current?.play(),
-      pause: () => galleryRef.current?.pause(),
-    }));
 
     const galleryItems = useMemo(() => galleryImages.map(gi => ({
       original: gi.image.s3Key,
@@ -147,9 +135,6 @@ const PhotoCarousel = forwardRef<PhotoCarouselHandle, PhotoCarouselProps>(
                 className={styles.image}
               />
               <div className={styles.imageOverlay}>
-                <span className={styles.counter}>
-                  {currentIndex + 1} / {total}
-                </span>
                 <div className={styles.imageActions}>
                   <button
                     className={styles.actionBtn}
@@ -173,10 +158,7 @@ const PhotoCarousel = forwardRef<PhotoCarouselHandle, PhotoCarouselProps>(
           )}
         />
       </div>
-    );
-  },
-);
-
-PhotoCarousel.displayName = 'PhotoCarousel';
+  );
+};
 
 export default memo(PhotoCarousel);

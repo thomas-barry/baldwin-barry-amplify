@@ -14,7 +14,9 @@ const Home = () => (
           <br />
           Coping with reality.
         </h1>
-        <p className={styles.body}>A sandbox for playing with web technologies. Mostly built with Claude Code.</p>
+        <p className={styles.body}>
+          This is my sandbox for playing with web technologies. Mostly built with Claude Code.
+        </p>
       </div>
       <div className={styles.heroPhoto}>
         <CurtainCard
