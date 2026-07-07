@@ -12,6 +12,13 @@ const backend = defineBackend({
   onUploadHandler,
 });
 
+// The Cognito user pool was deleted out-of-band (outside CloudFormation), so CFN still
+// tracks the old (now-nonexistent) physical pool and would try to call UpdateUserPool
+// against it on every deploy, which 404s. Changing the logical ID forces CFN to CREATE
+// a new pool under a new logical ID instead of updating the dead one, and downstream
+// references (UserPoolClient, IdentityPool, AppSync's userPoolConfig) get rewired to it.
+backend.auth.resources.cfnResources.cfnUserPool.overrideLogicalId('AdminUserPoolV2');
+
 // Grant the Lambda function access to the data layer
 backend.onUploadHandler.addEnvironment('GRAPHQL_ENDPOINT', backend.data.graphqlUrl);
 
