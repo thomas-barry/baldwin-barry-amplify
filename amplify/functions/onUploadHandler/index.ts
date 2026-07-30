@@ -6,6 +6,7 @@ import exifReader from 'exif-reader';
 import sharp from 'sharp';
 import { Readable } from 'stream';
 import { THUMBNAIL_HEIGHT, THUMBNAIL_PREFIX, THUMBNAIL_WIDTH, UPLOADS_PREFIX } from '../../../constants';
+import { sanitizeExif } from './exif';
 import streamToBuffer from './streamToBuffer';
 
 // Utility functions for metadata handling
@@ -24,8 +25,8 @@ interface ExtractedImageMetadata {
   galleryId?: string;
   title?: string;
   description?: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   format?: string;
   size?: number;
   density?: number;
@@ -61,17 +62,42 @@ function parseS3Metadata(s3Metadata: Record<string, string> = {}, s3Key: string)
   metadata.description = s3Metadata.description || s3Metadata['image-description'] || s3Metadata.imagedescription;
   metadata.fileName = s3Metadata.filename || s3Metadata['filename'];
   metadata.s3Key = s3Key;
-  metadata.s3ThumbnailKey = s3Key.replace('uploads/', 'thumbnails/');
+  metadata.s3ThumbnailKey = s3Key.replace(UPLOADS_PREFIX, THUMBNAIL_PREFIX);
   return metadata;
+}
+
+// A malformed or truncated EXIF block must never cost us the upload: the caller
+// runs before thumbnail generation and the DynamoDB write, so anything thrown
+// here would leave the image with no thumbnail and no record at all.
+function readExif(exifBuffer: Buffer | undefined): Record<string, unknown> {
+  if (!exifBuffer) return {};
+
+  try {
+    return sanitizeExif(exifReader(exifBuffer));
+  } catch (error) {
+    console.warn('could not parse EXIF, continuing without it:', error);
+    return {};
+  }
+}
+
+// EXIF orientation values 5–8 transpose the image, so its stored pixel
+// dimensions are the reverse of how it should be displayed. sharp's
+// metadata().width/height deliberately report the stored values and ignore the
+// orientation tag, so the swap has to be applied here.
+function isTransposed(orientation?: number): boolean {
+  return orientation !== undefined && orientation >= 5 && orientation <= 8;
 }
 
 async function extractImageMetadata(imageBuffer: Buffer): Promise<ExtractedImageMetadata> {
   const image = sharp(imageBuffer);
   const metadata = await image.metadata();
+  const transposed = isTransposed(metadata.orientation);
 
   const extractedMetadata: ExtractedImageMetadata = {
-    width: metadata.width,
-    height: metadata.height,
+    // Display dimensions: these match the auto-oriented thumbnail and the way
+    // browsers render the original, which is what the frontend lays out against.
+    width: transposed ? metadata.height : metadata.width,
+    height: transposed ? metadata.width : metadata.height,
     format: metadata.format,
     size: metadata.size,
     density: metadata.density,
@@ -81,7 +107,7 @@ async function extractImageMetadata(imageBuffer: Buffer): Promise<ExtractedImage
     hasProfile: metadata.hasProfile,
     hasAlpha: metadata.hasAlpha,
     orientation: metadata.orientation,
-    exif: metadata.exif ? exifReader(metadata.exif) : {},
+    exif: readExif(metadata.exif),
   };
 
   return extractedMetadata;
@@ -277,13 +303,26 @@ export const handler = async (event: S3Event) => {
       // convert stream to buffer
       const imageBuffer = await streamToBuffer(response.Body as Readable);
 
-      // extract detailed image metadata
+      // extract detailed image metadata — degrade rather than abort, so a file
+      // sharp cannot introspect still gets a thumbnail and a DynamoDB record
       console.log('🔍 extracting detailed image metadata...');
-      const imageMetadata = await extractImageMetadata(imageBuffer);
+      let imageMetadata: ExtractedImageMetadata;
+      try {
+        imageMetadata = await extractImageMetadata(imageBuffer);
+      } catch (error) {
+        console.warn('could not extract image metadata, continuing without it:', error);
+        imageMetadata = { exif: {} };
+      }
 
       // generate thumbnail using sharp
       console.log('EXTRACTING THUMBNAIL FROM IMAGE', imageMetadata);
       const thumbnailBuffer = await sharp(imageBuffer)
+        // Bake the EXIF orientation into the pixels before resizing. sharp does
+        // not copy metadata to the output, so without this the thumbnail keeps
+        // the raw sensor orientation while browsers auto-rotate the original —
+        // leaving thumbnails 90°/180° off. Rotating first also makes
+        // `position: 'top'` crop the top of the *displayed* image.
+        .rotate()
         .resize({
           width: THUMBNAIL_WIDTH,
           height: THUMBNAIL_HEIGHT,
@@ -323,12 +362,6 @@ export const handler = async (event: S3Event) => {
       if (s3Metadata.galleryId && imageId) {
         await insertGalleryImageRecord(docClient, s3Metadata.galleryId, imageId);
       }
-
-      // Insert Image record in DynamoDB
-
-      // TODO: Optionally create Image record in DynamoDB here using the metadata
-      // This would require adding the necessary permissions and GraphQL client
-      // For now, the frontend handles Image record creation
     } catch (error) {
       console.error('error processing image:', error);
     }

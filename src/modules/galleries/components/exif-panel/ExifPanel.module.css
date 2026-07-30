@@ -1,0 +1,78 @@
+@layer components {
+  /* Glass overlay, matching .navBtn / .actionBtn in PhotoCarousel.module.css.
+     Sits over the photo, so it uses fixed light-on-dark colours rather than
+     theme tokens — the backdrop is the image, not the page surface. */
+  .panel {
+    pointer-events: all;
+    max-width: min(280px, 60%);
+    padding: var(--space-1) calc(var(--space-1) * 1.25);
+    border-radius: var(--radius-md);
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: var(--fs-300);
+    line-height: 1.4;
+    /* Pushes the sibling action buttons to the right edge. Done here rather
+       than with `justify-content: space-between` on .imageOverlay so the
+       buttons stay right-aligned when this panel isn't rendered at all. */
+    margin-inline-end: auto;
+  }
+
+  .camera {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-300);
+    font-weight: var(--fw-bold);
+    letter-spacing: 0.01em;
+  }
+
+  .lens {
+    margin: 2px 0 0;
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .rows {
+    margin: var(--space-1) 0 0;
+    display: grid;
+    gap: 2px;
+  }
+
+  .row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-1);
+  }
+
+  .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .value {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  @media (width <= 768px) {
+    .panel {
+      max-width: 65%;
+      padding: 0.5rem 0.625rem;
+    }
+
+    .label {
+      font-size: 0.6875rem;
+    }
+
+    .value {
+      font-size: 0.75rem;
+    }
+  }
+}

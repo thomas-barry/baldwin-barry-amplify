@@ -1,10 +1,13 @@
-import { cfUrl } from '@/lib/cloudfront';
+import type { ExifSummary } from '@/lib/exif';
+import { summarizeExif } from '@/lib/exif';
+import { useImageUrls } from '@/lib/imageUrl';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import ReactImageGallery, { ReactImageGalleryItem } from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { THUMBNAIL_PREFIX, UPLOADS_PREFIX } from '../../../../../constants';
+import ExifPanel from '../exif-panel';
 import styles from './PhotoCarousel.module.css';
 
 interface GalleryImage {
@@ -23,7 +26,15 @@ interface GalleryImage {
     contentType?: string | null;
     width: number | null;
     height: number | null;
+    exifData?: unknown;
   };
+}
+
+/** react-image-gallery passes the whole item object through to renderItem, so
+ *  per-slide data rides along on it rather than being looked up by index —
+ *  more than one slide renders during a transition. */
+interface CarouselItem extends ReactImageGalleryItem {
+  exifSummary: ExifSummary | null;
 }
 
 interface PhotoCarouselProps {
@@ -36,8 +47,9 @@ const PhotoCarousel = ({ galleryImages, isLoading, onSlide }: PhotoCarouselProps
     const galleryRef = useRef<ReactImageGallery>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [showInfo, setShowInfo] = useState(false);
 
-    const galleryItems = useMemo(() => galleryImages.map(gi => ({
+    const galleryItems = useMemo<CarouselItem[]>(() => galleryImages.map(gi => ({
       original: gi.image.s3Key,
       thumbnail:
         gi.image.s3ThumbnailKey ||
@@ -46,7 +58,17 @@ const PhotoCarousel = ({ galleryImages, isLoading, onSlide }: PhotoCarouselProps
       originalTitle: gi.image.title,
       originalHeight: gi.image.height || 0,
       originalWidth: gi.image.width || 0,
+      // Summarised once per image here rather than in ExifPanel, so it is not
+      // recomputed on every render of every visible slide.
+      exifSummary: summarizeExif(gi.image.exifData),
     })), [galleryImages]);
+
+    // Full-size and thumbnail keys resolved in one batch — see useImageUrls.
+    const imageKeys = useMemo(
+      () => Array.from(new Set(galleryItems.flatMap(item => [item.original, item.thumbnail!]))),
+      [galleryItems],
+    );
+    const imageUrls = useImageUrls(imageKeys);
 
     const handleSlide = (index: number) => {
       setCurrentIndex(index);
@@ -57,10 +79,13 @@ const PhotoCarousel = ({ galleryImages, isLoading, onSlide }: PhotoCarouselProps
       [currentIndex - 1, currentIndex + 2]
         .filter(i => i >= 0 && i < galleryItems.length)
         .forEach(i => {
+          // Skip until the URL resolves, or `src` becomes the string "undefined".
+          const src = imageUrls[galleryItems[i].original];
+          if (!src) return;
           const img = new Image();
-          img.src = cfUrl(galleryItems[i].original);
+          img.src = src;
         });
-    }, [currentIndex, galleryItems]);
+    }, [currentIndex, galleryItems, imageUrls]);
 
     if (isLoading) {
       return (
@@ -127,35 +152,61 @@ const PhotoCarousel = ({ galleryImages, isLoading, onSlide }: PhotoCarouselProps
               <i className='pi pi-chevron-right' />
             </button>
           )}
-          renderItem={(item: ReactImageGalleryItem) => (
-            <div className={styles.imageContainer}>
-              <LazyLoadImage
-                src={cfUrl(item.original)}
-                alt={item.originalTitle || item.description || 'Gallery image'}
-                className={styles.image}
-              />
-              <div className={styles.imageOverlay}>
-                <div className={styles.imageActions}>
-                  <button
-                    className={styles.actionBtn}
-                    onClick={handleFullscreen}
-                    aria-label='Expand fullscreen'
-                  >
-                    <i className='pi pi-expand' />
-                  </button>
+          renderItem={(item: ReactImageGalleryItem) => {
+            const { exifSummary } = item as CarouselItem;
+            const src = imageUrls[item.original];
+
+            return (
+              <div className={styles.imageContainer}>
+                {src && (
+                  <LazyLoadImage
+                    src={src}
+                    alt={item.originalTitle || item.description || 'Gallery image'}
+                    className={styles.image}
+                  />
+                )}
+                <div className={styles.imageOverlay}>
+                  <ExifPanel summary={exifSummary} visible={showInfo} />
+                  <div className={styles.imageActions}>
+                    {/* Hidden entirely for images with no camera data —
+                        screenshots, PNGs, export-stripped JPEGs. */}
+                    {exifSummary && (
+                      <button
+                        className={`${styles.actionBtn} ${showInfo ? styles.actionBtnActive : ''}`}
+                        onClick={() => setShowInfo(prev => !prev)}
+                        aria-label='Image details'
+                        aria-pressed={showInfo}
+                      >
+                        <i className='pi pi-info-circle' />
+                      </button>
+                    )}
+                    <button
+                      className={styles.actionBtn}
+                      onClick={handleFullscreen}
+                      aria-label='Expand fullscreen'
+                    >
+                      <i className='pi pi-expand' />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-          renderThumbInner={(item: ReactImageGalleryItem) => (
-            <div className={styles.thumbnailContainer}>
-              <LazyLoadImage
-                src={cfUrl(item.thumbnail!)}
-                alt={item.originalTitle || item.description || 'Gallery thumbnail'}
-                className={styles.thumbnailImage}
-              />
-            </div>
-          )}
+            );
+          }}
+          renderThumbInner={(item: ReactImageGalleryItem) => {
+            const src = imageUrls[item.thumbnail!];
+
+            return (
+              <div className={styles.thumbnailContainer}>
+                {src && (
+                  <LazyLoadImage
+                    src={src}
+                    alt={item.originalTitle || item.description || 'Gallery thumbnail'}
+                    className={styles.thumbnailImage}
+                  />
+                )}
+              </div>
+            );
+          }}
         />
       </div>
   );
