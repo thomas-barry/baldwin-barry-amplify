@@ -253,7 +253,10 @@ const DiceCube = ({ onFaceChange, onRollEnd, rollRef }: DiceCubeProps) => {
       container.removeChild(renderer.domElement);
       if (rollRef) rollRef.current = null;
     };
-  }, []);
+    // onFaceChange/onRollEnd are read through refs above so they stay current
+    // without rebuilding the scene. rollRef is a ref object with stable
+    // identity, so this still runs once per mount.
+  }, [rollRef]);
 
   return (
     <div

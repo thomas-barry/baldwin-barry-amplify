@@ -27,7 +27,10 @@ export default tseslint.config(
   },
   // Configuration for TypeScript/React files
   {
-    files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
+    // `files` patterns are relative to this config's directory and `*` does not
+    // cross `/`, so bare `*.ts` matched only root-level files — none of src/
+    // was ever checked by prettier, react-hooks or react-refresh.
+    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     languageOptions: {
       parser: tseslint.parser,
       globals: {

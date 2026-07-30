@@ -37,10 +37,7 @@ backend.onUploadHandler.addEnvironment(
 
 // CloudFront invalidation: set CLOUDFRONT_DISTRIBUTION_ID in your environment before running
 // `npx ampx sandbox` (or in CI secrets). The Lambda will skip invalidation if unset.
-backend.onUploadHandler.addEnvironment(
-  'CLOUDFRONT_DISTRIBUTION_ID',
-  process.env.CLOUDFRONT_DISTRIBUTION_ID ?? '',
-);
+backend.onUploadHandler.addEnvironment('CLOUDFRONT_DISTRIBUTION_ID', process.env.CLOUDFRONT_DISTRIBUTION_ID ?? '');
 backend.onUploadHandler.resources.lambda.addToRolePolicy(
   new PolicyStatement({
     actions: ['cloudfront:CreateInvalidation'],

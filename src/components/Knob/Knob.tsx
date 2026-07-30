@@ -50,7 +50,10 @@ const Knob = ({
     };
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => el.removeEventListener('wheel', onWheel);
-  }, []);
+    // Previously []: the listener captured the first render's onChange and
+    // bounds, so wheel input called a stale callback and clamped to stale
+    // min/max. Re-attaching is a remove/add pair on one listener.
+  }, [onChange, minValue, maxValue]);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     const { key, shiftKey } = e;

@@ -24,6 +24,9 @@ export const LoginDialogProvider = ({ children }: { children: React.ReactNode })
   return <LoginDialogContext.Provider value={value}>{children}</LoginDialogContext.Provider>;
 };
 
+// Provider and hook intentionally share a file; the hook is not a component,
+// so Fast Refresh is unaffected.
+// eslint-disable-next-line react-refresh/only-export-components
 export const useLoginDialog = () => {
   const context = useContext(LoginDialogContext);
 
