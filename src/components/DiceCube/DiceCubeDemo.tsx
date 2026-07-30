@@ -4,8 +4,17 @@ import styles from './DiceCubeDemo.module.css';
 const DiceCube = lazy(() => import('./DiceCube'));
 
 const SUM_WORDS: Record<number, string> = {
-  2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven',
-  8: 'eight', 9: 'nine', 10: 'ten', 11: 'eleven', 12: 'twelve',
+  2: 'two',
+  3: 'three',
+  4: 'four',
+  5: 'five',
+  6: 'six',
+  7: 'seven',
+  8: 'eight',
+  9: 'nine',
+  10: 'ten',
+  11: 'eleven',
+  12: 'twelve',
 };
 
 const DiceCubeDemo = () => {
@@ -28,35 +37,43 @@ const DiceCubeDemo = () => {
 
   return (
     <div className={styles.wrapper}>
-    <div className={styles.container}>
-      <Suspense
-        fallback={
+      <div className={styles.container}>
+        <Suspense
+          fallback={
+            <div className={styles.diceRow}>
+              <div className={styles.loading} />
+              <div className={styles.loading} />
+            </div>
+          }>
           <div className={styles.diceRow}>
-            <div className={styles.loading} />
-            <div className={styles.loading} />
+            <DiceCube
+              onFaceChange={setFace1}
+              onRollEnd={handleRollEnd}
+              rollRef={rollRef1}
+            />
+            <DiceCube
+              onFaceChange={setFace2}
+              onRollEnd={handleRollEnd}
+              rollRef={rollRef2}
+            />
           </div>
-        }
-      >
-        <div className={styles.diceRow}>
-          <DiceCube onFaceChange={setFace1} onRollEnd={handleRollEnd} rollRef={rollRef1} />
-          <DiceCube onFaceChange={setFace2} onRollEnd={handleRollEnd} rollRef={rollRef2} />
-        </div>
-      </Suspense>
-      <div className={styles.controls}>
-        <button className={styles.rollBtn} disabled={isRolling} onClick={handleRoll}>
-          Roll
-        </button>
-        <div className={styles.result}>
-          {isRolling ? (
-            <div className={styles.spinnerRing} />
-          ) : (
-            sum !== null && (
-              <p className={styles.readout}>{SUM_WORDS[sum] ?? sum}</p>
-            )
-          )}
+        </Suspense>
+        <div className={styles.controls}>
+          <button
+            className={styles.rollBtn}
+            disabled={isRolling}
+            onClick={handleRoll}>
+            Roll
+          </button>
+          <div className={styles.result}>
+            {isRolling ? (
+              <div className={styles.spinnerRing} />
+            ) : (
+              sum !== null && <p className={styles.readout}>{SUM_WORDS[sum] ?? sum}</p>
+            )}
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };

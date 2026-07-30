@@ -1,2 +1,2 @@
-export type { SquareSelection } from './ImageSquareSelector';
 export { default } from './ImageSquareSelector';
+export type { SquareSelection } from './ImageSquareSelector';

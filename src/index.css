@@ -6,20 +6,20 @@
 /* ── Paper Design System: Light (default) ────────────────────────── */
 :root {
   /* Color tokens — light mode */
-  --color-bg: #F4EDE4;
-  --color-surface: #FFFFFF;
-  --color-surface-raised: #EDE6DD;
-  --color-surface-nav: #0D1F2D;
-  --color-border: rgba(13, 31, 45, 0.10);
-  --color-text: #0D1F2D;
-  --color-text-muted: #4A6070;
-  --color-text-subtle: #8FA8B5;
-  --color-accent: #3DBFB8;
-  --color-accent-2: #E8722A;
-  --color-positive: #2F9E6B;
-  --color-warning: #E8722A;
-  --color-destructive: #B54040;
-  --color-badge: #E8722A;
+  --color-bg: #f4ede4;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ede6dd;
+  --color-surface-nav: #0d1f2d;
+  --color-border: rgba(13, 31, 45, 0.1);
+  --color-text: #0d1f2d;
+  --color-text-muted: #4a6070;
+  --color-text-subtle: #8fa8b5;
+  --color-accent: #3dbfb8;
+  --color-accent-2: #e8722a;
+  --color-positive: #2f9e6b;
+  --color-warning: #e8722a;
+  --color-destructive: #b54040;
+  --color-badge: #e8722a;
 
   /* Sidebar geometry */
   --sidebar-width: 204px;
@@ -42,12 +42,12 @@
   --fw-black: 700;
 
   /* Font sizes — heading scale */
-  --fs-h1: 3rem;     /* 48px */
-  --fs-h2: 2rem;     /* 32px */
-  --fs-h3: 2rem;     /* 32px */
-  --fs-h4: 1.5rem;   /* 24px */
+  --fs-h1: 3rem; /* 48px */
+  --fs-h2: 2rem; /* 32px */
+  --fs-h3: 2rem; /* 32px */
+  --fs-h4: 1.5rem; /* 24px */
   --fs-h5: 1.125rem; /* 18px */
-  --fs-h6: 0.9375rem;/* 15px */
+  --fs-h6: 0.9375rem; /* 15px */
 
   /* Font sizes — legacy scale */
   --fs-300: 0.875rem;
@@ -68,8 +68,8 @@
   --space-4: 32px;
 
   /* PrimeReact overrides — light */
-  --primary-color: #3DBFB8;
-  --primary-color-text: #0D1F2D;
+  --primary-color: #3dbfb8;
+  --primary-color-text: #0d1f2d;
   --border-radius: 8px;
 
   --dot-color: rgba(13, 31, 45, 0.08);
@@ -82,20 +82,20 @@
 
 /* ── Paper Design System: Dark ────────────────────────────────────── */
 [data-theme='dark'] {
-  --color-bg: #0C1C28;
-  --color-surface: #152B3A;
-  --color-surface-raised: #1E3A4D;
+  --color-bg: #0c1c28;
+  --color-surface: #152b3a;
+  --color-surface-raised: #1e3a4d;
   --color-surface-nav: #091520;
-  --color-border: rgba(240, 235, 225, 0.10);
-  --color-text: #F0EBE1;
-  --color-text-muted: #8FA8B5;
-  --color-text-subtle: #4A6070;
-  --color-accent: #3DBFB8;
-  --color-accent-2: #E8722A;
-  --color-positive: #3DBFB8;
-  --color-warning: #E8722A;
-  --color-destructive: #E05252;
-  --color-badge: #E8722A;
+  --color-border: rgba(240, 235, 225, 0.1);
+  --color-text: #f0ebe1;
+  --color-text-muted: #8fa8b5;
+  --color-text-subtle: #4a6070;
+  --color-accent: #3dbfb8;
+  --color-accent-2: #e8722a;
+  --color-positive: #3dbfb8;
+  --color-warning: #e8722a;
+  --color-destructive: #e05252;
+  --color-badge: #e8722a;
 
   --clr-surface: var(--color-bg);
   --clr-text: var(--color-text);
@@ -104,25 +104,25 @@
   color-scheme: dark;
 
   /* PrimeReact dark surface overrides */
-  --surface-a: #152B3A;
-  --surface-b: #0C1C28;
-  --surface-card: #152B3A;
-  --surface-overlay: #1E3A4D;
-  --surface-border: rgba(240, 235, 225, 0.10);
-  --surface-hover: #1E3A4D;
-  --text-color: #F0EBE1;
-  --text-color-secondary: #8FA8B5;
-  --surface-0: #0C1C28;
-  --surface-50: #0C1C28;
-  --surface-100: #152B3A;
-  --surface-200: #1E3A4D;
-  --surface-300: #2A4D64;
-  --surface-400: #4A6070;
-  --surface-500: #8FA8B5;
-  --surface-600: #B0C8D4;
-  --surface-700: #D0DFE6;
-  --surface-800: #E8F0F4;
-  --surface-900: #F0EBE1;
+  --surface-a: #152b3a;
+  --surface-b: #0c1c28;
+  --surface-card: #152b3a;
+  --surface-overlay: #1e3a4d;
+  --surface-border: rgba(240, 235, 225, 0.1);
+  --surface-hover: #1e3a4d;
+  --text-color: #f0ebe1;
+  --text-color-secondary: #8fa8b5;
+  --surface-0: #0c1c28;
+  --surface-50: #0c1c28;
+  --surface-100: #152b3a;
+  --surface-200: #1e3a4d;
+  --surface-300: #2a4d64;
+  --surface-400: #4a6070;
+  --surface-500: #8fa8b5;
+  --surface-600: #b0c8d4;
+  --surface-700: #d0dfe6;
+  --surface-800: #e8f0f4;
+  --surface-900: #f0ebe1;
 }
 
 html {

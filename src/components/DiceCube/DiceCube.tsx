@@ -1,26 +1,51 @@
-import { useEffect, useRef } from 'react';
 import type React from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import styles from './DiceCube.module.css';
 
 const PIP_LAYOUTS: Record<number, [number, number][]> = {
-  1: [[0.5,  0.5 ]],
-  2: [[0.75, 0.25], [0.25, 0.75]],
-  3: [[0.75, 0.25], [0.5,  0.5 ], [0.25, 0.75]],
-  4: [[0.25, 0.25], [0.75, 0.25], [0.25, 0.75], [0.75, 0.75]],
-  5: [[0.25, 0.25], [0.75, 0.25], [0.5,  0.5 ], [0.25, 0.75], [0.75, 0.75]],
-  6: [[0.25, 0.25], [0.75, 0.25], [0.25, 0.5 ], [0.75, 0.5 ], [0.25, 0.75], [0.75, 0.75]],
+  1: [[0.5, 0.5]],
+  2: [
+    [0.75, 0.25],
+    [0.25, 0.75],
+  ],
+  3: [
+    [0.75, 0.25],
+    [0.5, 0.5],
+    [0.25, 0.75],
+  ],
+  4: [
+    [0.25, 0.25],
+    [0.75, 0.25],
+    [0.25, 0.75],
+    [0.75, 0.75],
+  ],
+  5: [
+    [0.25, 0.25],
+    [0.75, 0.25],
+    [0.5, 0.5],
+    [0.25, 0.75],
+    [0.75, 0.75],
+  ],
+  6: [
+    [0.25, 0.25],
+    [0.75, 0.25],
+    [0.25, 0.5],
+    [0.75, 0.5],
+    [0.25, 0.75],
+    [0.75, 0.75],
+  ],
 };
 
 // Three.js BoxGeometry face order: +X, -X, +Y, -Y, +Z, -Z
 // Standard die convention: opposite faces sum to 7
 const FACE_NORMALS: { normal: THREE.Vector3; value: number }[] = [
-  { normal: new THREE.Vector3( 1,  0,  0), value: 1 },
-  { normal: new THREE.Vector3(-1,  0,  0), value: 6 },
-  { normal: new THREE.Vector3( 0,  1,  0), value: 2 },
-  { normal: new THREE.Vector3( 0, -1,  0), value: 5 },
-  { normal: new THREE.Vector3( 0,  0,  1), value: 3 },
-  { normal: new THREE.Vector3( 0,  0, -1), value: 4 },
+  { normal: new THREE.Vector3(1, 0, 0), value: 1 },
+  { normal: new THREE.Vector3(-1, 0, 0), value: 6 },
+  { normal: new THREE.Vector3(0, 1, 0), value: 2 },
+  { normal: new THREE.Vector3(0, -1, 0), value: 5 },
+  { normal: new THREE.Vector3(0, 0, 1), value: 3 },
+  { normal: new THREE.Vector3(0, 0, -1), value: 4 },
 ];
 
 function makeFaceTexture(value: number): THREE.CanvasTexture {
@@ -88,15 +113,9 @@ const DiceCube = ({ onFaceChange, onRollEnd, rollRef }: DiceCubeProps) => {
 
     // Cube
     const geometry = new THREE.BoxGeometry(1.6, 1.6, 1.6);
-    const faceMaterials = [1, 6, 2, 5, 3, 4].map(
-      v => new THREE.MeshPhongMaterial({ map: makeFaceTexture(v) })
-    );
+    const faceMaterials = [1, 6, 2, 5, 3, 4].map(v => new THREE.MeshPhongMaterial({ map: makeFaceTexture(v) }));
     const cube = new THREE.Mesh(geometry, faceMaterials);
-    cube.rotation.set(
-      Math.random() * Math.PI * 2,
-      Math.random() * Math.PI * 2,
-      Math.random() * Math.PI * 2,
-    );
+    cube.rotation.set(Math.random() * Math.PI * 2, Math.random() * Math.PI * 2, Math.random() * Math.PI * 2);
     scene.add(cube);
 
     // Lights — fixed in world space; cube rotates through them
@@ -112,9 +131,9 @@ const DiceCube = ({ onFaceChange, onRollEnd, rollRef }: DiceCubeProps) => {
     let dieState: DieState = 'idle';
     const angularVelocity = new THREE.Vector3();
     const targetQ = new THREE.Quaternion();
-    const DAMPING = 0.97;          // per-frame factor at 60 fps; scaled by dt at runtime
-    const SETTLE_THRESHOLD = 0.1;  // rad/s
-    const SLERP_SPEED = 0.1;       // per-frame factor at 60 fps; scaled by dt at runtime
+    const DAMPING = 0.97; // per-frame factor at 60 fps; scaled by dt at runtime
+    const SETTLE_THRESHOLD = 0.1; // rad/s
+    const SLERP_SPEED = 0.1; // per-frame factor at 60 fps; scaled by dt at runtime
 
     let secondImpulseTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -134,7 +153,7 @@ const DiceCube = ({ onFaceChange, onRollEnd, rollRef }: DiceCubeProps) => {
           angularVelocity.add(
             new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
               .normalize()
-              .multiplyScalar(speed2)
+              .multiplyScalar(speed2),
           );
           dieState = 'spinning';
         }, 500);
@@ -225,7 +244,10 @@ const DiceCube = ({ onFaceChange, onRollEnd, rollRef }: DiceCubeProps) => {
       cancelAnimationFrame(rafId);
       if (secondImpulseTimeout !== null) clearTimeout(secondImpulseTimeout);
       ro.disconnect();
-      faceMaterials.forEach(m => { m.map?.dispose(); m.dispose(); });
+      faceMaterials.forEach(m => {
+        m.map?.dispose();
+        m.dispose();
+      });
       geometry.dispose();
       renderer.dispose();
       container.removeChild(renderer.domElement);
@@ -233,7 +255,12 @@ const DiceCube = ({ onFaceChange, onRollEnd, rollRef }: DiceCubeProps) => {
     };
   }, []);
 
-  return <div ref={containerRef} className={styles.canvas} />;
+  return (
+    <div
+      ref={containerRef}
+      className={styles.canvas}
+    />
+  );
 };
 
 export default DiceCube;

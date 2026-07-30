@@ -1,4 +1,5 @@
 import { Authenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
@@ -7,7 +8,6 @@ import { PrimeReactProvider } from 'primereact/api';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import outputs from '../amplify_outputs.json';
-import '@aws-amplify/ui-react/styles.css';
 import './index.css';
 
 import 'primeflex/primeflex.css'; // flex utilities

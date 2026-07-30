@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import Ticks from './Ticks';
 import styles from './Knob.module.css';
+import Ticks from './Ticks';
 
 interface KnobProps {
   value?: number;
@@ -107,7 +107,7 @@ const Knob = ({
   return (
     <div
       ref={wheelRef}
-      role="slider"
+      role='slider'
       tabIndex={0}
       className={`${styles.container}${className ? ` ${className}` : ''}`}
       onKeyDown={onKeyDown}
@@ -118,12 +118,17 @@ const Knob = ({
       aria-valuemax={maxValue}
       aria-valuenow={value}
       aria-valuetext={`${Math.round(((value - minValue) / (maxValue - minValue)) * 100)}%`}
-      aria-label={ariaLabel ?? label}
-    >
+      aria-label={ariaLabel ?? label}>
       <div className={styles.dial}>
-        <div className={styles.knob} style={{ transform: `rotate(${angle}deg)` }} />
+        <div
+          className={styles.knob}
+          style={{ transform: `rotate(${angle}deg)` }}
+        />
         <div className={styles.focusRing} />
-        <Ticks ticks={ticks} angle={angle} />
+        <Ticks
+          ticks={ticks}
+          angle={angle}
+        />
         <span className={styles.valueDisplay}>{Math.round(value)}</span>
       </div>
       {minMaxLabels && <span className={styles.min}>{minLabel}</span>}

@@ -9,7 +9,7 @@
   transform: rotate(-135deg);
 
   &::after {
-    content: "";
+    content: '';
     width: 0.08em;
     height: 0.6em;
     background-color: rgba(var(--color-knob-tick), 0.5);

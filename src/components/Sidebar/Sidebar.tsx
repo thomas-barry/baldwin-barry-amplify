@@ -24,9 +24,7 @@ const NAV_ITEMS: NavItem[] = [
 
 const MOBILE_BREAKPOINT = 768;
 
-const ADMIN_NAV_ITEMS: NavItem[] = [
-  { to: '/admin', icon: 'pi pi-cog', label: 'Admin' },
-];
+const ADMIN_NAV_ITEMS: NavItem[] = [{ to: '/admin', icon: 'pi pi-cog', label: 'Admin' }];
 
 const ADMIN_CAMERA_NAV_ITEM: NavItem = { to: '/admin/camera', icon: 'pi pi-camera', label: 'Camera Upload' };
 

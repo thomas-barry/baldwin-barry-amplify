@@ -1,15 +1,15 @@
+import type { Schema } from '@/schema';
 import { useQueryClient } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
-import { Editor } from 'primereact/editor';
-import type { EditorTextChangeEvent } from 'primereact/editor';
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
 import { Dialog } from 'primereact/dialog';
+import type { EditorTextChangeEvent } from 'primereact/editor';
+import { Editor } from 'primereact/editor';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Toast } from 'primereact/toast';
 import { useRef, useState } from 'react';
-import type { Schema } from '@/schema';
 import type { BlogPost } from '../../types';
 import styles from './BlogPostForm.module.css';
 
@@ -27,7 +27,7 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
   const contentRef = useRef(initialValues?.content ?? '');
   const [excerpt, setExcerpt] = useState(initialValues?.excerpt ?? '');
   const [tagsInput, setTagsInput] = useState(
-    initialValues?.tags?.filter((t): t is string => t !== null).join(', ') ?? ''
+    initialValues?.tags?.filter((t): t is string => t !== null).join(', ') ?? '',
   );
   const [published, setPublished] = useState(initialValues?.published ?? false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,9 +38,7 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
   const resetForm = () => {
     setTitle(initialValues?.title ?? '');
     setExcerpt(initialValues?.excerpt ?? '');
-    setTagsInput(
-      initialValues?.tags?.filter((t): t is string => t !== null).join(', ') ?? ''
-    );
+    setTagsInput(initialValues?.tags?.filter((t): t is string => t !== null).join(', ') ?? '');
     setPublished(initialValues?.published ?? false);
     setTitleError('');
   };
@@ -73,9 +71,7 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
       if (isEdit && initialValues?.id) {
         const wasPublished = !!initialValues.publishedDate;
         const publishedDate =
-          published && !wasPublished
-            ? new Date().toISOString()
-            : (initialValues.publishedDate ?? null);
+          published && !wasPublished ? new Date().toISOString() : (initialValues.publishedDate ?? null);
 
         await client.models.BlogPost.update({
           id: initialValues.id,
@@ -152,11 +148,12 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
         onHide={handleHide}
         footer={dialogFooter}
         draggable={false}
-        resizable={false}
-      >
+        resizable={false}>
         <div className={styles.formContainer}>
           <div className={styles.formField}>
-            <label htmlFor='post-title' className={styles.formLabel}>
+            <label
+              htmlFor='post-title'
+              className={styles.formLabel}>
               Title <span className={styles.requiredMark}>*</span>
             </label>
             <InputText
@@ -170,7 +167,11 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
           </div>
 
           <div className={styles.formField}>
-            <label htmlFor='post-excerpt' className={styles.formLabel}>Excerpt</label>
+            <label
+              htmlFor='post-excerpt'
+              className={styles.formLabel}>
+              Excerpt
+            </label>
             <InputTextarea
               id='post-excerpt'
               value={excerpt}
@@ -186,13 +187,19 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
             <label className={styles.formLabel}>Content</label>
             <Editor
               value={contentRef.current}
-              onTextChange={(e: EditorTextChangeEvent) => { contentRef.current = e.htmlValue ?? ''; }}
+              onTextChange={(e: EditorTextChangeEvent) => {
+                contentRef.current = e.htmlValue ?? '';
+              }}
               style={{ height: '320px' }}
             />
           </div>
 
           <div className={styles.formField}>
-            <label htmlFor='post-tags' className={styles.formLabel}>Tags</label>
+            <label
+              htmlFor='post-tags'
+              className={styles.formLabel}>
+              Tags
+            </label>
             <InputText
               id='post-tags'
               value={tagsInput}
@@ -208,7 +215,11 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
               checked={published}
               onChange={e => setPublished(!!e.checked)}
             />
-            <label htmlFor='post-published' className={styles.formLabel}>Publish</label>
+            <label
+              htmlFor='post-published'
+              className={styles.formLabel}>
+              Publish
+            </label>
           </div>
         </div>
       </Dialog>

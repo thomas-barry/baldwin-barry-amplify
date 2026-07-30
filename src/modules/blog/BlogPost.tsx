@@ -1,13 +1,13 @@
 import { useAuth } from '@/context/AuthContext';
-import { useQuery } from '@tanstack/react-query';
-import { generateClient } from 'aws-amplify/data';
-import { Link } from '@tanstack/react-router';
-import { ProgressSpinner } from 'primereact/progressspinner';
 import type { Schema } from '@/schema';
+import { useQuery } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
+import { generateClient } from 'aws-amplify/data';
+import { ProgressSpinner } from 'primereact/progressspinner';
+import styles from './BlogPost.module.css';
 import BlogPostForm from './components/blog-post-form/BlogPostForm';
 import { useBlogPostForm } from './hooks/useBlogPostForm';
 import type { BlogPost as BlogPostType } from './types';
-import styles from './BlogPost.module.css';
 
 const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
 
@@ -15,7 +15,11 @@ const BlogPost = ({ postId }: { postId: string }) => {
   const { isAdmin } = useAuth();
   const { isOpen, editPost, openEditForm, closeForm } = useBlogPostForm();
 
-  const { data: post, isLoading, isError } = useQuery({
+  const {
+    data: post,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['blogPost', postId],
     queryFn: async () => {
       const response = await clientRead.models.BlogPost.get({ id: postId });
@@ -34,9 +38,14 @@ const BlogPost = ({ postId }: { postId: string }) => {
   if (isError || !post) {
     return (
       <div className={styles.errorContainer}>
-        <i className='pi pi-exclamation-triangle' style={{ fontSize: '2rem', color: 'var(--red-500)' }} />
+        <i
+          className='pi pi-exclamation-triangle'
+          style={{ fontSize: '2rem', color: 'var(--red-500)' }}
+        />
         <p>Post not found.</p>
-        <Link to='/blog' className='p-button p-component p-button-text'>
+        <Link
+          to='/blog'
+          className='p-button p-component p-button-text'>
           ← Back to Musings
         </Link>
       </div>
@@ -55,16 +64,20 @@ const BlogPost = ({ postId }: { postId: string }) => {
   return (
     <div className={styles.page}>
       <div className={styles.backRow}>
-        <Link to='/blog' className={styles.backLink}>
+        <Link
+          to='/blog'
+          className={styles.backLink}>
           <i className='pi pi-arrow-left' /> Back to Musings
         </Link>
         {isAdmin && (
           <button
             className='p-button p-component p-button-icon-only p-button-sm p-button-info p-button-rounded'
             aria-label='Edit post'
-            onClick={() => openEditForm(post)}
-          >
-            <span className='p-button-icon pi pi-pencil' aria-hidden='true' />
+            onClick={() => openEditForm(post)}>
+            <span
+              className='p-button-icon pi pi-pencil'
+              aria-hidden='true'
+            />
           </button>
         )}
       </div>
@@ -87,7 +100,11 @@ const BlogPost = ({ postId }: { postId: string }) => {
             {tags.length > 0 && (
               <div className={styles.tags}>
                 {tags.map(tag => (
-                  <span key={tag} className={styles.tag}>{tag}</span>
+                  <span
+                    key={tag}
+                    className={styles.tag}>
+                    {tag}
+                  </span>
                 ))}
               </div>
             )}

@@ -1,5 +1,7 @@
+import type { SquareSelection } from '@/components/ImageSquareSelector';
 import { useAuth } from '@/context/AuthContext';
 import { useLoginDialog } from '@/context/LoginDialogContext';
+import type { Schema } from '@/schema';
 import { StorageImage } from '@aws-amplify/ui-react-storage';
 import {
   DndContext,
@@ -24,10 +26,8 @@ import { InputSwitch } from 'primereact/inputswitch';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Toast } from 'primereact/toast';
 import { useEffect, useRef, useState } from 'react';
-import type { SquareSelection } from '@/components/ImageSquareSelector';
 import AmplifyFileUploader from '../amplify-file-uploader/AmplifyFileUploader';
 import ThumbnailCropDialog from '../thumbnail-crop-dialog/ThumbnailCropDialog';
-import type { Schema } from '@/schema';
 import styles from './GalleryEditor.module.css';
 
 interface GalleryEditorProps {
@@ -49,7 +49,13 @@ interface SortableImageItemProps {
   onDelete: (imageItem: ImageWithDetails) => void;
 }
 
-const SortableImageItem = ({ imageItem, isGalleryThumbnail, onThumbnailToggle, onImageClick, onDelete }: SortableImageItemProps) => {
+const SortableImageItem = ({
+  imageItem,
+  isGalleryThumbnail,
+  onThumbnailToggle,
+  onImageClick,
+  onDelete,
+}: SortableImageItemProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: imageItem.galleryImage.id,
   });
@@ -94,7 +100,9 @@ const SortableImageItem = ({ imageItem, isGalleryThumbnail, onThumbnailToggle, o
           tooltip={isGalleryThumbnail ? 'Current gallery thumbnail' : 'Set as gallery thumbnail'}
         />
       </div>
-      <div className={styles.imageClickArea} onClick={handleImageClick}>
+      <div
+        className={styles.imageClickArea}
+        onClick={handleImageClick}>
         <StorageImage
           path={imageItem.image.s3ThumbnailKey || imageItem.image.s3Key}
           alt={imageItem.image.title}
@@ -109,8 +117,7 @@ const SortableImageItem = ({ imageItem, isGalleryThumbnail, onThumbnailToggle, o
           onClick={handleDelete}
           aria-label='Delete image'
           title='Delete image'
-          type='button'
-        >
+          type='button'>
           <i className='pi pi-trash' />
         </button>
       </div>
@@ -347,8 +354,9 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
       setSortedImages(prev => prev.filter(i => i.galleryImage.id !== imageItem.galleryImage.id));
       queryClient.invalidateQueries({ queryKey: ['galleryImagesWithDetails', galleryId] });
       if (gallery?.thumbnailImageId === imageItem.image.id) {
-        clientWrite.models.Gallery.update({ id: galleryId, thumbnailImageId: null })
-          .catch(err => console.error('Error clearing thumbnail:', err));
+        clientWrite.models.Gallery.update({ id: galleryId, thumbnailImageId: null }).catch(err =>
+          console.error('Error clearing thumbnail:', err),
+        );
         queryClient.invalidateQueries({ queryKey: ['gallery', galleryId] });
       }
       toast.current?.show({ severity: 'success', summary: 'Image deleted', life: 3000 });
@@ -446,8 +454,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   if (!isAuthenticated) {
     return (
       <div className={styles.errorContainer}>
-        <i
-          className={`pi pi-lock ${styles.errorIcon}`}></i>
+        <i className={`pi pi-lock ${styles.errorIcon}`}></i>
         <h3>Authentication Required</h3>
         <p>You must be logged in to edit galleries.</p>
         <Button
@@ -527,77 +534,77 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
       </div>
 
       {/* Combined Drag and Drop Reorder + Thumbnail Selection */}
-      {sortedImages.length > 0 && <Card className={styles.reorderSection}>
-        <h3 className={styles.sectionTitle}>
-          <i className='pi pi-sort' />
-          Reorder Images & Select Thumbnail
-        </h3>
-        <p className={styles.sectionDescription}>
-          Drag and drop to reorder images. Click the star icon to set as gallery thumbnail.
-        </p>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}>
-          <SortableContext
-            items={sortedImages.map(item => item.galleryImage.id)}
-            strategy={rectSortingStrategy}>
-            <div className={styles.sortableGrid}>
-              {sortedImages.map(item => (
-                <SortableImageItem
-                  key={item.galleryImage.id}
-                  imageItem={item}
-                  isGalleryThumbnail={gallery.thumbnailImageId === item.image.id}
-                  onThumbnailToggle={handleThumbnailToggle}
-                  onImageClick={() => setCropDialogImage(item)}
-                  onDelete={imageItem =>
-                    confirmDialog({
-                      message: `Delete "${imageItem.image.title}"? This will permanently remove the image and cannot be undone.`,
-                      header: 'Delete Image',
-                      icon: 'pi pi-exclamation-triangle',
-                      acceptClassName: 'p-button-danger',
-                      accept: () => deleteImageMutation.mutate(imageItem),
-                    })
-                  }
-                />
-              ))}
-            </div>
-          </SortableContext>
-          <DragOverlay>
-            {activeId && activeImage ? (
-              <div className={`${styles.sortableItem} ${styles.dragging}`}>
-                <StorageImage
-                  path={activeImage.image.s3ThumbnailKey || activeImage.image.s3Key}
-                  alt={activeImage.image.title}
-                  className={styles.sortableItemImage}
-                  fallbackSrc='/placeholder-image.jpg'
-                />
-                <div className={styles.sortableItemFooter}>
-                  <p className={styles.sortableItemTitle}>{activeImage.image.title}</p>
-                </div>
+      {sortedImages.length > 0 && (
+        <Card className={styles.reorderSection}>
+          <h3 className={styles.sectionTitle}>
+            <i className='pi pi-sort' />
+            Reorder Images & Select Thumbnail
+          </h3>
+          <p className={styles.sectionDescription}>
+            Drag and drop to reorder images. Click the star icon to set as gallery thumbnail.
+          </p>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={sortedImages.map(item => item.galleryImage.id)}
+              strategy={rectSortingStrategy}>
+              <div className={styles.sortableGrid}>
+                {sortedImages.map(item => (
+                  <SortableImageItem
+                    key={item.galleryImage.id}
+                    imageItem={item}
+                    isGalleryThumbnail={gallery.thumbnailImageId === item.image.id}
+                    onThumbnailToggle={handleThumbnailToggle}
+                    onImageClick={() => setCropDialogImage(item)}
+                    onDelete={imageItem =>
+                      confirmDialog({
+                        message: `Delete "${imageItem.image.title}"? This will permanently remove the image and cannot be undone.`,
+                        header: 'Delete Image',
+                        icon: 'pi pi-exclamation-triangle',
+                        acceptClassName: 'p-button-danger',
+                        accept: () => deleteImageMutation.mutate(imageItem),
+                      })
+                    }
+                  />
+                ))}
               </div>
-            ) : null}
-          </DragOverlay>
-        </DndContext>
-        <div className={styles.actionButtons}>
-          <Button
-            label='Save Order'
-            icon='pi pi-save'
-            onClick={handleSaveOrder}
-            loading={updateOrderMutation.isPending}
-          />
-        </div>
-      </Card>}
+            </SortableContext>
+            <DragOverlay>
+              {activeId && activeImage ? (
+                <div className={`${styles.sortableItem} ${styles.dragging}`}>
+                  <StorageImage
+                    path={activeImage.image.s3ThumbnailKey || activeImage.image.s3Key}
+                    alt={activeImage.image.title}
+                    className={styles.sortableItemImage}
+                    fallbackSrc='/placeholder-image.jpg'
+                  />
+                  <div className={styles.sortableItemFooter}>
+                    <p className={styles.sortableItemTitle}>{activeImage.image.title}</p>
+                  </div>
+                </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+          <div className={styles.actionButtons}>
+            <Button
+              label='Save Order'
+              icon='pi pi-save'
+              onClick={handleSaveOrder}
+              loading={updateOrderMutation.isPending}
+            />
+          </div>
+        </Card>
+      )}
 
       <Card className={styles.uploadSection}>
         <h3 className={styles.sectionTitle}>
           <i className='pi pi-upload' />
           Upload Images
         </h3>
-        <p className={styles.sectionDescription}>
-          Upload images to add them to this gallery.
-        </p>
+        <p className={styles.sectionDescription}>Upload images to add them to this gallery.</p>
         <AmplifyFileUploader
           galleryId={galleryId}
           onUploadSuccess={handleUploadSuccess}
@@ -611,7 +618,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
           imageTitle={cropDialogImage.image.title}
           initialCrop={
             gallery.thumbnailImageId === cropDialogImage.image.id
-              ? (gallery.thumbnailCrop as SquareSelection | null) ?? null
+              ? ((gallery.thumbnailCrop as SquareSelection | null) ?? null)
               : null
           }
           onSave={crop => saveCropMutation.mutate({ imageId: cropDialogImage.image.id, crop })}

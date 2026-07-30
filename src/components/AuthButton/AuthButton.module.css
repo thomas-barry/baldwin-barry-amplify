@@ -20,8 +20,8 @@
 }
 
 .userBadgeAdmin {
-  background: color-mix(in srgb, #E8722A 18%, transparent);
-  color: #E8722A;
+  background: color-mix(in srgb, #e8722a 18%, transparent);
+  color: #e8722a;
 }
 
 .userBadgeGuest {

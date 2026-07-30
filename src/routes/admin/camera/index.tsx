@@ -8,7 +8,9 @@ export const Route = createFileRoute('/admin/camera/')({
 
 function CameraUploadPage() {
   return (
-    <ProtectedRoute requireAdmin={true} redirectTo='/'>
+    <ProtectedRoute
+      requireAdmin={true}
+      redirectTo='/'>
       <CameraUpload />
     </ProtectedRoute>
   );

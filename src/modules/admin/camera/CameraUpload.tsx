@@ -1,6 +1,5 @@
 import { createImageUploadMetadata } from '@/lib/s3-metadata-utils';
 import type { Schema } from '@/schema';
-import { UPLOADS_PREFIX } from '../../../../constants';
 import { useQuery } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
 import { uploadData } from 'aws-amplify/storage';
@@ -9,6 +8,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Toast } from 'primereact/toast';
 import { useRef, useState } from 'react';
+import { UPLOADS_PREFIX } from '../../../../constants';
 import styles from './CameraUpload.module.css';
 
 const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
@@ -116,7 +116,11 @@ const CameraUpload = () => {
 
           {previewUrl && (
             <div className={styles.preview}>
-              <img src={previewUrl} alt='Preview' className={styles.previewImage} />
+              <img
+                src={previewUrl}
+                alt='Preview'
+                className={styles.previewImage}
+              />
             </div>
           )}
 

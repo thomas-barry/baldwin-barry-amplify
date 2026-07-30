@@ -33,9 +33,7 @@ const Topbar = () => {
   // against the root route and never see galleryId. Read it off the matches.
   const galleryId = useRouterState({
     select: s =>
-      s.matches.find(match => match.routeId.includes('$galleryId'))?.params as
-        | { galleryId?: string }
-        | undefined,
+      s.matches.find(match => match.routeId.includes('$galleryId'))?.params as { galleryId?: string } | undefined,
   })?.galleryId;
 
   const { data: gallery } = useQuery({
@@ -59,21 +57,29 @@ const Topbar = () => {
 
   return (
     <header className={styles.topbar}>
-      <nav className={styles.left} aria-label='Breadcrumb'>
+      <nav
+        className={styles.left}
+        aria-label='Breadcrumb'>
         <ol className={styles.crumbs}>
           {crumbs.map((crumb, index) => {
             const isCurrent = index === crumbs.length - 1;
             const textClass = index === 0 ? styles.siteName : styles.pageTitle;
 
             return (
-              <li className={styles.crumb} key={`${index}-${crumb.label}`}>
+              <li
+                className={styles.crumb}
+                key={`${index}-${crumb.label}`}>
                 {index > 0 && (
-                  <span className={styles.separator} aria-hidden='true'>
+                  <span
+                    className={styles.separator}
+                    aria-hidden='true'>
                     /
                   </span>
                 )}
                 {isCurrent || !crumb.to ? (
-                  <span className={textClass} aria-current='page'>
+                  <span
+                    className={textClass}
+                    aria-current='page'>
                     {crumb.label}
                   </span>
                 ) : (
@@ -83,8 +89,7 @@ const Topbar = () => {
                   <Link
                     to={crumb.to}
                     activeOptions={{ exact: true }}
-                    className={`${textClass} ${styles.crumbLink}`}
-                  >
+                    className={`${textClass} ${styles.crumbLink}`}>
                     {crumb.label}
                   </Link>
                 )}

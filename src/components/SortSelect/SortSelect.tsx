@@ -9,13 +9,15 @@ interface SortSelectProps {
 
 const SortSelect = ({ value, onChange }: SortSelectProps) => (
   <div className={styles.wrapper}>
-    <i className={`pi pi-sort-alt ${styles.icon}`} aria-hidden='true' />
+    <i
+      className={`pi pi-sort-alt ${styles.icon}`}
+      aria-hidden='true'
+    />
     <select
       className={styles.select}
       value={value}
       onChange={e => onChange(e.target.value as SortValue)}
-      aria-label='Sort galleries'
-    >
+      aria-label='Sort galleries'>
       <option value='newest'>Newest first</option>
       <option value='alpha'>Alphabetical</option>
     </select>

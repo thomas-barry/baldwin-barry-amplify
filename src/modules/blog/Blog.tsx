@@ -1,9 +1,9 @@
 import { useAuth } from '@/context/AuthContext';
 import { Button } from 'primereact/button';
+import styles from './Blog.module.css';
 import BlogPostForm from './components/blog-post-form/BlogPostForm';
 import BlogPostList from './components/blog-post-list/BlogPostList';
 import { useBlogPostForm } from './hooks/useBlogPostForm';
-import styles from './Blog.module.css';
 
 const Blog = () => {
   const { isAdmin } = useAuth();

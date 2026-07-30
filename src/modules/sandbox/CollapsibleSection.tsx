@@ -16,8 +16,7 @@ const CollapsibleSection = ({ title, children, defaultOpen = false }: Props) => 
         <button
           className={styles.toggle}
           onClick={() => setOpen(o => !o)}
-          aria-expanded={open}
-        >
+          aria-expanded={open}>
           <span className={`${styles.triangle}${open ? ` ${styles.open}` : ''}`} />
           {title}
         </button>

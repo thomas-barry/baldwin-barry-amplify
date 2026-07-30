@@ -1,3 +1,4 @@
+import type { Schema } from '@/schema';
 import { useQueryClient } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
 import { Button } from 'primereact/button';
@@ -6,7 +7,6 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { useRef, useState } from 'react';
-import type { Schema } from '@/schema';
 import { Gallery } from '../../types';
 import styles from './GalleryForm.module.css';
 
@@ -166,7 +166,11 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
                 checked={adminOnly}
                 onChange={e => setAdminOnly(e.checked ?? false)}
               />
-              <label htmlFor='adminOnly' className={styles.formLabel}>Admin only</label>
+              <label
+                htmlFor='adminOnly'
+                className={styles.formLabel}>
+                Admin only
+              </label>
             </div>
           </div>
         </div>

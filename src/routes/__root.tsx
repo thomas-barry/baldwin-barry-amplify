@@ -1,6 +1,6 @@
 import LoginDialog from '@/components/auth/LoginDialog';
-import Topbar from '@/components/Topbar';
 import Sidebar from '@/components/Sidebar';
+import Topbar from '@/components/Topbar';
 import { LoginDialogProvider } from '@/context/LoginDialogContext';
 import { SidebarProvider } from '@/context/SidebarContext';
 import { createRootRoute, Outlet } from '@tanstack/react-router';

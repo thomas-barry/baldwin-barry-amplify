@@ -1,13 +1,13 @@
+import type { SortValue } from '@/components/SortSelect';
+import { useAuth } from '@/context/AuthContext';
 import GalleryCard from '@/modules/galleries/components/gallery-card/GalleryCard';
 import { Gallery } from '@/modules/galleries/types';
-import type { SortValue } from '@/components/SortSelect';
+import type { Schema } from '@/schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
 import { Card } from 'primereact/card';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { useAuth } from '@/context/AuthContext';
 import { useMemo } from 'react';
-import type { Schema } from '@/schema';
 import styles from './GalleryList.module.css';
 
 interface GalleryListProps {
@@ -30,7 +30,17 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
     queryKey: ['galleries'],
     queryFn: async () => {
       const response = await clientRead.models.Gallery.list({
-        selectionSet: ['id', 'name', 'description', 'createdDate', 'updatedAt', 'thumbnailImage.*', 'images.id', 'thumbnailCrop', 'adminOnly'],
+        selectionSet: [
+          'id',
+          'name',
+          'description',
+          'createdDate',
+          'updatedAt',
+          'thumbnailImage.*',
+          'images.id',
+          'thumbnailCrop',
+          'adminOnly',
+        ],
       });
       return response.data as unknown as Gallery[];
     },
@@ -86,7 +96,10 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
   if (isErrorQuery) {
     return (
       <div className={styles.errorContainer}>
-        <i className='pi pi-exclamation-triangle' style={{ fontSize: '2rem', color: 'var(--red-500)' }} />
+        <i
+          className='pi pi-exclamation-triangle'
+          style={{ fontSize: '2rem', color: 'var(--red-500)' }}
+        />
         <p>Error loading galleries: {error?.message || 'Unknown error'}</p>
       </div>
     );
@@ -94,7 +107,9 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
 
   if (!sortedGalleries.length) {
     return (
-      <Card className={styles.emptyStateCard} title='No Galleries Found'>
+      <Card
+        className={styles.emptyStateCard}
+        title='No Galleries Found'>
         <p>No galleries have been created yet. Use the "Create New Gallery" button to add one.</p>
       </Card>
     );

@@ -29,7 +29,13 @@ const ThumbnailCropDialog = ({
 
   const footer = (
     <div className={styles.footer}>
-      <Button label='Cancel' severity='secondary' text onClick={onHide} disabled={isSaving} />
+      <Button
+        label='Cancel'
+        severity='secondary'
+        text
+        onClick={onHide}
+        disabled={isSaving}
+      />
       <Button
         label='Save as Thumbnail'
         icon={isSaving ? 'pi pi-spin pi-spinner' : 'pi pi-check'}

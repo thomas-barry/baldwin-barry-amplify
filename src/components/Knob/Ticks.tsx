@@ -5,7 +5,7 @@ interface TicksProps {
   angle?: number;
 }
 
-const getTickAngle = (ticks: number, tickNum: number) => -135 + ((280 / ticks) * tickNum);
+const getTickAngle = (ticks: number, tickNum: number) => -135 + (280 / ticks) * tickNum;
 
 const Ticks = ({ ticks = 28, angle = 0 }: TicksProps) => (
   <>

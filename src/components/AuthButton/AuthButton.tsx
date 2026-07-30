@@ -12,7 +12,11 @@ const AuthButton = () => {
         <span className={`${styles.userBadge} ${isAdmin ? styles.userBadgeAdmin : styles.userBadgeGuest}`}>
           {username}
         </span>
-        <button className={styles.iconBtn} onClick={logout} aria-label='Sign out' title='Sign out'>
+        <button
+          className={styles.iconBtn}
+          onClick={logout}
+          aria-label='Sign out'
+          title='Sign out'>
           <i className='pi pi-sign-out' />
         </button>
       </div>
@@ -20,7 +24,11 @@ const AuthButton = () => {
   }
 
   return (
-    <button className={styles.iconBtn} onClick={openLogin} aria-label='Sign in' title='Sign in'>
+    <button
+      className={styles.iconBtn}
+      onClick={openLogin}
+      aria-label='Sign in'
+      title='Sign in'>
       <i className='pi pi-sign-in' />
     </button>
   );

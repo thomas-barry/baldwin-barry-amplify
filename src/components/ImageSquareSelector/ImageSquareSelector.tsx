@@ -2,8 +2,8 @@ import { useCallback, useRef, useState } from 'react';
 import styles from './ImageSquareSelector.module.css';
 
 export interface SquareSelection {
-  x: number;    // left edge 0–1 (fraction of display width)
-  y: number;    // top edge 0–1 (fraction of display height)
+  x: number; // left edge 0–1 (fraction of display width)
+  y: number; // top edge 0–1 (fraction of display height)
   size: number; // side length 0–1 (fraction of display width)
 }
 
@@ -27,7 +27,7 @@ const ImageSquareSelector = ({ imageUrl, selection, onSelectionChange }: ImageSq
 
   // Move-mode state
   const moveOffsetRef = useRef<{ x: number; y: number } | null>(null); // pointer offset within box
-  const moveSelRef = useRef<SquareSelection | null>(null);              // selection at move start
+  const moveSelRef = useRef<SquareSelection | null>(null); // selection at move start
 
   const [liveSel, setLiveSel] = useState<SquareSelection | null>(null);
 
@@ -83,12 +83,7 @@ const ImageSquareSelector = ({ imageUrl, selection, onSelectionChange }: ImageSq
         const sidePx = selection.size * rect.width;
         const leftPx = selection.x * rect.width;
         const topPx = selection.y * rect.height;
-        if (
-          pos.x >= leftPx &&
-          pos.x <= leftPx + sidePx &&
-          pos.y >= topPx &&
-          pos.y <= topPx + sidePx
-        ) {
+        if (pos.x >= leftPx && pos.x <= leftPx + sidePx && pos.y >= topPx && pos.y <= topPx + sidePx) {
           dragModeRef.current = 'move';
           moveOffsetRef.current = { x: pos.x - leftPx, y: pos.y - topPx };
           moveSelRef.current = selection;
@@ -129,7 +124,9 @@ const ImageSquareSelector = ({ imageUrl, selection, onSelectionChange }: ImageSq
 
       if (dragModeRef.current === 'move') {
         if (hasDraggedRef.current && moveOffsetRef.current && moveSelRef.current) {
-          onSelectionChange(computeMoveSel(getPos(e), moveOffsetRef.current, moveSelRef.current, rect.width, rect.height));
+          onSelectionChange(
+            computeMoveSel(getPos(e), moveOffsetRef.current, moveSelRef.current, rect.width, rect.height),
+          );
         }
         // Click on selection (no drag) → leave selection unchanged
       } else {
@@ -160,7 +157,12 @@ const ImageSquareSelector = ({ imageUrl, selection, onSelectionChange }: ImageSq
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}>
-        <img src={imageUrl} className={styles.image} draggable={false} alt='' />
+        <img
+          src={imageUrl}
+          className={styles.image}
+          draggable={false}
+          alt=''
+        />
         {displayedSel && displayedSel.size > 0 && (
           <div
             className={styles.selectionBox}

@@ -1,6 +1,6 @@
 import GalleryList from '@/components/GalleryList';
-import SortSelect from '@/components/SortSelect';
 import type { SortValue } from '@/components/SortSelect';
+import SortSelect from '@/components/SortSelect';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from 'primereact/button';
 import { useState } from 'react';

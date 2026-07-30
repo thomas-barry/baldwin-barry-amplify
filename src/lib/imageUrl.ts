@@ -60,10 +60,7 @@ export function useImageUrls(keys: string[]): Record<string, string> {
     },
   });
 
-  const cdnUrls = useMemo(
-    () => (hasCdn ? Object.fromEntries(keys.map(key => [key, cfUrl(key)])) : {}),
-    [keys],
-  );
+  const cdnUrls = useMemo(() => (hasCdn ? Object.fromEntries(keys.map(key => [key, cfUrl(key)])) : {}), [keys]);
 
   return hasCdn ? cdnUrls : (query.data ?? {});
 }

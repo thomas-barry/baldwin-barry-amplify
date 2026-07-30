@@ -138,7 +138,7 @@
   .actionBtnActive {
     background: rgba(255, 255, 255, 0.9);
     border-color: rgba(255, 255, 255, 0.9);
-    color: #0D1F2D;
+    color: #0d1f2d;
 
     &:hover {
       background: #fff;

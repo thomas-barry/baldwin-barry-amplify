@@ -6,13 +6,7 @@ interface TicksProps {
   angle?: number;
 }
 
-const getTickAngle = ({
-  ticks,
-  tickNum,
-}: {
-  ticks: number;
-  tickNum: number;
-}) => -135 + (280 / ticks) * tickNum;
+const getTickAngle = ({ ticks, tickNum }: { ticks: number; tickNum: number }) => -135 + (280 / ticks) * tickNum;
 
 const Ticks = ({ ticks = 28, angle = 0 }: TicksProps) => {
   return Array.from({ length: ticks }, (_, tickNum) => {

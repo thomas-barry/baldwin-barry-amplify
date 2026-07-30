@@ -45,24 +45,29 @@ export const CurtainCard: React.FC<CurtainCardProps> = ({
   frontStyle,
   backStyle,
 }) => {
-  const containerClasses = [
-    styles.curtainCard,
-    styles[variant],
-    styles[`padding-${padding}`],
-    className,
-  ]
+  const containerClasses = [styles.curtainCard, styles[variant], styles[`padding-${padding}`], className]
     .filter(Boolean)
     .join(' ');
 
   return (
     <article
       className={containerClasses}
-      style={{
-        '--curtain-height': height,
-        '--curtain-enter-delay': enterDelay,
-      } as React.CSSProperties}>
-      <div className={[styles.back, backClassName].filter(Boolean).join(' ')} style={backStyle}>{back}</div>
-      <div className={[styles.front, frontClassName].filter(Boolean).join(' ')} style={frontStyle}>{front}</div>
+      style={
+        {
+          '--curtain-height': height,
+          '--curtain-enter-delay': enterDelay,
+        } as React.CSSProperties
+      }>
+      <div
+        className={[styles.back, backClassName].filter(Boolean).join(' ')}
+        style={backStyle}>
+        {back}
+      </div>
+      <div
+        className={[styles.front, frontClassName].filter(Boolean).join(' ')}
+        style={frontStyle}>
+        {front}
+      </div>
     </article>
   );
 };

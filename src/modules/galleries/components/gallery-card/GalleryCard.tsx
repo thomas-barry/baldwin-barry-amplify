@@ -1,9 +1,9 @@
-import type { CSSProperties, MouseEvent } from 'react';
-import { useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useImageUrls, withCacheBuster } from '@/lib/imageUrl';
-import { Link } from '@tanstack/react-router';
 import { Gallery } from '@/modules/galleries/types';
+import { Link } from '@tanstack/react-router';
+import type { CSSProperties, MouseEvent } from 'react';
+import { useMemo } from 'react';
 import styles from './GalleryCard.module.css';
 
 interface GalleryCardProps {
@@ -67,17 +67,21 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
               to='/photos/$galleryId/edit'
               params={{ galleryId: gallery.id }}
               className='p-button p-component p-button-icon-only p-button-sm p-button-info p-button-rounded'
-              aria-label='Edit gallery'
-            >
-              <span className='p-button-icon pi pi-pencil' aria-hidden='true' />
+              aria-label='Edit gallery'>
+              <span
+                className='p-button-icon pi pi-pencil'
+                aria-hidden='true'
+              />
             </Link>
             {onDelete && (
               <button
                 className='p-button p-component p-button-icon-only p-button-sm p-button-danger p-button-rounded'
                 aria-label='Delete gallery'
-                onClick={handleDelete}
-              >
-                <span className='p-button-icon pi pi-trash' aria-hidden='true' />
+                onClick={handleDelete}>
+                <span
+                  className='p-button-icon pi pi-trash'
+                  aria-hidden='true'
+                />
               </button>
             )}
           </div>
@@ -88,14 +92,11 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
           <Link
             to='/photos/$galleryId'
             params={{ galleryId: gallery.id }}
-            className={styles.cardLink}
-          >
+            className={styles.cardLink}>
             {gallery.name}
           </Link>
         </h3>
-        <span className={styles.cardCount}>
-          {photoCount === 1 ? '1 photo' : `${photoCount} photos`}
-        </span>
+        <span className={styles.cardCount}>{photoCount === 1 ? '1 photo' : `${photoCount} photos`}</span>
       </div>
     </article>
   );

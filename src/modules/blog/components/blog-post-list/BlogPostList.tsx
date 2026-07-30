@@ -1,10 +1,10 @@
 import { useAuth } from '@/context/AuthContext';
+import type { Schema } from '@/schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
 import { Card } from 'primereact/card';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useMemo } from 'react';
-import type { Schema } from '@/schema';
 import type { BlogPost } from '../../types';
 import BlogPostCard from '../blog-post-card/BlogPostCard';
 import styles from './BlogPostList.module.css';
@@ -20,7 +20,12 @@ const BlogPostList = ({ onEdit }: BlogPostListProps) => {
   const { isAdmin } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: posts, isLoading, isError, error } = useQuery({
+  const {
+    data: posts,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ['blogPosts', isAdmin],
     queryFn: async () => {
       const filter = isAdmin ? undefined : { published: { eq: true } };
@@ -45,7 +50,7 @@ const BlogPostList = ({ onEdit }: BlogPostListProps) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogPosts'] });
     },
-    onError: (err) => {
+    onError: err => {
       console.error('Error deleting blog post:', err);
     },
   });
@@ -67,7 +72,10 @@ const BlogPostList = ({ onEdit }: BlogPostListProps) => {
   if (isError) {
     return (
       <div className={styles.errorContainer}>
-        <i className='pi pi-exclamation-triangle' style={{ fontSize: '2rem', color: 'var(--red-500)' }} />
+        <i
+          className='pi pi-exclamation-triangle'
+          style={{ fontSize: '2rem', color: 'var(--red-500)' }}
+        />
         <p>Error loading posts: {error?.message ?? 'Unknown error'}</p>
       </div>
     );
@@ -75,7 +83,9 @@ const BlogPostList = ({ onEdit }: BlogPostListProps) => {
 
   if (!sortedPosts.length) {
     return (
-      <Card className={styles.emptyStateCard} title='No Musings Mused'>
+      <Card
+        className={styles.emptyStateCard}
+        title='No Musings Mused'>
         {isAdmin && <p>No musings yet. Use &quot;New Post&quot; to create one.</p>}
       </Card>
     );

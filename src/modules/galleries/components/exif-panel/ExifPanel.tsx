@@ -32,14 +32,18 @@ const ExifPanel = ({ summary, visible }: ExifPanelProps) => {
   ].filter((row): row is ExifRow => Boolean(row.value));
 
   return (
-    <aside className={styles.panel} aria-label='Camera details'>
+    <aside
+      className={styles.panel}
+      aria-label='Camera details'>
       {summary.camera && <h4 className={styles.camera}>{summary.camera}</h4>}
       {summary.lens && <p className={styles.lens}>{summary.lens}</p>}
 
       {rows.length > 0 && (
         <dl className={styles.rows}>
           {rows.map(({ label, value }) => (
-            <div className={styles.row} key={label}>
+            <div
+              className={styles.row}
+              key={label}>
               <dt className={styles.label}>{label}</dt>
               <dd className={styles.value}>{value}</dd>
             </div>

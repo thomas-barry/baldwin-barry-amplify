@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { CurtainCard } from '@/components/CurtainCard';
 import { DiceCubeDemo } from '@/components/DiceCube';
-import KnobDemo from '@/components/KnobDemo';
-import ImageSquareSelector from '@/components/ImageSquareSelector';
 import type { SquareSelection } from '@/components/ImageSquareSelector';
+import ImageSquareSelector from '@/components/ImageSquareSelector';
+import KnobDemo from '@/components/KnobDemo';
 import TanStackFormDemo from '@/components/TanStackFormDemo';
+import { useState } from 'react';
 import CollapsibleSection from './CollapsibleSection';
 import styles from './Sandbox.module.css';
 
@@ -17,65 +17,59 @@ const Sandbox = () => {
     <div className={styles.page}>
       <h1 className={styles.heading}>Sandbox</h1>
 
-      <CollapsibleSection title="The die is cast">
+      <CollapsibleSection title='The die is cast'>
         <div className={styles.demo}>
           <DiceCubeDemo />
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Crank my knob">
+      <CollapsibleSection title='Crank my knob'>
         <div className={styles.demo}>
           <KnobDemo />
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="TanStack Form">
+      <CollapsibleSection title='TanStack Form'>
         <div className={styles.demo}>
           <TanStackFormDemo />
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Curtain call">
+      <CollapsibleSection title='Curtain call'>
         <p className={styles.description}>Hover each card to raise the curtain and reveal what's underneath.</p>
         <div className={styles.curtainRow}>
           <CurtainCard
-            height="200px"
-            variant="default"
-            padding="md"
+            height='200px'
+            variant='default'
+            padding='md'
             backClassName={styles.curtainBack}
             front={
               <>
                 <strong>Team member</strong>
                 <p>Barry Baldwin</p>
-                <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--fs-300)' }}>
-                  Hover to learn more
-                </p>
+                <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--fs-300)' }}>Hover to learn more</p>
               </>
             }
             back={
               <>
                 <strong>About Barry</strong>
                 <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--fs-300)' }}>
-                  Full-stack engineer. Passionate about design systems, CSS architecture, and building
-                  things that feel right.
+                  Full-stack engineer. Passionate about design systems, CSS architecture, and building things that feel
+                  right.
                 </p>
               </>
             }
           />
           <CurtainCard
-            height="200px"
-            variant="elevated"
-            padding="md"
+            height='200px'
+            variant='elevated'
+            padding='md'
             backClassName={styles.curtainBack}
             front={
               <>
                 <strong>Latest release</strong>
-                <p style={{ fontSize: 'var(--fs-600)', fontWeight: 'var(--fw-black)', margin: '0.25rem 0' }}>
-                  v2.4.0
-                </p>
-                <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--fs-300)' }}>
-                  Hover for changelog
-                </p>
+                <p style={{ fontSize: 'var(--fs-600)', fontWeight: 'var(--fw-black)', margin: '0.25rem 0' }}>v2.4.0</p>
+                <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--fs-300)' }}>Hover for changelog</p>
               </>
             }
             back={
@@ -96,9 +90,9 @@ const Sandbox = () => {
             }
           />
           <CurtainCard
-            height="200px"
-            variant="outlined"
-            padding="md"
+            height='200px'
+            variant='outlined'
+            padding='md'
             backClassName={styles.curtainBack}
             front={
               <>
@@ -112,8 +106,8 @@ const Sandbox = () => {
               <>
                 <strong>How it works</strong>
                 <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--fs-300)' }}>
-                  The front panel uses <code>translateY(-100%)</code> on{' '}
-                  <code>:hover</code>, clipped by <code>overflow: hidden</code> on the container.
+                  The front panel uses <code>translateY(-100%)</code> on <code>:hover</code>, clipped by{' '}
+                  <code>overflow: hidden</code> on the container.
                 </p>
               </>
             }
@@ -121,7 +115,7 @@ const Sandbox = () => {
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Square this">
+      <CollapsibleSection title='Square this'>
         <p className={styles.description}>Drag to select a square region. Click anywhere to reset.</p>
         <div className={styles.demo}>
           <ImageSquareSelector
@@ -131,8 +125,7 @@ const Sandbox = () => {
           />
           {selection && (
             <p className={styles.values}>
-              x: {selection.x.toFixed(3)} · y: {selection.y.toFixed(3)} · size:{' '}
-              {selection.size.toFixed(3)}
+              x: {selection.x.toFixed(3)} · y: {selection.y.toFixed(3)} · size: {selection.size.toFixed(3)}
             </p>
           )}
         </div>

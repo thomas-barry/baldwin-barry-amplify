@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { KeyboardEvent, TouchEvent, useEffect, useRef } from 'react';
-import Ticks from './Ticks';
 import styles from './ReactKnob.module.css';
+import Ticks from './Ticks';
 
 interface ReactKnobProps {
   value?: number;
@@ -47,9 +47,7 @@ const ReactKnob = ({
     }
 
     const onWheel = (e: WheelEvent) => {
-      onChange?.(
-        Math.min(Math.max(valueRef.current + e.deltaY, minValue), maxValue),
-      );
+      onChange?.(Math.min(Math.max(valueRef.current + e.deltaY, minValue), maxValue));
       e.preventDefault();
     };
 
@@ -62,21 +60,11 @@ const ReactKnob = ({
   const onKeyDown = ({ key, shiftKey }: KeyboardEvent<HTMLDivElement>) => {
     if (key === 'ArrowUp') {
       onChange?.(
-        Math.min(
-          value +
-            Number(shiftKey) +
-            (maxValue - minValue) / ((shiftKey ? 2 : 1) * keyStepPct),
-          maxValue,
-        ),
+        Math.min(value + Number(shiftKey) + (maxValue - minValue) / ((shiftKey ? 2 : 1) * keyStepPct), maxValue),
       );
     } else if (key === 'ArrowDown') {
       onChange?.(
-        Math.max(
-          value -
-            Number(shiftKey) -
-            (maxValue - minValue) / ((shiftKey ? 2 : 1) * keyStepPct),
-          minValue,
-        ),
+        Math.max(value - Number(shiftKey) - (maxValue - minValue) / ((shiftKey ? 2 : 1) * keyStepPct), minValue),
       );
     }
   };

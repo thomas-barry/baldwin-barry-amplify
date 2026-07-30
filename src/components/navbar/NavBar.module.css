@@ -96,7 +96,7 @@
 .loginButton,
 .logoutButton {
   background-color: var(--color-accent);
-  color: #0D1F2D;
+  color: #0d1f2d;
   border: none;
   padding: 6px 12px;
   border-radius: var(--radius-sm);

@@ -1,9 +1,9 @@
 import { useAuth } from '@/context/AuthContext';
 import { galleryQueryOptions } from '@/modules/galleries/queries';
+import type { Schema } from '@/schema';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '@/schema';
 import PhotoCarousel from '../photo-carousel/PhotoCarousel';
 import styles from './Gallery.module.css';
 
@@ -37,16 +37,17 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
     <div>
       <div className={styles.galleryHeader}>
         <div className={styles.galleryTitleBlock}>
-          <h2 className={styles.galleryHeading}>
-            {isGalleryLoading ? 'Loading…' : (gallery?.name ?? 'Gallery')}
-          </h2>
-          {gallery?.description && (
-            <p className={styles.galleryDescription}>{gallery.description}</p>
-          )}
+          <h2 className={styles.galleryHeading}>{isGalleryLoading ? 'Loading…' : (gallery?.name ?? 'Gallery')}</h2>
+          {gallery?.description && <p className={styles.galleryDescription}>{gallery.description}</p>}
         </div>
         <div className={styles.galleryHeaderActions}>
-          <Link to='/photos' className='p-button p-component p-button-secondary'>
-            <span className='p-button-icon pi pi-arrow-left p-button-icon-left' aria-hidden='true' />
+          <Link
+            to='/photos'
+            className='p-button p-component p-button-secondary'>
+            <span
+              className='p-button-icon pi pi-arrow-left p-button-icon-left'
+              aria-hidden='true'
+            />
             <span className='p-button-label'>Galleries</span>
           </Link>
           {isAdmin && (
@@ -54,9 +55,11 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
               to='/photos/$galleryId/edit'
               params={{ galleryId }}
               className='p-button p-component p-button-info'
-              aria-label='Edit Gallery'
-            >
-              <span className='p-button-icon pi pi-pencil' aria-hidden='true' />
+              aria-label='Edit Gallery'>
+              <span
+                className='p-button-icon pi pi-pencil'
+                aria-hidden='true'
+              />
             </Link>
           )}
         </div>
@@ -66,7 +69,6 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
         galleryImages={galleryImages ?? []}
         isLoading={isLoading}
       />
-
     </div>
   );
 };
