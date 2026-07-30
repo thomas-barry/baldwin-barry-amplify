@@ -1,4 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
+import { galleryQueryOptions } from '@/modules/galleries/queries';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { generateClient } from 'aws-amplify/data';
@@ -29,13 +30,8 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
     },
   });
 
-  const { data: gallery, isLoading: isGalleryLoading } = useQuery({
-    queryKey: ['gallery', galleryId],
-    queryFn: async () => {
-      const response = await clientApiKey.models.Gallery.get({ id: galleryId });
-      return response.data;
-    },
-  });
+  // Shared with the Topbar breadcrumb — see galleryQueryOptions.
+  const { data: gallery, isLoading: isGalleryLoading } = useQuery(galleryQueryOptions(galleryId));
 
   return (
     <div>
