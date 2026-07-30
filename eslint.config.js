@@ -9,7 +9,9 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['.amplify/**', '**/build/**', '**/dist/**'],
+    // `.claude/` holds Claude Code's git worktrees — full copies of the repo,
+    // so every source file gets linted a second time from a stale checkout.
+    ignores: ['.amplify/**', '.claude/**', '**/build/**', '**/dist/**'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -52,6 +54,5 @@ export default tseslint.config(
         },
       ],
     },
-    ignores: ['src/*, **/dist', '**/.eslintrc.cjs'],
   },
 );
