@@ -1,6 +1,7 @@
 import type { CSSProperties, MouseEvent } from 'react';
+import { useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { cfUrl } from '@/lib/cloudfront';
+import { useImageUrls, withCacheBuster } from '@/lib/imageUrl';
 import { Link } from '@tanstack/react-router';
 import { Gallery } from '@/modules/galleries/types';
 import styles from './GalleryCard.module.css';
@@ -13,6 +14,11 @@ interface GalleryCardProps {
 const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
   const { isAdmin } = useAuth();
   const photoCount = gallery.images?.length ?? 0;
+
+  const thumbnailKey = gallery.thumbnailImage?.s3ThumbnailKey;
+  const thumbnailKeys = useMemo(() => (thumbnailKey ? [thumbnailKey] : []), [thumbnailKey]);
+  const imageUrls = useImageUrls(thumbnailKeys);
+  const thumbnailSrc = withCacheBuster(thumbnailKey ? imageUrls[thumbnailKey] : undefined, gallery.updatedAt);
 
   const crop = gallery.thumbnailCrop;
   const W = gallery.thumbnailImage?.width;
@@ -37,9 +43,9 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
   return (
     <article className={styles.card}>
       <div className={styles.imageWrapper}>
-        {gallery.thumbnailImage ? (
+        {gallery.thumbnailImage && thumbnailSrc ? (
           <img
-            src={`${cfUrl(gallery.thumbnailImage.s3ThumbnailKey!)}${gallery.updatedAt ? `?v=${gallery.updatedAt}` : ''}`}
+            src={thumbnailSrc}
             alt={gallery.thumbnailImage.title || 'Gallery thumbnail'}
             className={crop && W && H ? undefined : styles.cardImage}
             style={cropStyle}
