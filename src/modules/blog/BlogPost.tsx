@@ -1,3 +1,4 @@
+import Markdown from '@/components/Markdown';
 import { useAuth } from '@/context/AuthContext';
 import type { Schema } from '@/schema';
 import { useQuery } from '@tanstack/react-query';
@@ -111,10 +112,7 @@ const BlogPost = ({ postId }: { postId: string }) => {
           </div>
         </header>
 
-        <div
-          className={styles.content}
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        <Markdown>{post.content}</Markdown>
       </article>
     </div>
   );
