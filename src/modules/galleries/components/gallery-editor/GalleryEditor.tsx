@@ -437,6 +437,11 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
 
   const handleUploadSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ['galleryImagesWithDetails', galleryId] });
+    // The upload handler adopts the first image of an untouched gallery as its
+    // thumbnail, so the gallery itself is stale too. Like the image list, this
+    // races the Lambda — the refetch may land before the record exists.
+    queryClient.invalidateQueries({ queryKey: ['gallery', galleryId] });
+    queryClient.invalidateQueries({ queryKey: ['galleries'] });
     toast.current?.show({ severity: 'success', summary: 'Image uploaded', life: 3000 });
   };
 

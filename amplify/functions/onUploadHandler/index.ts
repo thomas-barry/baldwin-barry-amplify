@@ -1,7 +1,7 @@
 import { CloudFrontClient, CreateInvalidationCommand } from '@aws-sdk/client-cloudfront';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import exifReader from 'exif-reader';
 import sharp from 'sharp';
 import { Readable } from 'stream';
@@ -215,6 +215,60 @@ async function insertGalleryImageRecord(docClient: DynamoDBDocumentClient, galle
   }
 }
 
+// Adopt the image as the gallery's thumbnail, but only while the gallery has
+// none. The condition is what makes this safe: a batch upload fans out into one
+// concurrent invocation per file, all of which see an unset thumbnail, and
+// DynamoDB settles the race by letting exactly one conditional write land.
+//
+// "First" therefore means first to finish processing, not first in the file
+// picker — with several files in flight, which one wins is not deterministic.
+// The condition is also "unset" rather than "gallery is empty", so a gallery
+// whose thumbnail image was deleted (which clears the field) adopts a new one
+// on the next upload.
+async function setDefaultGalleryThumbnail(
+  docClient: DynamoDBDocumentClient,
+  galleryId: string,
+  imageId: string,
+): Promise<void> {
+  const galleryTableName = process.env.GALLERY_TABLE_NAME;
+
+  if (!galleryTableName) {
+    console.error('GALLERY_TABLE_NAME environment variable is not set');
+    return;
+  }
+
+  try {
+    await docClient.send(
+      new UpdateCommand({
+        TableName: galleryTableName,
+        Key: { id: galleryId },
+        UpdateExpression: 'SET thumbnailImageId = :imageId, updatedAt = :now',
+        // The gallery row must already exist — never conjure one from an upload
+        // carrying a stale gallery id. `attribute_type(..., 'NULL')` covers the
+        // cleared case: clearing the thumbnail from the editor sends `null`, and
+        // whether AppSync's resolver removes the attribute or stores a NULL is
+        // an implementation detail we should not depend on.
+        ConditionExpression:
+          'attribute_exists(id) AND (attribute_not_exists(thumbnailImageId) OR attribute_type(thumbnailImageId, :nullType))',
+        ExpressionAttributeValues: {
+          ':imageId': imageId,
+          ':now': new Date().toISOString(),
+          ':nullType': 'NULL',
+        },
+      }),
+    );
+    console.log('Set default gallery thumbnail:', { galleryId, imageId });
+  } catch (error) {
+    if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
+      // Expected for every image after the first, and for any gallery whose
+      // thumbnail has already been chosen. Not a failure.
+      console.log('Gallery already has a thumbnail, leaving it alone:', galleryId);
+      return;
+    }
+    console.error('Error setting default gallery thumbnail:', error);
+  }
+}
+
 async function invalidateCloudFront(key: string): Promise<void> {
   const distributionId = process.env.CLOUDFRONT_DISTRIBUTION_ID;
   if (!distributionId) {
@@ -361,6 +415,7 @@ export const handler = async (event: S3Event) => {
       // If galleryId is present and imageId was successfully created, link the image to the gallery
       if (s3Metadata.galleryId && imageId) {
         await insertGalleryImageRecord(docClient, s3Metadata.galleryId, imageId);
+        await setDefaultGalleryThumbnail(docClient, s3Metadata.galleryId, imageId);
       }
     } catch (error) {
       console.error('error processing image:', error);
