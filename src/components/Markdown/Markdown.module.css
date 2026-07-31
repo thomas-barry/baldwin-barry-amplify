@@ -1,0 +1,117 @@
+/*
+ * Article typography. Owned here rather than by the page so the editor preview
+ * and the published musing cannot drift apart.
+ */
+.prose {
+  font-size: var(--fs-400);
+  line-height: 1.8;
+  color: var(--color-text);
+
+  & h1,
+  & h2,
+  & h3,
+  & h4 {
+    font-family: var(--font-display);
+    font-weight: var(--fw-bold);
+    letter-spacing: -0.02em;
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-2);
+    color: var(--color-text);
+  }
+
+  & p {
+    margin: 0 0 var(--space-3);
+  }
+
+  & a {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  & img {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    margin: var(--space-3) 0;
+  }
+
+  & ul,
+  & ol {
+    margin: 0 0 var(--space-3);
+    padding-left: 1.5em;
+  }
+
+  & blockquote {
+    border-left: 3px solid var(--color-accent);
+    margin: var(--space-3) 0;
+    padding: var(--space-1) var(--space-2);
+    color: var(--color-text-subtle);
+    font-style: italic;
+  }
+
+  & pre,
+  & code {
+    font-family: var(--font-mono);
+    background: var(--color-surface-raised);
+    border-radius: var(--radius-sm);
+  }
+
+  & code {
+    padding: 0.125em 0.25em;
+    font-size: 0.875em;
+  }
+
+  & pre {
+    padding: var(--space-2);
+    overflow-x: auto;
+    margin: 0 0 var(--space-3);
+
+    & code {
+      padding: 0;
+      background: none;
+    }
+  }
+
+  & hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: var(--space-4) 0;
+  }
+
+  /* Tables come from remark-gfm. */
+  & table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 var(--space-3);
+    font-size: var(--fs-300);
+  }
+
+  & th,
+  & td {
+    border: 1px solid var(--color-border);
+    padding: 0.375rem var(--space-1);
+    text-align: left;
+  }
+
+  & th {
+    background: var(--color-surface-raised);
+    font-weight: var(--fw-bold);
+  }
+}
+
+.figure {
+  margin: var(--space-3) 0;
+
+  /* The image supplies the block spacing via `.prose img`; the figure owns it
+     here instead, so the caption stays tight against the photo. */
+  & img {
+    margin: 0;
+  }
+}
+
+.caption {
+  margin-top: var(--space-1);
+  font-size: var(--fs-300);
+  line-height: 1.5;
+  color: var(--color-text-subtle);
+  text-align: center;
+}

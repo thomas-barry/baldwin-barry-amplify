@@ -1,11 +1,11 @@
+import ImagePicker from '@/components/ImagePicker';
+import Markdown from '@/components/Markdown';
 import type { Schema } from '@/schema';
 import { useQueryClient } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
 import { Dialog } from 'primereact/dialog';
-import type { EditorTextChangeEvent } from 'primereact/editor';
-import { Editor } from 'primereact/editor';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Toast } from 'primereact/toast';
@@ -24,7 +24,7 @@ interface BlogPostFormProps {
 
 const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPostFormProps) => {
   const [title, setTitle] = useState(initialValues?.title ?? '');
-  const contentRef = useRef(initialValues?.content ?? '');
+  const [content, setContent] = useState(initialValues?.content ?? '');
   const [excerpt, setExcerpt] = useState(initialValues?.excerpt ?? '');
   const [tagsInput, setTagsInput] = useState(
     initialValues?.tags?.filter((t): t is string => t !== null).join(', ') ?? '',
@@ -32,15 +32,19 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
   const [published, setPublished] = useState(initialValues?.published ?? false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [titleError, setTitleError] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
+  const [pickerVisible, setPickerVisible] = useState(false);
   const toast = useRef<Toast>(null);
   const queryClient = useQueryClient();
 
   const resetForm = () => {
     setTitle(initialValues?.title ?? '');
+    setContent(initialValues?.content ?? '');
     setExcerpt(initialValues?.excerpt ?? '');
     setTagsInput(initialValues?.tags?.filter((t): t is string => t !== null).join(', ') ?? '');
     setPublished(initialValues?.published ?? false);
     setTitleError('');
+    setShowPreview(false);
   };
 
   const handleHide = () => {
@@ -76,7 +80,7 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
         await client.models.BlogPost.update({
           id: initialValues.id,
           title: title.trim(),
-          content: contentRef.current,
+          content,
           excerpt: excerpt.trim() || null,
           tags: tags.length ? tags : null,
           published,
@@ -85,7 +89,7 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
       } else {
         await client.models.BlogPost.create({
           title: title.trim(),
-          content: contentRef.current,
+          content,
           excerpt: excerpt.trim() || null,
           tags: tags.length ? tags : null,
           published,
@@ -184,14 +188,49 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
           </div>
 
           <div className={styles.formField}>
-            <label className={styles.formLabel}>Content</label>
-            <Editor
-              value={contentRef.current}
-              onTextChange={(e: EditorTextChangeEvent) => {
-                contentRef.current = e.htmlValue ?? '';
-              }}
-              style={{ height: '320px' }}
-            />
+            <div className={styles.contentHeader}>
+              <label
+                htmlFor='post-content'
+                className={styles.formLabel}>
+                Content <span className={styles.formatHint}>Markdown</span>
+              </label>
+              <div className={styles.contentTools}>
+                <Button
+                  label='Insert image'
+                  icon='pi pi-image'
+                  text
+                  size='small'
+                  type='button'
+                  onClick={() => setPickerVisible(true)}
+                />
+                <Button
+                  label={showPreview ? 'Write' : 'Preview'}
+                  icon={showPreview ? 'pi pi-pencil' : 'pi pi-eye'}
+                  text
+                  size='small'
+                  type='button'
+                  onClick={() => setShowPreview(p => !p)}
+                />
+              </div>
+            </div>
+            {showPreview ? (
+              <div className={styles.preview}>
+                {content.trim() ? (
+                  <Markdown>{content}</Markdown>
+                ) : (
+                  <p className={styles.previewEmpty}>Nothing to preview yet.</p>
+                )}
+              </div>
+            ) : (
+              <InputTextarea
+                id='post-content'
+                value={content}
+                onChange={e => setContent(e.target.value)}
+                className={`w-full ${styles.contentInput}`}
+                placeholder={'Write in markdown.\n\nUse “Insert image” to copy an image snippet, then paste it here.'}
+                rows={14}
+              />
+            )}
           </div>
 
           <div className={styles.formField}>
@@ -223,6 +262,11 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
           </div>
         </div>
       </Dialog>
+
+      <ImagePicker
+        visible={pickerVisible}
+        onHide={() => setPickerVisible(false)}
+      />
     </>
   );
 };

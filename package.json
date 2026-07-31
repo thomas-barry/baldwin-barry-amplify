@@ -32,11 +32,12 @@
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.5",
-    "quill": "^2.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-image-gallery": "^1.4.0",
     "react-lazy-load-image-component": "^1.6.3",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "three": "^0.183.2"
   },
   "devDependencies": {

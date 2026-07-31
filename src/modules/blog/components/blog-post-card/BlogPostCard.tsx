@@ -1,4 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
+import { stripMarkdown } from '@/lib/markdown';
 import { Link } from '@tanstack/react-router';
 import type { MouseEvent } from 'react';
 import type { BlogPost } from '../../types';
@@ -13,7 +14,7 @@ interface BlogPostCardProps {
 const BlogPostCard = ({ post, onEdit, onDelete }: BlogPostCardProps) => {
   const { isAdmin } = useAuth();
 
-  const excerpt = post.excerpt ?? post.content.replace(/<[^>]+>/g, '').slice(0, 160);
+  const excerpt = post.excerpt ?? stripMarkdown(post.content).slice(0, 160);
 
   const displayDate = post.publishedDate ?? post.createdAt;
   const formattedDate = new Date(displayDate).toLocaleDateString('en-US', {
