@@ -4,6 +4,7 @@ import type { Schema } from '@/schema';
 import { useQuery } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
 import { Dialog } from 'primereact/dialog';
+import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Toast } from 'primereact/toast';
@@ -15,6 +16,32 @@ const client = generateClient<Schema>({ authMode: 'apiKey' });
 /** Pages are walked to completion so the grid never silently hides an image. */
 const PAGE_SIZE = 100;
 const MAX_IMAGES = 500;
+const MAX_MEMBERSHIPS = 2000;
+
+/** The dropdown's default entry. `null` would collide with PrimeReact's own
+ *  "nothing selected" state, which shows the placeholder instead of a label. */
+const ALL_GALLERIES = 'all';
+
+/**
+ * Walks every page of a list query.
+ *
+ * The token is threaded through a parameter rather than a
+ * declared-then-assigned variable: assigning `page` from `page.nextToken`
+ * makes the inference circular and TypeScript gives up on the type (TS7022).
+ */
+async function listAll<T>(
+  fetchPage: (nextToken?: string) => Promise<{ data: T[]; nextToken?: string | null }>,
+  max: number,
+): Promise<T[]> {
+  const items: T[] = [];
+  let token: string | undefined;
+  do {
+    const page = await fetchPage(token);
+    items.push(...page.data);
+    token = page.nextToken ?? undefined;
+  } while (token && items.length < max);
+  return items;
+}
 
 interface ImagePickerProps {
   visible: boolean;
@@ -35,6 +62,7 @@ const altTextFor = (image: Schema['Image']['type']) =>
  */
 const ImagePicker = ({ visible, onHide }: ImagePickerProps) => {
   const [filter, setFilter] = useState('');
+  const [galleryId, setGalleryId] = useState<string>(ALL_GALLERIES);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const toast = useRef<Toast>(null);
 
@@ -42,34 +70,82 @@ const ImagePicker = ({ visible, onHide }: ImagePickerProps) => {
     queryKey: ['images'],
     enabled: visible,
     queryFn: async () => {
-      // The first call takes no token so `page` infers cleanly; threading a
-      // token through a declared-then-assigned variable instead makes the
-      // inference circular (TS7022).
-      const items: Schema['Image']['type'][] = [];
-      let page = await client.models.Image.list({ limit: PAGE_SIZE });
-      items.push(...page.data);
-      while (page.nextToken && items.length < MAX_IMAGES) {
-        page = await client.models.Image.list({ limit: PAGE_SIZE, nextToken: page.nextToken });
-        items.push(...page.data);
-      }
+      const items = await listAll(nextToken => client.models.Image.list({ limit: PAGE_SIZE, nextToken }), MAX_IMAGES);
       // DynamoDB returns scan order; newest-first is what you want when the
       // image you are reaching for is usually the one just uploaded.
       return items.sort((a, b) => b.uploadDate.localeCompare(a.uploadDate));
     },
   });
 
+  // Its own key rather than the `['galleries']` one GalleryList owns: that
+  // query has a much wider selection set and is cast to a different shape.
+  const { data: galleries } = useQuery({
+    queryKey: ['galleryOptions'],
+    enabled: visible,
+    queryFn: async () => {
+      const items = await listAll(
+        nextToken => client.models.Gallery.list({ limit: PAGE_SIZE, nextToken, selectionSet: ['id', 'name'] }),
+        MAX_IMAGES,
+      );
+      return items.sort((a, b) => a.name.localeCompare(b.name));
+    },
+  });
+
+  // The join table is the only thing that knows which gallery an image is in.
+  // Fetched once and filtered in memory so switching galleries is instant, and
+  // so an image in several galleries appears under each of them.
+  const { data: memberships } = useQuery({
+    queryKey: ['galleryMemberships'],
+    enabled: visible,
+    queryFn: async () => {
+      const items = await listAll(
+        nextToken =>
+          client.models.GalleryImage.list({ limit: PAGE_SIZE, nextToken, selectionSet: ['galleryId', 'imageId'] }),
+        MAX_MEMBERSHIPS,
+      );
+      const byGallery = new Map<string, Set<string>>();
+      for (const { galleryId: gid, imageId } of items) {
+        const set = byGallery.get(gid) ?? new Set<string>();
+        set.add(imageId);
+        byGallery.set(gid, set);
+      }
+      return byGallery;
+    },
+  });
+
+  const galleryOptions = useMemo(
+    () => [
+      { label: 'All galleries', value: ALL_GALLERIES },
+      ...(galleries ?? []).map(gallery => ({ label: gallery.name, value: gallery.id })),
+    ],
+    [galleries],
+  );
+
   const visibleImages = useMemo(() => {
     if (!images) return [];
     const needle = filter.trim().toLowerCase();
-    if (!needle) return images;
-    return images.filter(
-      image => image.fileName.toLowerCase().includes(needle) || (image.title?.toLowerCase().includes(needle) ?? false),
-    );
-  }, [images, filter]);
+    // An unresolved membership query filters everything out rather than
+    // showing the wrong gallery's images while it loads.
+    const inGallery = galleryId === ALL_GALLERIES ? null : (memberships?.get(galleryId) ?? new Set<string>());
+    return images.filter(image => {
+      if (inGallery && !inGallery.has(image.id)) return false;
+      if (!needle) return true;
+      return image.fileName.toLowerCase().includes(needle) || (image.title?.toLowerCase().includes(needle) ?? false);
+    });
+  }, [images, filter, galleryId, memberships]);
 
   // Memoised because `useImageUrls` keys its presigned-URL query on this array.
   const thumbnailKeys = useMemo(() => (images ?? []).map(image => image.s3ThumbnailKey ?? image.s3Key), [images]);
   const thumbnailUrls = useImageUrls(thumbnailKeys);
+
+  // An empty grid has three causes and they are not interchangeable: telling
+  // someone "no images match that filter" when the gallery they picked is
+  // simply empty sends them hunting for a filter they never typed.
+  const emptyMessage = !images?.length
+    ? 'No images uploaded yet.'
+    : galleryId !== ALL_GALLERIES && !memberships?.get(galleryId)?.size
+      ? 'This gallery has no images yet.'
+      : 'No images match that filter.';
 
   const handleCopy = async (image: Schema['Image']['type']) => {
     const snippet = formatImageMarkdown(altTextFor(image), image.s3Key);
@@ -111,21 +187,28 @@ const ImagePicker = ({ visible, onHide }: ImagePickerProps) => {
             <code className={styles.hintCode}>![alt](key &quot;caption&quot;)</code>
           </p>
 
-          <InputText
-            value={filter}
-            onChange={e => setFilter(e.target.value)}
-            className='w-full'
-            placeholder='Filter by file name or title'
-          />
+          <div className={styles.filters}>
+            <Dropdown
+              value={galleryId}
+              options={galleryOptions}
+              onChange={e => setGalleryId(e.value)}
+              className={styles.galleryFilter}
+              aria-label='Filter by gallery'
+            />
+            <InputText
+              value={filter}
+              onChange={e => setFilter(e.target.value)}
+              className={styles.textFilter}
+              placeholder='Filter by file name or title'
+            />
+          </div>
 
           {isLoading ? (
             <div className={styles.loader}>
               <ProgressSpinner />
             </div>
           ) : visibleImages.length === 0 ? (
-            <p className={styles.empty}>
-              {images?.length ? 'No images match that filter.' : 'No images uploaded yet.'}
-            </p>
+            <p className={styles.empty}>{emptyMessage}</p>
           ) : (
             <ul className={styles.grid}>
               {visibleImages.map(image => {

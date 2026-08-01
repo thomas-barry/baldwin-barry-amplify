@@ -27,6 +27,31 @@
   border-radius: var(--radius-sm);
 }
 
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.galleryFilter {
+  flex: 0 1 14rem;
+  min-width: 10rem;
+}
+
+.textFilter {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+/* Once the row wraps, a 14rem dropdown above a full-width text field reads as a
+   mistake. Give both the full width instead of leaving dead space beside one. */
+@media (max-width: 640px) {
+  .galleryFilter,
+  .textFilter {
+    flex-basis: 100%;
+  }
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
