@@ -1,32 +1,15 @@
 import Markdown from '@/components/Markdown';
 import { useAuth } from '@/context/AuthContext';
-import type { Schema } from '@/schema';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { generateClient } from 'aws-amplify/data';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import styles from './BlogPost.module.css';
-import BlogPostForm from './components/blog-post-form/BlogPostForm';
-import { useBlogPostForm } from './hooks/useBlogPostForm';
-import type { BlogPost as BlogPostType } from './types';
-
-const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
+import { blogPostQueryOptions } from './queries';
 
 const BlogPost = ({ postId }: { postId: string }) => {
   const { isAdmin } = useAuth();
-  const { isOpen, editPost, openEditForm, closeForm } = useBlogPostForm();
 
-  const {
-    data: post,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ['blogPost', postId],
-    queryFn: async () => {
-      const response = await clientRead.models.BlogPost.get({ id: postId });
-      return response.data as unknown as BlogPostType;
-    },
-  });
+  const { data: post, isLoading, isError } = useQuery(blogPostQueryOptions(postId));
 
   if (isLoading) {
     return (
@@ -71,27 +54,18 @@ const BlogPost = ({ postId }: { postId: string }) => {
           <i className='pi pi-arrow-left' /> Back to Musings
         </Link>
         {isAdmin && (
-          <button
+          <Link
+            to='/blog/$postId/edit'
+            params={{ postId }}
             className='p-button p-component p-button-icon-only p-button-sm p-button-info p-button-rounded'
-            aria-label='Edit post'
-            onClick={() => openEditForm(post)}>
+            aria-label='Edit post'>
             <span
               className='p-button-icon pi pi-pencil'
               aria-hidden='true'
             />
-          </button>
+          </Link>
         )}
       </div>
-
-      {isAdmin && (
-        <BlogPostForm
-          key={editPost?.id ?? 'new'}
-          visible={isOpen}
-          onHide={closeForm}
-          initialValues={editPost ?? undefined}
-          isEdit={!!editPost}
-        />
-      )}
 
       <article className={styles.article}>
         <header className={styles.articleHeader}>

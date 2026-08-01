@@ -12,6 +12,7 @@ const SITE_NAME = 'THOMAS BALDWIN BARRY';
  *  route type, which is what Link requires. */
 const SECTIONS = {
   photos: { label: 'Photography', to: '/photos' },
+  blog: { label: 'Musings', to: '/blog' },
   about: { label: 'About', to: '/about' },
   contact: { label: 'Contact', to: '/contact' },
   admin: { label: 'Admin', to: '/admin' },
