@@ -7,11 +7,10 @@ import styles from './BlogPostCard.module.css';
 
 interface BlogPostCardProps {
   post: BlogPost;
-  onEdit?: (post: BlogPost) => void;
   onDelete?: (post: BlogPost) => void;
 }
 
-const BlogPostCard = ({ post, onEdit, onDelete }: BlogPostCardProps) => {
+const BlogPostCard = ({ post, onDelete }: BlogPostCardProps) => {
   const { isAdmin } = useAuth();
 
   const excerpt = post.excerpt ?? stripMarkdown(post.content).slice(0, 160);
@@ -25,12 +24,6 @@ const BlogPostCard = ({ post, onEdit, onDelete }: BlogPostCardProps) => {
 
   const tags = post.tags?.filter((t): t is string => t !== null) ?? [];
 
-  const handleEdit = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onEdit?.(post);
-  };
-
   const handleDelete = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -43,17 +36,16 @@ const BlogPostCard = ({ post, onEdit, onDelete }: BlogPostCardProps) => {
         {isAdmin && !post.published && <span className={styles.draftBadge}>Draft</span>}
         {isAdmin && (
           <div className={styles.adminOverlay}>
-            {onEdit && (
-              <button
-                className='p-button p-component p-button-icon-only p-button-sm p-button-info p-button-rounded'
-                aria-label='Edit post'
-                onClick={handleEdit}>
-                <span
-                  className='p-button-icon pi pi-pencil'
-                  aria-hidden='true'
-                />
-              </button>
-            )}
+            <Link
+              to='/blog/$postId/edit'
+              params={{ postId: post.id }}
+              className='p-button p-component p-button-icon-only p-button-sm p-button-info p-button-rounded'
+              aria-label='Edit post'>
+              <span
+                className='p-button-icon pi pi-pencil'
+                aria-hidden='true'
+              />
+            </Link>
             {onDelete && (
               <button
                 className='p-button p-component p-button-icon-only p-button-sm p-button-danger p-button-rounded'

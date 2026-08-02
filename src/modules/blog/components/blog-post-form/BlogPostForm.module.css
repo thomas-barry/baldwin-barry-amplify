@@ -1,25 +1,49 @@
 /*
- * PrimeReact ships the `lara-light-teal` theme, so dialog panels stay white in
- * both app themes while our palette tokens invert with `[data-theme]`. Left
- * alone, `--color-text` flips to #f0ebe1 in dark mode and the field labels drop
- * to 1.19:1 against the white panel — far under the WCAG AA 4.5:1 minimum.
- *
- * Pin the palette to its light-theme values for the contents of the dialog, so
- * every token below resolves against the surface it is actually painted on.
+ * The editor is a page, not a dialog. That is why there are no palette
+ * overrides here and no height arithmetic: the form sits on our own surface, so
+ * `--color-text` already resolves against the right background in both themes,
+ * and the page scrolls, so nothing has to be squeezed into a fixed budget.
  */
-.formContainer {
-  --color-text: #0d1f2d;
-  --color-text-muted: #4a6070;
-  --color-text-subtle: #8fa8b5;
-  --color-destructive: #b54040;
-  --color-surface: #ffffff;
-  --color-surface-raised: #ede6dd;
-  --color-border: rgb(13 31 45 / 0.1);
-
+/* Matches Blog.module.css so the editor sits on the page the same way the list
+   it was reached from does. */
+.page {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  padding: var(--space-1) 0;
+  padding: var(--space-3) var(--space-3) var(--space-4);
+}
+
+.pageHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.pageHeading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-black);
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+}
+
+.pageActions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 60rem;
 }
 
 .formField {
@@ -62,7 +86,6 @@
   font-family: var(--font-mono);
   font-size: var(--fs-300);
   font-weight: var(--fw-regular);
-  /* `--color-text-subtle` is only 2.49:1 on white — too low for body text. */
   color: var(--color-text-muted);
 }
 
@@ -70,14 +93,15 @@
   font-family: var(--font-mono);
   font-size: var(--fs-300);
   line-height: 1.7;
-  resize: vertical;
+  /* `autoResize` writes an explicit height on every keystroke, so a drag handle
+     would only hold until the next character. */
+  resize: none;
 }
 
-/* Matches the textarea's box so toggling Write/Preview doesn't shift the dialog. */
+/* No max-height and no internal scroll: the page is the scroll container, so
+   the preview renders the article at full height the way a reader sees it. */
 .preview {
-  min-height: 320px;
-  max-height: 60vh;
-  overflow-y: auto;
+  min-height: 20rem;
   padding: var(--space-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -88,10 +112,4 @@
   margin: 0;
   color: var(--color-text-muted);
   font-style: italic;
-}
-
-.dialogFooter {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-1);
 }

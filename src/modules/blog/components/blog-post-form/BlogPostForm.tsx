@@ -2,10 +2,10 @@ import ImagePicker from '@/components/ImagePicker';
 import Markdown from '@/components/Markdown';
 import type { Schema } from '@/schema';
 import { useQueryClient } from '@tanstack/react-query';
+import { useBlocker, useNavigate } from '@tanstack/react-router';
 import { generateClient } from 'aws-amplify/data';
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
-import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Toast } from 'primereact/toast';
@@ -16,19 +16,17 @@ import styles from './BlogPostForm.module.css';
 const client = generateClient<Schema>({ authMode: 'userPool' });
 
 interface BlogPostFormProps {
-  visible: boolean;
-  onHide: () => void;
   initialValues?: BlogPost;
   isEdit?: boolean;
 }
 
-const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPostFormProps) => {
+const tagsToInput = (tags?: BlogPost['tags']) => tags?.filter((t): t is string => t !== null).join(', ') ?? '';
+
+const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
   const [title, setTitle] = useState(initialValues?.title ?? '');
   const [content, setContent] = useState(initialValues?.content ?? '');
   const [excerpt, setExcerpt] = useState(initialValues?.excerpt ?? '');
-  const [tagsInput, setTagsInput] = useState(
-    initialValues?.tags?.filter((t): t is string => t !== null).join(', ') ?? '',
-  );
+  const [tagsInput, setTagsInput] = useState(tagsToInput(initialValues?.tags));
   const [published, setPublished] = useState(initialValues?.published ?? false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [titleError, setTitleError] = useState('');
@@ -36,21 +34,29 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
   const [pickerVisible, setPickerVisible] = useState(false);
   const toast = useRef<Toast>(null);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-  const resetForm = () => {
-    setTitle(initialValues?.title ?? '');
-    setContent(initialValues?.content ?? '');
-    setExcerpt(initialValues?.excerpt ?? '');
-    setTagsInput(initialValues?.tags?.filter((t): t is string => t !== null).join(', ') ?? '');
-    setPublished(initialValues?.published ?? false);
-    setTitleError('');
-    setShowPreview(false);
-  };
+  const isDirty =
+    title !== (initialValues?.title ?? '') ||
+    content !== (initialValues?.content ?? '') ||
+    excerpt !== (initialValues?.excerpt ?? '') ||
+    tagsInput !== tagsToInput(initialValues?.tags) ||
+    published !== (initialValues?.published ?? false);
 
-  const handleHide = () => {
-    resetForm();
-    onHide();
-  };
+  // Set on the save path so the guard below doesn't ask you to confirm
+  // discarding the very changes that were just written. A ref, not state:
+  // `navigate` runs in the same tick and would not see a queued setState.
+  const isLeavingAfterSave = useRef(false);
+
+  // A dialog had one obvious exit. A page has Back, the sidebar, and the
+  // address bar, so leaving mid-edit has to be caught explicitly.
+  useBlocker({
+    shouldBlockFn: () => {
+      if (!isDirty || isLeavingAfterSave.current) return false;
+      return !window.confirm('Discard your changes to this musing?');
+    },
+    enableBeforeUnload: () => isDirty && !isLeavingAfterSave.current,
+  });
 
   const validate = (): boolean => {
     if (!title.trim()) {
@@ -59,6 +65,15 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
     }
     setTitleError('');
     return true;
+  };
+
+  const leaveTo = (postId?: string) => {
+    isLeavingAfterSave.current = true;
+    if (postId) {
+      navigate({ to: '/blog/$postId', params: { postId } });
+    } else {
+      navigate({ to: '/blog' });
+    }
   };
 
   const handleSubmit = async () => {
@@ -108,7 +123,11 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
       if (isEdit && initialValues?.id) {
         queryClient.invalidateQueries({ queryKey: ['blogPost', initialValues.id] });
       }
-      handleHide();
+
+      // Straight to the article after an edit; back to the list after a create,
+      // since the new id only arrives inside the mutation response and the list
+      // is where you would go looking for it anyway.
+      leaveTo(isEdit ? initialValues?.id : undefined);
     } catch (error) {
       console.error('Error saving blog post:', error);
       toast.current?.show({
@@ -122,37 +141,30 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
     }
   };
 
-  const dialogFooter = (
-    <div className={styles.dialogFooter}>
-      <Button
-        label='Cancel'
-        icon='pi pi-times'
-        outlined
-        onClick={handleHide}
-        className='p-button-text'
-      />
-      <Button
-        label={isSubmitting ? 'Saving...' : isEdit ? 'Update' : 'Create'}
-        icon='pi pi-check'
-        onClick={handleSubmit}
-        disabled={isSubmitting}
-        loading={isSubmitting}
-      />
-    </div>
-  );
-
   return (
     <>
       <Toast ref={toast} />
-      <Dialog
-        header={isEdit ? 'Edit Musing' : 'New Musing'}
-        visible={visible}
-        style={{ width: '800px' }}
-        modal
-        onHide={handleHide}
-        footer={dialogFooter}
-        draggable={false}
-        resizable={false}>
+      <div className={styles.page}>
+        <div className={styles.pageHeaderRow}>
+          <h1 className={styles.pageHeading}>{isEdit ? 'Edit Musing' : 'New Musing'}</h1>
+          <div className={styles.pageActions}>
+            <Button
+              label='Cancel'
+              icon='pi pi-times'
+              outlined
+              className='p-button-text'
+              onClick={() => navigate({ to: '/blog' })}
+            />
+            <Button
+              label={isSubmitting ? 'Saving...' : isEdit ? 'Update' : 'Create'}
+              icon='pi pi-check'
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              loading={isSubmitting}
+            />
+          </div>
+        </div>
+
         <div className={styles.formContainer}>
           <div className={styles.formField}>
             <label
@@ -228,7 +240,10 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
                 onChange={e => setContent(e.target.value)}
                 className={`w-full ${styles.contentInput}`}
                 placeholder={'Write in markdown.\n\nUse “Insert image” to copy an image snippet, then paste it here.'}
-                rows={14}
+                rows={20}
+                // Grows with the post so the page is the only thing that
+                // scrolls — the whole reason for moving off the dialog.
+                autoResize
               />
             )}
           </div>
@@ -261,7 +276,7 @@ const BlogPostForm = ({ visible, onHide, initialValues, isEdit = false }: BlogPo
             </label>
           </div>
         </div>
-      </Dialog>
+      </div>
 
       <ImagePicker
         visible={pickerVisible}

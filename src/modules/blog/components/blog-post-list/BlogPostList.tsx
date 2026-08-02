@@ -12,11 +12,7 @@ import styles from './BlogPostList.module.css';
 const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
 const clientWrite = generateClient<Schema>({ authMode: 'userPool' });
 
-interface BlogPostListProps {
-  onEdit?: (post: BlogPost) => void;
-}
-
-const BlogPostList = ({ onEdit }: BlogPostListProps) => {
+const BlogPostList = () => {
   const { isAdmin } = useAuth();
   const queryClient = useQueryClient();
 
@@ -97,7 +93,6 @@ const BlogPostList = ({ onEdit }: BlogPostListProps) => {
         <BlogPostCard
           key={post.id}
           post={post}
-          onEdit={isAdmin ? onEdit : undefined}
           onDelete={isAdmin ? handleDelete : undefined}
         />
       ))}

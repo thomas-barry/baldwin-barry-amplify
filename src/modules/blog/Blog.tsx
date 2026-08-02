@@ -1,13 +1,10 @@
 import { useAuth } from '@/context/AuthContext';
-import { Button } from 'primereact/button';
+import { Link } from '@tanstack/react-router';
 import styles from './Blog.module.css';
-import BlogPostForm from './components/blog-post-form/BlogPostForm';
 import BlogPostList from './components/blog-post-list/BlogPostList';
-import { useBlogPostForm } from './hooks/useBlogPostForm';
 
 const Blog = () => {
   const { isAdmin } = useAuth();
-  const { isOpen, editPost, openCreateForm, openEditForm, closeForm } = useBlogPostForm();
 
   return (
     <div className={styles.page}>
@@ -17,27 +14,21 @@ const Blog = () => {
         </div>
         {isAdmin && (
           <div className={styles.headerControls}>
-            <Button
-              label='New Post'
-              icon='pi pi-plus'
-              onClick={openCreateForm}
-            />
+            <Link
+              to='/blog/new'
+              className='p-button p-component'>
+              <span
+                className='p-button-icon pi pi-plus p-button-icon-left'
+                aria-hidden='true'
+              />
+              <span className='p-button-label'>New Post</span>
+            </Link>
           </div>
         )}
       </div>
 
-      {isAdmin && (
-        <BlogPostForm
-          key={editPost?.id ?? 'new'}
-          visible={isOpen}
-          onHide={closeForm}
-          initialValues={editPost ?? undefined}
-          isEdit={!!editPost}
-        />
-      )}
-
       <div className={styles.listWrapper}>
-        <BlogPostList onEdit={isAdmin ? openEditForm : undefined} />
+        <BlogPostList />
       </div>
     </div>
   );
