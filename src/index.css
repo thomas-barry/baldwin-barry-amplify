@@ -100,6 +100,28 @@
   --space-3: 24px;
   --space-4: 32px;
 
+  /* Elevation. Four steps, no more: sm = resting card, md = raised panel,
+     lg = hover lift, xl = modal. The dark block redefines all four — the same
+     alpha that reads as a soft shadow on cream is invisible on #0c1c28. */
+  --shadow-sm:
+    0 1px 3px 0 rgb(0 0 0 / 0.08),
+    0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-md:
+    0 4px 6px -1px rgb(0 0 0 / 0.08),
+    0 2px 4px -1px rgb(0 0 0 / 0.04);
+  --shadow-lg:
+    0 10px 25px -5px rgb(0 0 0 / 0.08),
+    0 10px 10px -5px rgb(0 0 0 / 0.04);
+  --shadow-xl: 0 24px 60px rgb(0 0 0 / 0.15);
+
+  /* One focus treatment for the whole app. A box-shadow rather than an outline
+     so it can sit alongside an elevation shadow on the same element.
+
+     NOT named `--focus-ring`: the PrimeReact theme defines that on :root, and
+     the theme sheet is unlayered (it is swapped at runtime for dark mode), so
+     it would silently win and this value would never apply. */
+  --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--color-accent) 40%, transparent);
+
   /* PrimeReact overrides — light */
   --primary-color: #3dbfb8;
   --primary-color-text: #0d1f2d;
@@ -134,6 +156,19 @@
   --clr-surface: var(--color-bg);
   --clr-text: var(--color-text);
   --dot-color: rgba(240, 235, 225, 0.12);
+
+  /* Same geometry as light, heavier alpha — a shadow has to be roughly 4x as
+     opaque to read at all against a dark ground. */
+  --shadow-sm:
+    0 1px 3px 0 rgb(0 0 0 / 0.3),
+    0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow-md:
+    0 4px 6px -1px rgb(0 0 0 / 0.35),
+    0 2px 4px -1px rgb(0 0 0 / 0.25);
+  --shadow-lg:
+    0 10px 25px -5px rgb(0 0 0 / 0.45),
+    0 10px 10px -5px rgb(0 0 0 / 0.3);
+  --shadow-xl: 0 24px 60px rgb(0 0 0 / 0.55);
 
   color-scheme: dark;
 

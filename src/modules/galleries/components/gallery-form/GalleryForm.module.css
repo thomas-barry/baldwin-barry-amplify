@@ -41,7 +41,7 @@
 
 /* Make focus visible for accessibility */
 :global(.p-inputtext:focus) {
-  box-shadow: 0 0 0 0.2rem rgba(63, 81, 181, 0.25);
+  box-shadow: var(--shadow-focus);
 }
 
 /* Error state for inputs */
