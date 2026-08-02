@@ -1,5 +1,4 @@
 import { Authenticator } from '@aws-amplify/ui-react';
-import '@aws-amplify/ui-react/styles.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
@@ -8,12 +7,10 @@ import { PrimeReactProvider } from 'primereact/api';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import outputs from '../amplify_outputs.json';
+// Vendor CSS (PrimeReact core, PrimeFlex, primeicons, Amplify UI) is imported
+// from index.css so it can be assigned a cascade layer. The PrimeReact theme is
+// loaded and swapped at runtime by ThemeProvider.
 import './index.css';
-
-import 'primeflex/primeflex.css'; // flex utilities
-import 'primeicons/primeicons.css'; // icons
-import 'primereact/resources/primereact.min.css'; // core css
-import 'primereact/resources/themes/lara-light-teal/theme.css'; // theme
 
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';

@@ -24,7 +24,7 @@
 }
 
 .requiredMark {
-  color: var(--red-500);
+  color: var(--color-destructive);
 }
 
 .dialogFooter {
@@ -41,12 +41,13 @@
 
 /* Make focus visible for accessibility */
 :global(.p-inputtext:focus) {
-  box-shadow: 0 0 0 0.2rem rgba(63, 81, 181, 0.25);
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
 }
 
 /* Error state for inputs */
 :global(.p-invalid) {
-  border-color: var(--red-500) !important;
+  border-color: var(--color-destructive) !important;
 }
 
 /* Animation for showing the dialog */

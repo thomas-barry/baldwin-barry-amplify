@@ -6,21 +6,22 @@
   height: var(--curtain-height, 240px);
   border-radius: var(--radius-lg);
   background-color: var(--color-surface);
+  /* The border reserves space so `outlined` can add a visible edge without
+     shifting layout. `padding-box` keeps the surface colour from painting
+     under it, which would otherwise read as a hairline ring around any
+     edge-to-edge content such as a full-bleed image. */
   border: 1px solid transparent;
+  background-clip: padding-box;
 }
 
 /* ── Variants ─────────────────────────────────────────────────────── */
 
 .default {
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.08),
-    0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .elevated {
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.08),
-    0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-md);
 }
 
 .outlined {

@@ -38,7 +38,33 @@
   width: 100%;
   margin: 20px 0;
   text-align: center;
-  background-color: var(--surface-card);
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Mirrors GalleryCard: 1/1 image area, then a body row. Same grid cell, same
+   radius, same border — so the real cards drop straight in without the page
+   reflowing around them. */
+.skeletonCard {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.skeletonImage {
+  aspect-ratio: 1 / 1;
+}
+
+.skeletonBody {
+  padding: var(--space-2);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1);
+}
+
+.retryButton {
+  margin-top: var(--space-2);
 }

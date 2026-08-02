@@ -1,0 +1,36 @@
+.skeleton {
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Sweep rather than a pulse: a pulse on a grid of cards reads as the whole page
+   flashing, while a sweep stays legible as "content is arriving". */
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-surface) 60%, transparent),
+    transparent
+  );
+  animation: sweep 1.4s ease-in-out infinite;
+}
+
+@keyframes sweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* The global prefers-reduced-motion block collapses the duration, which would
+   leave the sweep frozen mid-sheen. Drop it entirely instead. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    display: none;
+  }
+}

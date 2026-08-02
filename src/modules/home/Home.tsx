@@ -6,7 +6,7 @@ const Home = () => (
   <div className={styles.page}>
     <section className={styles.hero}>
       <div className={styles.heroContent}>
-        <p className={styles.overline}>Retired Software Engineer · Borderline Misanthrope</p>
+        <p className={styles.overline}>Retired Gen-X Software Engineer · Borderline Misanthrope</p>
         <h1 className={styles.headline}>
           Building things.
           <br />
@@ -21,7 +21,7 @@ const Home = () => (
       <div className={styles.heroPhoto}>
         <CurtainCard
           className={styles.heroCard}
-          height='clamp(220px, 25vw, 320px)'
+          height='auto'
           variant='default'
           padding='none'
           enterDelay='0.25s'

@@ -1,3 +1,4 @@
+import Skeleton from '@/components/Skeleton';
 import type { SortValue } from '@/components/SortSelect';
 import { useAuth } from '@/context/AuthContext';
 import GalleryCard from '@/modules/galleries/components/gallery-card/GalleryCard';
@@ -5,9 +6,10 @@ import { Gallery } from '@/modules/galleries/types';
 import type { Schema } from '@/schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
+import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
-import { ProgressSpinner } from 'primereact/progressspinner';
-import { useMemo } from 'react';
+import { Toast } from 'primereact/toast';
+import { useMemo, useRef } from 'react';
 import styles from './GalleryList.module.css';
 
 interface GalleryListProps {
@@ -17,15 +19,19 @@ interface GalleryListProps {
 const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
 const clientWrite = generateClient<Schema>({ authMode: 'userPool' });
 
+const SKELETON_COUNT = 6;
+
 const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
   const queryClient = useQueryClient();
   const { isAdmin } = useAuth();
+  const toast = useRef<Toast>(null);
 
   const {
     data: galleries,
     isLoading,
     isError: isErrorQuery,
     error,
+    refetch,
   } = useQuery({
     queryKey: ['galleries'],
     queryFn: async () => {
@@ -75,7 +81,12 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
       queryClient.invalidateQueries({ queryKey: ['galleries'] });
     },
     onError: error => {
-      console.error('Error deleting gallery:', error);
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Delete failed',
+        detail: error instanceof Error ? error.message : 'Could not delete the gallery.',
+        life: 5000,
+      });
     },
   });
 
@@ -87,8 +98,30 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
 
   if (isLoading) {
     return (
-      <div className={styles.loaderContainer}>
-        <ProgressSpinner />
+      <div className={styles.galleryListContainer}>
+        <div className={styles.galleryGrid}>
+          {Array.from({ length: SKELETON_COUNT }, (_, i) => (
+            <div
+              key={i}
+              className={styles.skeletonCard}>
+              <Skeleton
+                className={styles.skeletonImage}
+                height='auto'
+                radius='0'
+              />
+              <div className={styles.skeletonBody}>
+                <Skeleton
+                  width='55%'
+                  height='1.25rem'
+                />
+                <Skeleton
+                  width='25%'
+                  height='0.875rem'
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -98,9 +131,16 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
       <div className={styles.errorContainer}>
         <i
           className='pi pi-exclamation-triangle'
-          style={{ fontSize: '2rem', color: 'var(--red-500)' }}
+          style={{ fontSize: 'var(--fs-800)', color: 'var(--color-destructive)' }}
         />
         <p>Error loading galleries: {error?.message || 'Unknown error'}</p>
+        <Button
+          className={styles.retryButton}
+          label='Try again'
+          icon='pi pi-refresh'
+          outlined
+          onClick={() => refetch()}
+        />
       </div>
     );
   }
@@ -110,13 +150,14 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
       <Card
         className={styles.emptyStateCard}
         title='No Galleries Found'>
-        <p>No galleries have been created yet. Use the "Create New Gallery" button to add one.</p>
+        {isAdmin && <p>No galleries yet. Use &quot;New Gallery&quot; to create one.</p>}
       </Card>
     );
   }
 
   return (
     <div className={styles.galleryListContainer}>
+      <Toast ref={toast} />
       <div className={styles.galleryGrid}>
         {sortedGalleries.map(gallery => (
           <GalleryCard
