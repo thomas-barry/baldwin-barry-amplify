@@ -49,6 +49,8 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
             alt={gallery.thumbnailImage.title || 'Gallery thumbnail'}
             className={crop && W && H ? undefined : styles.cardImage}
             style={cropStyle}
+            loading='lazy'
+            decoding='async'
           />
         ) : (
           <div className={styles.imagePlaceholder}>

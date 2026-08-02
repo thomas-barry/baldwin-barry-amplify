@@ -28,8 +28,8 @@
 .draftBadge {
   font-size: var(--fs-300);
   font-weight: var(--fw-bold);
-  color: var(--color-warning, #b45309);
-  background: var(--color-warning-subtle, #fef3c7);
+  color: var(--color-warning);
+  background: var(--color-warning-subtle);
   padding: 0.125rem 0.5rem;
   border-radius: var(--radius-sm);
   text-transform: uppercase;
@@ -107,7 +107,7 @@
 .tag {
   font-size: var(--fs-300);
   color: var(--color-accent);
-  background: var(--color-accent-subtle, rgba(var(--color-accent-rgb, 0 0 0) / 0.08));
+  background: var(--color-accent-subtle);
   padding: 0.125rem 0.5rem;
   border-radius: var(--radius-sm);
 }

@@ -1,5 +1,11 @@
 .page {
-  padding: var(--space-3) var(--space-3) var(--space-4);
+  padding: var(--page-padding);
+  /* `main` is a flex row, so without `width: 100%` this shrink-wraps its
+     content and `margin-inline: auto` centres a too-narrow box — which is what
+     made each section's heading land at a different x. */
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
 }
 
 .pageHeaderRow {

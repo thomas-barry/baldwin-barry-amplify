@@ -4,7 +4,9 @@ import { useImageUrls } from '@/lib/imageUrl';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import ReactImageGallery, { ReactImageGalleryItem } from 'react-image-gallery';
-import 'react-image-gallery/styles/css/image-gallery.css';
+// image-gallery.css is NOT imported here — index.css imports it into
+// `layer(gallery)`. An import from a .tsx is unlayered, and unlayered CSS beats
+// every layer, so a second copy here would outrank the overrides below.
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { THUMBNAIL_PREFIX, UPLOADS_PREFIX } from '../../../../../constants';
 import ExifPanel from '../exif-panel';

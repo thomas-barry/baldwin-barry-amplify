@@ -1,6 +1,25 @@
-@layer normalize, default, themes, gallery, modules, components, utilities;
+/* `primereact` is declared here on purpose: PrimeReact's own stylesheets wrap
+   themselves in `@layer primereact`, and a layer's priority is fixed by where
+   it FIRST appears. Naming it here pins it above normalize/vendor (so buttons
+   keep their theme colors) and below authored styles. Without this line the
+   theme link registers the layer itself and lands lowest, which is enough for
+   normalize's `a { background: transparent }` to blank out button fills. */
+@layer normalize, vendor, primereact, gallery, default, themes, modules, components, utilities;
 
 @import url('normalize.css/normalize.css') layer(normalize);
+
+/* Vendor CSS must be layered, or it outranks every authored rule regardless of
+   import order — unlayered CSS beats all layers. These live here rather than in
+   main.tsx because only a stylesheet can assign a layer to an import.
+
+   The PrimeReact *theme* is deliberately NOT here: it has to be swappable at
+   runtime for dark mode (see ThemeContext), and an @import cannot be toggled.
+   It stays an unlayered <link> in index.html, so overrides of theme rules still
+   need explicit specificity. */
+@import url('primereact/resources/primereact.min.css') layer(vendor);
+@import url('primeflex/primeflex.css') layer(vendor);
+@import url('primeicons/primeicons.css') layer(vendor);
+@import url('@aws-amplify/ui-react/styles.css') layer(vendor);
 @import url('react-image-gallery/styles/css/image-gallery.css') layer(gallery);
 
 /* ── Paper Design System: Light (default) ────────────────────────── */
@@ -9,6 +28,7 @@
   --color-bg: #f4ede4;
   --color-surface: #ffffff;
   --color-surface-raised: #ede6dd;
+  --color-surface-alt: #ede6dd;
   --color-surface-nav: #0d1f2d;
   --color-border: rgba(13, 31, 45, 0.1);
   --color-text: #0d1f2d;
@@ -21,6 +41,10 @@
   --color-destructive: #b54040;
   --color-badge: #e8722a;
 
+  /* Tinted accent fills — derived so they follow the theme automatically. */
+  --color-accent-subtle: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  --color-warning-subtle: color-mix(in srgb, var(--color-warning) 16%, transparent);
+
   /* Sidebar geometry */
   --sidebar-width: 204px;
   --sidebar-width-collapsed: 64px;
@@ -30,16 +54,24 @@
   /* Shared header geometry */
   --header-height: 64px;
 
+  /* Page shell — every module's top-level `.page` uses these so headings line
+     up when you navigate between sections. `--prose-max` is a reading measure
+     for long-form text, applied to the text, not the container. */
+  --page-max: 1100px;
+  --page-padding: var(--space-4) var(--space-3);
+  --prose-max: 68ch;
+
   /* Font families */
   --font-display: 'Inter Tight', 'Inter', system-ui, sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
   --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
 
-  /* Font weights */
-  --fw-light: 200;
+  /* Font weights — must stay within the weights loaded in index.html. */
   --fw-regular: 400;
+  --fw-medium: 500;
   --fw-bold: 600;
   --fw-black: 700;
+  --fw-heavy: 800; /* display face only — Inter is not loaded at 800 */
 
   /* Font sizes — heading scale */
   --fs-h1: 3rem; /* 48px */
@@ -50,6 +82,7 @@
   --fs-h6: 0.9375rem; /* 15px */
 
   /* Font sizes — legacy scale */
+  --fs-200: 0.75rem;
   --fs-300: 0.875rem;
   --fs-400: 1rem;
   --fs-500: 1.125rem;
@@ -85,6 +118,7 @@
   --color-bg: #0c1c28;
   --color-surface: #152b3a;
   --color-surface-raised: #1e3a4d;
+  --color-surface-alt: #1e3a4d;
   --color-surface-nav: #091520;
   --color-border: rgba(240, 235, 225, 0.1);
   --color-text: #f0ebe1;
@@ -128,6 +162,10 @@
 html {
   color-scheme: light;
   height: 100%;
+  /* Reserve the scrollbar track always. Without it, navigating from a page that
+     scrolls to one that doesn't widens the viewport by the scrollbar width and
+     every centred page shell shifts sideways. */
+  scrollbar-gutter: stable;
 }
 
 p + p {

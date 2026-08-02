@@ -55,5 +55,5 @@
   height: 280px;
   border-radius: 6px;
   background-repeat: no-repeat;
-  background-color: var(--color-surface-alt, #f0f0f0);
+  background-color: var(--color-surface-alt);
 }

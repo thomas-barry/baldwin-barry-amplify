@@ -110,7 +110,7 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
       <Card
         className={styles.emptyStateCard}
         title='No Galleries Found'>
-        <p>No galleries have been created yet. Use the "Create New Gallery" button to add one.</p>
+        {isAdmin && <p>No galleries yet. Use &quot;New Gallery&quot; to create one.</p>}
       </Card>
     );
   }

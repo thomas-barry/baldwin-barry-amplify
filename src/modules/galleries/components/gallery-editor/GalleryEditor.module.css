@@ -139,6 +139,11 @@
   padding-bottom: 0;
 }
 
+/* The `!important`s here and on `.thumbnailButton` below are load-bearing, not
+   legacy cruft. They override the PrimeReact *theme* sheet (`.p-card`,
+   `.p-button`), which ThemeContext loads as a runtime <link> so dark mode can
+   swap it — that makes it unlayered, and unlayered CSS outranks every layer.
+   Layering the other vendor CSS (see index.css) does not reach these. */
 :global([data-theme='dark']) .reorderSection {
   background: var(--color-surface) !important;
   color: var(--color-text) !important;
