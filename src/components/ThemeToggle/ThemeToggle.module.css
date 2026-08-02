@@ -47,7 +47,7 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: var(--color-text-subtle);
+  background: var(--color-control-mark);
   transition:
     transform 0.2s ease,
     background 0.2s;
