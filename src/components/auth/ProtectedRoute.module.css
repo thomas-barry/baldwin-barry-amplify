@@ -18,7 +18,7 @@
   color: #0d1f2d;
   padding: 8px 16px;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: var(--fs-400);
 }
 
 .prompt button:hover {

@@ -6,7 +6,7 @@
 }
 
 .icon {
-  font-size: 0.875rem;
+  font-size: var(--fs-300);
   color: var(--color-text-subtle);
   transition: color 0.2s;
   flex-shrink: 0;

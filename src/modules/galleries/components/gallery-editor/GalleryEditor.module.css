@@ -19,7 +19,7 @@
 .title {
   margin: 0;
   color: var(--color-text);
-  font-size: 24px;
+  font-size: var(--fs-600);
 }
 
 .adminOnlyToggle {
@@ -38,7 +38,7 @@
 }
 
 .sectionTitle {
-  font-size: 18px;
+  font-size: var(--fs-500);
   font-weight: 600;
   color: var(--color-text);
   margin-bottom: 15px;
@@ -97,7 +97,7 @@
   color: white;
   padding: 4px 8px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: var(--fs-200);
   font-weight: 500;
 }
 
@@ -116,7 +116,7 @@
 }
 
 .thumbnailTitle {
-  font-size: 14px;
+  font-size: var(--fs-300);
   font-weight: 500;
   color: var(--color-text);
   margin: 0;
@@ -204,7 +204,7 @@
 
 .sectionDescription {
   color: var(--color-text-muted);
-  font-size: 14px;
+  font-size: var(--fs-300);
   margin-bottom: 16px;
   margin-top: -8px;
 }
@@ -280,7 +280,7 @@
 }
 
 .sortableItemTitle {
-  font-size: 12px;
+  font-size: var(--fs-200);
   color: var(--color-text);
   margin: 0;
   overflow: hidden;
@@ -301,7 +301,7 @@
   border-radius: 4px;
   background: transparent;
   color: var(--color-text-muted);
-  font-size: 12px;
+  font-size: var(--fs-200);
   cursor: pointer;
   transition:
     color 0.15s,
@@ -321,7 +321,7 @@
   color: white;
   border-radius: 4px;
   padding: 4px;
-  font-size: 12px;
+  font-size: var(--fs-200);
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -371,7 +371,7 @@
 .emptyContainer h3 {
   margin: 16px 0 8px 0;
   color: var(--color-text-muted);
-  font-size: 20px;
+  font-size: var(--fs-500);
 }
 
 .emptyContainer p {
@@ -380,11 +380,11 @@
 }
 
 .errorIcon {
-  font-size: 2rem;
+  font-size: var(--fs-800);
 }
 
 .emptyIcon {
-  font-size: 3rem;
+  font-size: var(--fs-900);
   color: var(--color-text-muted);
 }
 
@@ -427,10 +427,10 @@
   }
 
   .title {
-    font-size: 20px;
+    font-size: var(--fs-500);
   }
 
   .sectionTitle {
-    font-size: 16px;
+    font-size: var(--fs-400);
   }
 }

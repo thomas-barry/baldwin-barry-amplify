@@ -73,22 +73,31 @@
   --fw-black: 700;
   --fw-heavy: 800; /* display face only — Inter is not loaded at 800 */
 
-  /* Font sizes — heading scale */
-  --fs-h1: 3rem; /* 48px */
-  --fs-h2: 2rem; /* 32px */
-  --fs-h3: 2rem; /* 32px */
-  --fs-h4: 1.5rem; /* 24px */
-  --fs-h5: 1.125rem; /* 18px */
-  --fs-h6: 0.9375rem; /* 15px */
+  /* ── Type scale ──────────────────────────────────────────────────
+     One scale. The numeric tokens hold the values; the heading tokens are
+     aliases onto them, so there is exactly one place a size is defined and
+     `--fs-h*` can never drift from `--fs-*` again.
 
-  /* Font sizes — legacy scale */
-  --fs-200: 0.75rem;
-  --fs-300: 0.875rem;
-  --fs-400: 1rem;
-  --fs-500: 1.125rem;
-  --fs-600: 1.375rem;
-  --fs-700: 1.75rem;
-  --fs-800: 2.25rem;
+     Previously --fs-h2 and --fs-h3 were both 2rem (no step between them) and
+     --fs-500 duplicated --fs-h5. Sizes chosen to keep every heading currently
+     in use rendering the same, so the only deliberate changes are h3 (32→28,
+     the actual fix) and h6 (15→16, which was the one off-scale value). */
+  --fs-100: 0.6875rem; /* 11px — uppercase chrome labels only, never body copy */
+  --fs-200: 0.75rem; /* 12px */
+  --fs-300: 0.875rem; /* 14px */
+  --fs-400: 1rem; /* 16px */
+  --fs-500: 1.125rem; /* 18px */
+  --fs-600: 1.5rem; /* 24px */
+  --fs-700: 1.75rem; /* 28px */
+  --fs-800: 2rem; /* 32px */
+  --fs-900: 3rem; /* 48px */
+
+  --fs-h1: var(--fs-900);
+  --fs-h2: var(--fs-800);
+  --fs-h3: var(--fs-700);
+  --fs-h4: var(--fs-600);
+  --fs-h5: var(--fs-500);
+  --fs-h6: var(--fs-400);
 
   /* Geometry tokens */
   --radius-sm: 6px;
