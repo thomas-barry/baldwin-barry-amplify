@@ -10,8 +10,19 @@ import styles from './RootLayout.module.css';
 const RootLayout = () => (
   <LoginDialogProvider>
     <div className={styles.appLayout}>
+      {/* First tab stop on every page: the sidebar has six nav links plus a
+          collapse button ahead of the content, and a keyboard user should not
+          have to walk them on every navigation. */}
+      <a
+        href='#main-content'
+        className={styles.skipLink}>
+        Skip to content
+      </a>
       <Sidebar />
-      <main className={styles.mainContent}>
+      <main
+        id='main-content'
+        tabIndex={-1}
+        className={styles.mainContent}>
         <Topbar />
         <Outlet />
       </main>

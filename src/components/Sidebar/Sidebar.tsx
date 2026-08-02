@@ -35,10 +35,15 @@ const NavLink = ({ item, showLabel, onClick }: { item: NavItem; showLabel: boole
     activeProps={{ className: styles.active }}
     activeOptions={{ exact: item.exact }}
     onClick={onClick}>
-    <i className={`${item.icon} ${styles.navIcon}`} />
+    <i
+      className={`${item.icon} ${styles.navIcon}`}
+      aria-hidden='true'
+    />
     {showLabel && <span className={styles.navLabel}>{item.label}</span>}
   </Link>
 );
+
+const MOBILE_NAV_ID = 'mobile-nav';
 
 const Sidebar = () => {
   const { collapsed, setCollapsed } = useSidebar();
@@ -92,14 +97,17 @@ const Sidebar = () => {
             className={styles.collapseBtn}
             onClick={() => setCollapsed(!collapsed)}
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
-            <i className={`pi ${collapsed ? 'pi-chevron-right' : 'pi-chevron-left'}`} />
+            <i
+              className={`pi ${collapsed ? 'pi-chevron-right' : 'pi-chevron-left'}`}
+              aria-hidden='true'
+            />
             {!collapsed && <span>Collapse</span>}
           </button>
         </div>
       </aside>
 
       {/* ── Mobile Top Bar ── */}
-      <div className={styles.mobileTopBar}>
+      <header className={styles.mobileTopBar}>
         <Link
           to='/'
           className={styles.mobileLogoLink}
@@ -111,10 +119,14 @@ const Sidebar = () => {
           className={`${styles.mobileIconBtn} ${mobileOpen ? styles.mobileIconBtnActive : ''}`}
           onClick={() => setMobileOpen(o => !o)}
           aria-expanded={mobileOpen}
-          aria-label='Open navigation menu'>
-          <i className='pi pi-bars' />
+          aria-controls={MOBILE_NAV_ID}
+          aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}>
+          <i
+            className='pi pi-bars'
+            aria-hidden='true'
+          />
         </button>
-      </div>
+      </header>
 
       {/* ── Mobile Overlay ── */}
       {mobileOpen && (
@@ -125,7 +137,9 @@ const Sidebar = () => {
       )}
 
       {/* ── Mobile Dropdown ── */}
-      <div className={`${styles.mobileDropdown} ${mobileOpen ? styles.dropdownOpen : ''}`}>
+      <div
+        id={MOBILE_NAV_ID}
+        className={`${styles.mobileDropdown} ${mobileOpen ? styles.dropdownOpen : ''}`}>
         {NAV_ITEMS.map(item => (
           <NavLink
             key={item.to}
