@@ -1,9 +1,9 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import Skeleton from '@/components/Skeleton';
 import BlogPostForm from '@/modules/blog/components/blog-post-form/BlogPostForm';
 import { blogPostQueryOptions } from '@/modules/blog/queries';
 import { useQuery } from '@tanstack/react-query';
 import { Link, createFileRoute } from '@tanstack/react-router';
-import { ProgressSpinner } from 'primereact/progressspinner';
 
 export const Route = createFileRoute('/blog/$postId/edit')({
   component: RouteComponent,
@@ -28,7 +28,18 @@ function Editor({ postId }: { postId: string }) {
   const { data: post, isLoading, isError } = useQuery(blogPostQueryOptions(postId));
 
   if (isLoading) {
-    return <ProgressSpinner />;
+    // Was a bare, uncentred ProgressSpinner. Stand in for the editor's shape —
+    // title field, then the body area — so the form does not jump into place.
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+        <Skeleton
+          width='60%'
+          height='2rem'
+        />
+        <Skeleton height='2.75rem' />
+        <Skeleton height='20rem' />
+      </div>
+    );
   }
 
   if (isError || !post) {
