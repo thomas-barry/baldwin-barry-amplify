@@ -31,6 +31,6 @@
   margin: 20px 0;
   text-align: center;
   background-color: var(--surface-card);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
 }

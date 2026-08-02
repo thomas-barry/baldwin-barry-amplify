@@ -11,7 +11,7 @@
   cursor: crosshair;
   user-select: none;
   overflow: hidden;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   touch-action: none;
 }
 
@@ -53,7 +53,7 @@
 .preview {
   width: 280px;
   height: 280px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background-repeat: no-repeat;
   background-color: var(--color-surface-alt);
 }
