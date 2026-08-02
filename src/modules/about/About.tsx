@@ -12,11 +12,12 @@ const About = () => (
     </p>
     <p className={styles.body}>
       Along the way I've worn a lot of hats: architect, team lead, mentor, and occasionally the person who figures out
-      why the build is broken. It was never, ever my fault, not even once ((cough)).
+      why the build is broken. It was never, ever my fault, not even once. 😬 🤦🏻‍♂️
     </p>
     <p className={styles.body}>
-      For the last few years or so work felt less and less rewarding and I was burned out. Depressed. Anxious. So, I
-      retired early (a hot minute before Amazon likely would have laid me off).
+      For the last few years or so work felt less and less rewarding. I was burned out, depressed, and anxious. So... I
+      retired early, probably a hot minute before Amazon would have laid me off anyway (as most of my colleagues were
+      soon after).
     </p>
     <p className={styles.body}>
       Now that I have the time, I'm leaning into the things I enjoy — working on the house with my wonderful wife,
