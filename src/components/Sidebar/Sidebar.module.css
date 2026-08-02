@@ -7,7 +7,7 @@
   height: 100dvh;
   width: var(--sidebar-width);
   background: var(--color-surface-nav);
-  border-right: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-nav-edge);
   display: flex;
   flex-direction: column;
   transition: width var(--sidebar-transition);
@@ -60,7 +60,7 @@
   padding: 0.75rem 1.5rem;
   border-radius: 0;
   text-decoration: none;
-  color: var(--color-text-subtle);
+  color: var(--color-nav-text);
   font-family: var(--font-display);
   font-size: var(--fs-300);
   font-weight: 500;
@@ -121,7 +121,7 @@
   border-radius: 0;
   border: none;
   background: transparent;
-  color: var(--color-text-subtle);
+  color: var(--color-nav-text);
   font-size: var(--fs-200);
   cursor: pointer;
   white-space: nowrap;
@@ -284,22 +284,6 @@
   align-items: center;
 }
 
-/* ── Dark mode contrast fix ───────────────────────────────────────── */
-/* --color-text-subtle (#4A6070) on --color-surface-nav (#091520) = ~2.9:1, fails WCAG AA.
-   Override to --color-text-muted (#8FA8B5) = ~7.6:1. */
-
-:global([data-theme='dark']) .navItem {
-  color: var(--color-text-muted);
-
-  &:hover {
-    color: var(--color-text);
-  }
-}
-
-:global([data-theme='dark']) .collapseBtn {
-  color: var(--color-text-muted);
-
-  &:hover {
-    color: var(--color-text);
-  }
-}
+/* No dark-mode contrast patch here any more: --color-nav-text is legible on the
+   rail in both themes (6.7:1 light, 7.4:1 dark), so the token fixes it at the
+   source instead of at these two call sites. */

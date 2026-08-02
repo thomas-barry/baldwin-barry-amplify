@@ -31,9 +31,19 @@
   --color-surface-alt: #ede6dd;
   --color-surface-nav: #0d1f2d;
   --color-border: rgba(13, 31, 45, 0.1);
+  /* Edge between the nav rail and the page. In light the rail already contrasts
+     14:1 with the background, so the ordinary border is enough. */
+  --color-nav-edge: var(--color-border);
   --color-text: #0d1f2d;
   --color-text-muted: #4a6070;
-  --color-text-subtle: #8fa8b5;
+  /* 4.9:1 on --color-bg, 5.7:1 on --color-surface. Was #8fa8b5, which is a
+     nav-rail colour and measured 2.1:1 on cream — see --color-nav-text. */
+  --color-text-subtle: #54697a;
+  /* Text on the dark nav rail. The rail is dark in BOTH themes, so one value
+     serves both: 6.7:1 on the light rail, 7.4:1 on the dark one. Keeping this
+     separate from --color-text-subtle is the point — that token has to work on
+     page surfaces, which invert between themes while the rail does not. */
+  --color-nav-text: #8fa8b5;
   --color-accent: #3dbfb8;
   --color-accent-2: #e8722a;
   --color-positive: #2f9e6b;
@@ -43,6 +53,11 @@
 
   /* Tinted accent fills — derived so they follow the theme automatically. */
   --color-accent-subtle: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  /* Accent for TEXT sitting on --color-accent-subtle. In light, --color-accent
+     on its own 14% tint is 2.0:1 — this darkened teal is 5.7:1 on white and
+     5.0:1 on cream. Dark mode redefines it back to --color-accent, which
+     already clears AA against the dark tint. */
+  --color-accent-strong: #116b67;
   --color-warning-subtle: color-mix(in srgb, var(--color-warning) 16%, transparent);
 
   /* Sidebar geometry */
@@ -131,10 +146,12 @@
      it would silently win and this value would never apply. */
   --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--color-accent) 40%, transparent);
 
-  /* PrimeReact overrides — light */
-  --primary-color: #3dbfb8;
-  --primary-color-text: #0d1f2d;
-  --border-radius: 8px;
+  /* Removed: --primary-color, --primary-color-text and --border-radius. They
+     were labelled "PrimeReact overrides" but never overrode anything — the
+     theme declares all three on :root itself, and being unlayered it wins the
+     source-order tie. Nothing in this app referenced them either. To actually
+     recolour PrimeReact chrome, the theme sheet has to change (see
+     ThemeContext), not a custom property here. */
 
   --dot-color: rgba(13, 31, 45, 0.08);
 
@@ -152,10 +169,18 @@
   --color-surface-alt: #1e3a4d;
   --color-surface-nav: #091520;
   --color-border: rgba(240, 235, 225, 0.1);
+  /* The rail and the page are within 1.06:1 of each other in dark — no fill
+     value separates them, so the edge has to do the work and needs more than
+     the ordinary 10% border. */
+  --color-nav-edge: rgb(240 235 225 / 0.22);
   --color-text: #f0ebe1;
   --color-text-muted: #8fa8b5;
-  --color-text-subtle: #4a6070;
+  /* 5.7:1 on --color-bg, 4.8:1 on --color-surface. Was #4a6070 at 2.6:1/2.2:1,
+     which failed AA everywhere it was used. */
+  --color-text-subtle: #8098a6;
+  --color-nav-text: #8fa8b5;
   --color-accent: #3dbfb8;
+  --color-accent-strong: var(--color-accent);
   --color-accent-2: #e8722a;
   --color-positive: #3dbfb8;
   --color-warning: #e8722a;

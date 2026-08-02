@@ -72,7 +72,7 @@
 
 .tag {
   font-size: var(--fs-300);
-  color: var(--color-accent);
+  color: var(--color-accent-strong);
   background: var(--color-accent-subtle);
   padding: 0.125rem 0.5rem;
   border-radius: var(--radius-sm);
