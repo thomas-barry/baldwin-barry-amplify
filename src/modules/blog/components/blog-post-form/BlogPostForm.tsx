@@ -207,14 +207,16 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
                 Content <span className={styles.formatHint}>Markdown</span>
               </label>
               <div className={styles.contentTools}>
-                <Button
-                  label='Insert image'
-                  icon='pi pi-image'
-                  text
-                  size='small'
-                  type='button'
-                  onClick={() => setPickerVisible(true)}
-                />
+                {!showPreview && (
+                  <Button
+                    label='Insert image'
+                    icon='pi pi-image'
+                    text
+                    size='small'
+                    type='button'
+                    onClick={() => setPickerVisible(true)}
+                  />
+                )}
                 <Button
                   label={showPreview ? 'Write' : 'Preview'}
                   icon={showPreview ? 'pi pi-pencil' : 'pi pi-eye'}
