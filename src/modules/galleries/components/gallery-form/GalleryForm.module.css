@@ -41,7 +41,8 @@
 
 /* Make focus visible for accessibility */
 :global(.p-inputtext:focus) {
-  box-shadow: var(--shadow-focus);
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
 }
 
 /* Error state for inputs */

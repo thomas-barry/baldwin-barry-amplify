@@ -143,13 +143,16 @@
     0 10px 10px -5px rgb(0 0 0 / 0.04);
   --shadow-xl: 0 24px 60px rgb(0 0 0 / 0.15);
 
-  /* One focus treatment for the whole app. A box-shadow rather than an outline
-     so it can sit alongside an elevation shadow on the same element.
+  /* One focus treatment for the whole app, as an outline rather than a
+     box-shadow: it never competes with an element's own elevation, follows
+     border-radius, and renders outside the box so `overflow: hidden` cannot
+     clip it. This is also what Topbar, ImagePicker and CollapsibleSection had
+     already settled on independently.
 
-     NOT named `--focus-ring`: the PrimeReact theme defines that on :root, and
-     the theme sheet is unlayered (it is swapped at runtime for dark mode), so
-     it would silently win and this value would never apply. */
-  --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--color-accent) 40%, transparent);
+     Deliberately not named `--focus-ring`: the PrimeReact theme declares that
+     on :root and, being unlayered, would silently win. */
+  --focus-outline: 2px solid var(--color-accent);
+  --focus-outline-offset: 2px;
 
   /* Removed: --primary-color, --primary-color-text and --border-radius. They
      were labelled "PrimeReact overrides" but never overrode anything — the
@@ -231,6 +234,34 @@ html {
 
 p + p {
   margin-top: var(--space-3);
+}
+
+/* Baseline keyboard focus for everything interactive. Wrapped in :where() so it
+   carries zero specificity — any component that wants a different treatment
+   just declares one and wins, no !important and no ordering games.
+
+   This exists because :focus-visible was present in only 6 of 47 stylesheets:
+   the sidebar nav, the collapse button, the mobile hamburger, both card link
+   overlays, the carousel controls and the post back-link all had no visible
+   focus at all. */
+:where(a[href], button, [role='button'], input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* The app leans on hover transforms, a 250ms sidebar width transition and a
+   450ms carousel slide. Honour the OS setting instead of animating anyway.
+   Not `animation: none` — collapsing to 0.01ms keeps animationend/transitionend
+   handlers firing, so nothing that waits on them can hang. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 body {

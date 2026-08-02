@@ -56,12 +56,9 @@
 }
 
 .clickable:focus-visible {
-  /* The ring is drawn as a box-shadow layered over the lift, so the default
-     outline is suppressed deliberately rather than leaving focus unindicated. */
-  outline: none;
-  box-shadow:
-    var(--shadow-lg),
-    var(--shadow-focus);
+  box-shadow: var(--shadow-lg);
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
 }
 
 [data-theme='dark'] .card {

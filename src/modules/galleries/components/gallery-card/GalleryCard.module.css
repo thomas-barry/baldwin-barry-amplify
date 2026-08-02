@@ -71,10 +71,15 @@
   /* Sit above the stretched cardLink ::after so buttons receive pointer events */
   z-index: 1;
   opacity: 0;
-  transition: opacity 0.2s;
+  visibility: hidden;
+  transition:
+    opacity 0.2s,
+    visibility 0.2s;
 
-  .card:hover & {
+  .card:hover &,
+  .card:focus-within & {
     opacity: 1;
+    visibility: visible;
   }
 }
 
