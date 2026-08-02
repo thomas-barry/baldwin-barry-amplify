@@ -131,7 +131,7 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
       <div className={styles.errorContainer}>
         <i
           className='pi pi-exclamation-triangle'
-          style={{ fontSize: '2rem', color: 'var(--red-500)' }}
+          style={{ fontSize: 'var(--fs-800)', color: 'var(--color-destructive)' }}
         />
         <p>Error loading galleries: {error?.message || 'Unknown error'}</p>
         <Button
