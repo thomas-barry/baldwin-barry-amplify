@@ -54,7 +54,9 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
 
   const sortedGalleries = useMemo(() => {
     if (!galleries) return [];
-    const copy = galleries.filter(g => isAdmin || !g.adminOnly);
+    // Non-admins never see admin-only galleries, nor empty ones — a gallery with
+    // no images has nothing to show and reads as a broken link.
+    const copy = galleries.filter(g => isAdmin || (!g.adminOnly && !!g.images?.length));
     if (sort === 'alpha') {
       copy.sort((a, b) => a.name.localeCompare(b.name));
     } else {

@@ -44,6 +44,8 @@ interface ImageWithDetails {
 interface SortableImageItemProps {
   imageItem: ImageWithDetails;
   isGalleryThumbnail: boolean;
+  /** Bumped after a crop save; remounts StorageImage so it re-signs the URL. */
+  thumbnailVersion?: number;
   onThumbnailToggle: (imageId: string) => void;
   onImageClick?: () => void;
   onDelete: (imageItem: ImageWithDetails) => void;
@@ -52,6 +54,7 @@ interface SortableImageItemProps {
 const SortableImageItem = ({
   imageItem,
   isGalleryThumbnail,
+  thumbnailVersion,
   onThumbnailToggle,
   onImageClick,
   onDelete,
@@ -103,7 +106,10 @@ const SortableImageItem = ({
       <div
         className={styles.imageClickArea}
         onClick={handleImageClick}>
+        {/* Keyed on the version, not on the sortable wrapper: remounting the
+            wrapper would re-register the item with dnd-kit mid-interaction. */}
         <StorageImage
+          key={thumbnailVersion}
           path={imageItem.image.s3ThumbnailKey || imageItem.image.s3Key}
           alt={imageItem.image.title}
           className={styles.sortableItemImage}
@@ -158,6 +164,12 @@ async function cropImageToBlob(imageUrl: string, crop: SquareSelection, outputSi
 const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
 const clientWrite = generateClient<Schema>({ authMode: 'userPool' });
 
+// The upload handler is an S3-triggered Lambda, so the GalleryImage record does
+// not exist yet when the browser's upload finishes. Poll for it rather than
+// refetching once and showing a stale list.
+const UPLOAD_POLL_INTERVAL_MS = 2000;
+const UPLOAD_POLL_TIMEOUT_MS = 60000;
+
 const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   const { isAuthenticated, isAdmin } = useAuth();
   const { openLogin } = useLoginDialog();
@@ -168,6 +180,13 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   const [sortedImages, setSortedImages] = useState<ImageWithDetails[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [cropDialogImage, setCropDialogImage] = useState<ImageWithDetails | null>(null);
+  // Set while uploaded files are still being processed by the Lambda:
+  // `expected` is the image count we are waiting for the list to reach.
+  const [pendingUpload, setPendingUpload] = useState<{ expected: number; deadline: number } | null>(null);
+  // A crop save overwrites the bytes at the existing s3ThumbnailKey, so the URL
+  // never changes and the browser keeps serving its cached copy. Keyed by image
+  // id; bumping it remounts StorageImage, which mints a freshly signed URL.
+  const [thumbnailVersions, setThumbnailVersions] = useState<Record<string, number>>({});
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -211,12 +230,44 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
         .filter(item => item.image != null)
         .map(item => ({ galleryImage: item, image: item.image! })) as unknown as ImageWithDetails[];
     },
+    refetchInterval: pendingUpload && Date.now() < pendingUpload.deadline ? UPLOAD_POLL_INTERVAL_MS : false,
   });
+
+  // Stop polling once the uploaded images show up.
+  useEffect(() => {
+    if (!pendingUpload) return;
+    if ((galleryImages?.length ?? 0) < pendingUpload.expected) return;
+
+    setPendingUpload(null);
+    // The handler adopts the first image of an untouched gallery as its
+    // thumbnail, so the gallery record is stale too — but only now, once the
+    // handler has actually run.
+    queryClient.invalidateQueries({ queryKey: ['gallery', galleryId] });
+    queryClient.invalidateQueries({ queryKey: ['galleries'] });
+  }, [galleryImages, pendingUpload, queryClient, galleryId]);
+
+  // Give up rather than polling forever if the handler never lands.
+  useEffect(() => {
+    if (!pendingUpload) return;
+    const timer = setTimeout(
+      () => {
+        setPendingUpload(null);
+        toast.current?.show({
+          severity: 'warn',
+          summary: 'Still processing',
+          detail: 'The upload is taking longer than usual. Reload the page to check again.',
+          life: 8000,
+        });
+      },
+      Math.max(0, pendingUpload.deadline - Date.now()),
+    );
+    return () => clearTimeout(timer);
+  }, [pendingUpload]);
 
   // Generate thumbnail URLs
   useEffect(() => {
     const generateThumbnailUrls = async () => {
-      if (galleryImages && galleryImages.length > 0) {
+      if (galleryImages) {
         const imagesWithUrls = await Promise.all(
           galleryImages.map(async item => {
             if (!item?.image) return item;
@@ -240,16 +291,26 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
         );
 
         // Sort by order field, then by addedDate
-        const sorted = imagesWithUrls.sort((a, b) => {
+        const byServerOrder = (a: ImageWithDetails, b: ImageWithDetails) => {
           const orderA = a.galleryImage.order ?? 999999;
           const orderB = b.galleryImage.order ?? 999999;
           if (orderA !== orderB) {
             return orderA - orderB;
           }
           return new Date(a.galleryImage.addedDate).getTime() - new Date(b.galleryImage.addedDate).getTime();
-        });
+        };
 
-        setSortedImages(sorted);
+        // Keep whatever arrangement is on screen and append anything new at the
+        // end. A wholesale replace would silently undo an in-progress drag when
+        // an upload poll lands mid-reorder.
+        setSortedImages(prev => {
+          const positions = new Map(prev.map((item, index) => [item.galleryImage.id, index]));
+          const existing = imagesWithUrls
+            .filter(item => positions.has(item.galleryImage.id))
+            .sort((a, b) => positions.get(a.galleryImage.id)! - positions.get(b.galleryImage.id)!);
+          const added = imagesWithUrls.filter(item => !positions.has(item.galleryImage.id)).sort(byServerOrder);
+          return [...existing, ...added];
+        });
       }
     };
 
@@ -325,9 +386,13 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
         thumbnailCrop: null,
       });
     },
-    onSuccess: () => {
+    onSuccess: (_data, { imageId, crop }) => {
       queryClient.invalidateQueries({ queryKey: ['gallery', galleryId] });
       queryClient.invalidateQueries({ queryKey: ['galleries'] });
+      // Only new bytes need busting — a null crop just re-points the gallery.
+      if (crop) {
+        setThumbnailVersions(prev => ({ ...prev, [imageId]: Date.now() }));
+      }
       setCropDialogImage(null);
       toast.current?.show({ severity: 'success', summary: 'Thumbnail updated', life: 3000 });
     },
@@ -435,13 +500,13 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
     updateOrderMutation.mutate(updates);
   };
 
+  // Fires once per file, so each success bumps the count we are waiting for and
+  // restarts the clock.
   const handleUploadSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['galleryImagesWithDetails', galleryId] });
-    // The upload handler adopts the first image of an untouched gallery as its
-    // thumbnail, so the gallery itself is stale too. Like the image list, this
-    // races the Lambda — the refetch may land before the record exists.
-    queryClient.invalidateQueries({ queryKey: ['gallery', galleryId] });
-    queryClient.invalidateQueries({ queryKey: ['galleries'] });
+    setPendingUpload(prev => ({
+      expected: (prev?.expected ?? galleryImages?.length ?? 0) + 1,
+      deadline: Date.now() + UPLOAD_POLL_TIMEOUT_MS,
+    }));
     toast.current?.show({ severity: 'success', summary: 'Image uploaded', life: 3000 });
   };
 
@@ -562,6 +627,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
                     key={item.galleryImage.id}
                     imageItem={item}
                     isGalleryThumbnail={gallery.thumbnailImageId === item.image.id}
+                    thumbnailVersion={thumbnailVersions[item.image.id]}
                     onThumbnailToggle={handleThumbnailToggle}
                     onImageClick={() => setCropDialogImage(item)}
                     onDelete={imageItem =>
@@ -614,6 +680,17 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
           galleryId={galleryId}
           onUploadSuccess={handleUploadSuccess}
         />
+        {pendingUpload && (
+          <p
+            className={styles.processingNotice}
+            role='status'>
+            <i
+              className='pi pi-spin pi-spinner'
+              aria-hidden='true'
+            />
+            Processing upload — this list updates automatically when it&apos;s ready.
+          </p>
+        )}
       </Card>
 
       {cropDialogImage && (
