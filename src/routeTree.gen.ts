@@ -22,6 +22,7 @@ import { Route as BarryfiPlaidOauthRouteImport } from './routes/barryfi/plaid-oa
 import { Route as PhotosGalleryIdIndexRouteImport } from './routes/photos/$galleryId/index'
 import { Route as BlogNewIndexRouteImport } from './routes/blog/new/index'
 import { Route as BlogPostIdIndexRouteImport } from './routes/blog/$postId/index'
+import { Route as AdminQuipsIndexRouteImport } from './routes/admin/quips/index'
 import { Route as AdminCameraIndexRouteImport } from './routes/admin/camera/index'
 import { Route as PhotosGalleryIdEditRouteImport } from './routes/photos/$galleryId/edit'
 import { Route as BlogPostIdEditRouteImport } from './routes/blog/$postId/edit'
@@ -91,6 +92,11 @@ const BlogPostIdIndexRoute = BlogPostIdIndexRouteImport.update({
   path: '/blog/$postId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminQuipsIndexRoute = AdminQuipsIndexRouteImport.update({
+  id: '/admin/quips/',
+  path: '/admin/quips/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCameraIndexRoute = AdminCameraIndexRouteImport.update({
   id: '/admin/camera/',
   path: '/admin/camera/',
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/blog/$postId/edit': typeof BlogPostIdEditRoute
   '/photos/$galleryId/edit': typeof PhotosGalleryIdEditRoute
   '/admin/camera': typeof AdminCameraIndexRoute
+  '/admin/quips': typeof AdminQuipsIndexRoute
   '/blog/$postId': typeof BlogPostIdIndexRoute
   '/blog/new': typeof BlogNewIndexRoute
   '/photos/$galleryId': typeof PhotosGalleryIdIndexRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/blog/$postId/edit': typeof BlogPostIdEditRoute
   '/photos/$galleryId/edit': typeof PhotosGalleryIdEditRoute
   '/admin/camera': typeof AdminCameraIndexRoute
+  '/admin/quips': typeof AdminQuipsIndexRoute
   '/blog/$postId': typeof BlogPostIdIndexRoute
   '/blog/new': typeof BlogNewIndexRoute
   '/photos/$galleryId': typeof PhotosGalleryIdIndexRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/blog/$postId/edit': typeof BlogPostIdEditRoute
   '/photos/$galleryId/edit': typeof PhotosGalleryIdEditRoute
   '/admin/camera/': typeof AdminCameraIndexRoute
+  '/admin/quips/': typeof AdminQuipsIndexRoute
   '/blog/$postId/': typeof BlogPostIdIndexRoute
   '/blog/new/': typeof BlogNewIndexRoute
   '/photos/$galleryId/': typeof PhotosGalleryIdIndexRoute
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
     | '/blog/$postId/edit'
     | '/photos/$galleryId/edit'
     | '/admin/camera'
+    | '/admin/quips'
     | '/blog/$postId'
     | '/blog/new'
     | '/photos/$galleryId'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/blog/$postId/edit'
     | '/photos/$galleryId/edit'
     | '/admin/camera'
+    | '/admin/quips'
     | '/blog/$postId'
     | '/blog/new'
     | '/photos/$galleryId'
@@ -214,6 +225,7 @@ export interface FileRouteTypes {
     | '/blog/$postId/edit'
     | '/photos/$galleryId/edit'
     | '/admin/camera/'
+    | '/admin/quips/'
     | '/blog/$postId/'
     | '/blog/new/'
     | '/photos/$galleryId/'
@@ -233,6 +245,7 @@ export interface RootRouteChildren {
   BlogPostIdEditRoute: typeof BlogPostIdEditRoute
   PhotosGalleryIdEditRoute: typeof PhotosGalleryIdEditRoute
   AdminCameraIndexRoute: typeof AdminCameraIndexRoute
+  AdminQuipsIndexRoute: typeof AdminQuipsIndexRoute
   BlogPostIdIndexRoute: typeof BlogPostIdIndexRoute
   BlogNewIndexRoute: typeof BlogNewIndexRoute
   PhotosGalleryIdIndexRoute: typeof PhotosGalleryIdIndexRoute
@@ -331,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogPostIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/quips/': {
+      id: '/admin/quips/'
+      path: '/admin/quips'
+      fullPath: '/admin/quips'
+      preLoaderRoute: typeof AdminQuipsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/camera/': {
       id: '/admin/camera/'
       path: '/admin/camera'
@@ -369,6 +389,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogPostIdEditRoute: BlogPostIdEditRoute,
   PhotosGalleryIdEditRoute: PhotosGalleryIdEditRoute,
   AdminCameraIndexRoute: AdminCameraIndexRoute,
+  AdminQuipsIndexRoute: AdminQuipsIndexRoute,
   BlogPostIdIndexRoute: BlogPostIdIndexRoute,
   BlogNewIndexRoute: BlogNewIndexRoute,
   PhotosGalleryIdIndexRoute: PhotosGalleryIdIndexRoute,
