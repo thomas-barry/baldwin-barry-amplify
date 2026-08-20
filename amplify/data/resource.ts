@@ -53,6 +53,19 @@ const schema = a.schema({
       allow.group('admin').to(['create', 'update', 'delete']), // Only admin group can modify
     ]),
 
+  Quip: a
+    .model({
+      text: a.string().required(),
+      // Written explicitly by the admin UI on create, so no row ever carries a
+      // null here and the `enabled: { eq: true }` read filter is safe. The
+      // default is a backstop, not the guarantee.
+      enabled: a.boolean().default(true),
+    })
+    .authorization(allow => [
+      allow.publicApiKey().to(['read']),
+      allow.group('admin').to(['create', 'update', 'delete']),
+    ]),
+
   BlogPost: a
     .model({
       title: a.string().required(),

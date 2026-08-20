@@ -7,6 +7,18 @@ interface CurtainCardProps {
   /** Content revealed on the back face when hovered */
   back: React.ReactNode;
   /**
+   * Controlled open state. When true the curtain is held open regardless of hover,
+   * which lets a consumer drive the reveal from tap, focus or keyboard. Leave it
+   * undefined for the default hover-only, JavaScript-free behaviour.
+   */
+  open?: boolean;
+  /**
+   * Fired once the curtain has finished sliding back to its closed position.
+   * Interrupted closes never fire it, so this is the safe moment to swap the
+   * back content: the front panel is guaranteed to be covering it.
+   */
+  onCloseComplete?: () => void;
+  /**
    * CSS height value for the card. Both panels fill this height.
    * Defaults to '240px'. Use any valid CSS length: '300px', '20rem', etc.
    */
@@ -35,6 +47,8 @@ interface CurtainCardProps {
 export const CurtainCard: React.FC<CurtainCardProps> = ({
   front,
   back,
+  open,
+  onCloseComplete,
   height = '240px',
   variant = 'default',
   padding = 'md',
@@ -45,6 +59,18 @@ export const CurtainCard: React.FC<CurtainCardProps> = ({
   frontStyle,
   backStyle,
 }) => {
+  /*
+   * The same `transform` transition runs in both directions, so the resting
+   * position is what distinguishes a finished close from a finished open.
+   */
+  const handleTransitionEnd = (event: React.TransitionEvent<HTMLDivElement>) => {
+    if (event.propertyName !== 'transform' || !onCloseComplete) return;
+    const transform = getComputedStyle(event.currentTarget).transform;
+    if (transform === 'none' || new DOMMatrix(transform).m42 === 0) {
+      onCloseComplete();
+    }
+  };
+
   const containerClasses = [styles.curtainCard, styles[variant], styles[`padding-${padding}`], className]
     .filter(Boolean)
     .join(' ');
@@ -52,6 +78,7 @@ export const CurtainCard: React.FC<CurtainCardProps> = ({
   return (
     <article
       className={containerClasses}
+      data-open={open ? 'true' : undefined}
       style={
         {
           '--curtain-height': height,
@@ -65,7 +92,8 @@ export const CurtainCard: React.FC<CurtainCardProps> = ({
       </div>
       <div
         className={[styles.front, frontClassName].filter(Boolean).join(' ')}
-        style={frontStyle}>
+        style={frontStyle}
+        onTransitionEnd={handleTransitionEnd}>
         {front}
       </div>
     </article>

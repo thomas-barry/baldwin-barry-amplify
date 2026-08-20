@@ -48,7 +48,8 @@
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.curtainCard:hover .front {
+.curtainCard:hover .front,
+.curtainCard[data-open='true'] .front {
   transform: translateY(-100%);
   transition-delay: var(--curtain-enter-delay, 0s);
 }
