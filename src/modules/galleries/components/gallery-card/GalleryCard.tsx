@@ -15,7 +15,9 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
   const { isAdmin } = useAuth();
   const photoCount = gallery.images?.length ?? 0;
 
-  const thumbnailKey = gallery.thumbnailImage?.s3ThumbnailKey;
+  // A gallery can adopt a thumbnail-less image as its cover, so fall back to
+  // the original rather than rendering an empty frame.
+  const thumbnailKey = gallery.thumbnailImage?.s3ThumbnailKey ?? gallery.thumbnailImage?.s3Key;
   const thumbnailKeys = useMemo(() => (thumbnailKey ? [thumbnailKey] : []), [thumbnailKey]);
   const imageUrls = useImageUrls(thumbnailKeys);
   const thumbnailSrc = withCacheBuster(thumbnailKey ? imageUrls[thumbnailKey] : undefined, gallery.updatedAt);

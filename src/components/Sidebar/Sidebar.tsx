@@ -29,7 +29,8 @@ const ADMIN_NAV_ITEMS: NavItem[] = [
   { to: '/admin/quips', icon: 'pi pi-comment', label: 'Quips' },
   // Was a loose constant rendered only in the mobile dropdown, so it never
   // appeared in the desktop sidebar at all.
-  { to: '/admin/camera', icon: 'pi pi-camera', label: 'Camera Upload' },
+  { to: '/admin/upload', icon: 'pi pi-images', label: 'Upload Photos' },
+  { to: '/admin/logs', icon: 'pi pi-list', label: 'Upload Logs' },
 ];
 
 const NavLink = ({ item, showLabel, onClick }: { item: NavItem; showLabel: boolean; onClick?: () => void }) => (

@@ -8,7 +8,6 @@ import ReactImageGallery, { ReactImageGalleryItem } from 'react-image-gallery';
 // `layer(gallery)`. An import from a .tsx is unlayered, and unlayered CSS beats
 // every layer, so a second copy here would outrank the overrides below.
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { THUMBNAIL_PREFIX, UPLOADS_PREFIX } from '../../../../../constants';
 import ExifPanel from '../exif-panel';
 import styles from './PhotoCarousel.module.css';
 
@@ -23,6 +22,7 @@ interface GalleryImage {
     title: string;
     s3Key: string;
     s3ThumbnailKey?: string | null;
+    s3DisplayKey?: string | null;
     description?: string | null;
     uploadDate: string;
     contentType?: string | null;
@@ -54,8 +54,11 @@ const PhotoCarousel = ({ galleryImages, isLoading, onSlide }: PhotoCarouselProps
   const galleryItems = useMemo<CarouselItem[]>(
     () =>
       galleryImages.map(gi => ({
-        original: gi.image.s3Key,
-        thumbnail: gi.image.s3ThumbnailKey || gi.image.s3Key.replace(UPLOADS_PREFIX, THUMBNAIL_PREFIX),
+        // Serve the capped display copy, not the original — a full-resolution
+        // phone photo is several megabytes. Both derived keys are unset when
+        // their generation failed, so the original is the fallback for each.
+        original: gi.image.s3DisplayKey || gi.image.s3Key,
+        thumbnail: gi.image.s3ThumbnailKey || gi.image.s3Key,
         description: gi.image.description || gi.image.title || '',
         originalTitle: gi.image.title,
         originalHeight: gi.image.height || 0,

@@ -12,6 +12,7 @@ export interface Gallery {
     title: string;
     s3Key: string;
     s3ThumbnailKey?: string | null;
+    s3DisplayKey?: string | null;
     description?: string | null;
     uploadDate: string;
     fileName: string;

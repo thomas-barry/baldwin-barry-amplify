@@ -66,7 +66,7 @@ const BlogPostCard = ({ post, onDelete }: BlogPostCardProps) => {
             to='/blog/$postId'
             params={{ postId: post.id }}
             className={styles.cardLink}>
-            {post.title}
+            {post.title || 'Untitled draft'}
           </Link>
         </h3>
         <p className={styles.cardExcerpt}>{excerpt}</p>

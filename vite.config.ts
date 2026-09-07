@@ -1,4 +1,4 @@
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import browserslist from 'browserslist';
 import { browserslistToTargets } from 'lightningcss';
@@ -6,15 +6,15 @@ import path from 'path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [TanStackRouterVite({ target: 'react', autoCodeSplitting: true }), react()],
+  plugins: [tanstackRouter({ target: 'react', autoCodeSplitting: true }), react()],
   server: {
-    allowedHosts: ['marina-superorbital-interferingly.ngrok-free.dev'],
+    host: true,
+    allowedHosts: ['.local'],
   },
   css: {
     transformer: 'lightningcss',
     lightningcss: {
       targets: browserslistToTargets(browserslist()),
-      minify: true,
     },
   },
   optimizeDeps: {

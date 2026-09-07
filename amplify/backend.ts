@@ -1,8 +1,10 @@
 import { defineBackend } from '@aws-amplify/backend';
+import { ArnFormat, Stack } from 'aws-cdk-lib';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { onUploadHandler } from './functions/onUploadHandler/resource';
+import { readUploadLogs } from './functions/readUploadLogs/resource';
 import { storage } from './storage/resource';
 
 const backend = defineBackend({
@@ -10,6 +12,7 @@ const backend = defineBackend({
   data,
   storage,
   onUploadHandler,
+  readUploadLogs,
 });
 
 // The Cognito user pool was deleted out-of-band (outside CloudFormation), so CFN still
@@ -42,6 +45,27 @@ backend.onUploadHandler.resources.lambda.addToRolePolicy(
   new PolicyStatement({
     actions: ['cloudfront:CreateInvalidation'],
     resources: ['*'],
+  }),
+);
+
+// The log viewer reads the upload Lambda's own log group. Taking the name and
+// ARN from the construct rather than reconstructing the string keeps them
+// correct across sandbox and branch deploys, where the physical name differs.
+const uploadFunction = backend.onUploadHandler.resources.lambda;
+const uploadLogGroupName = `/aws/lambda/${uploadFunction.functionName}`;
+backend.readUploadLogs.addEnvironment('UPLOAD_LOG_GROUP_NAME', uploadLogGroupName);
+backend.readUploadLogs.resources.lambda.addToRolePolicy(
+  new PolicyStatement({
+    actions: ['logs:FilterLogEvents'],
+    // Scoped to this one log group — not logs:* across the account.
+    resources: [
+      Stack.of(uploadFunction).formatArn({
+        service: 'logs',
+        resource: 'log-group',
+        resourceName: `${uploadLogGroupName}:*`,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      }),
+    ],
   }),
 );
 

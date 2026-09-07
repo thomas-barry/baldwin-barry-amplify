@@ -4,6 +4,7 @@ import type { Schema } from '@/schema';
 import { useQueryClient } from '@tanstack/react-query';
 import { useBlocker, useNavigate } from '@tanstack/react-router';
 import { generateClient } from 'aws-amplify/data';
+import { remove } from 'aws-amplify/storage';
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
 import { InputText } from 'primereact/inputtext';
@@ -12,6 +13,7 @@ import { Toast } from 'primereact/toast';
 import { useRef, useState } from 'react';
 import type { BlogPost } from '../../types';
 import styles from './BlogPostForm.module.css';
+import PastableTextarea from './PastableTextarea';
 
 const client = generateClient<Schema>({ authMode: 'userPool' });
 
@@ -48,12 +50,45 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
   // `navigate` runs in the same tick and would not see a queued setState.
   const isLeavingAfterSave = useRef(false);
 
+  // Images pasted/dropped into the body this session. They upload immediately,
+  // so abandoning an unsaved draft would orphan them — tracked here to delete.
+  const pastedKeysRef = useRef<string[]>([]);
+  const hasSavedRef = useRef(false);
+
+  // `/blog/new` creates an empty stub row up front so the editor always has an
+  // id (pasting needs one). If that stub is left without ever being saved, it
+  // should not linger in the list as an untitled draft.
+  const isPristineDraft =
+    (initialValues?.title ?? '').trim() === '' &&
+    (initialValues?.content ?? '').trim() === '' &&
+    !initialValues?.published;
+
+  const notify = (severity: 'success' | 'info' | 'warn' | 'error', summary: string, detail: string) =>
+    toast.current?.show({ severity, summary, detail, life: severity === 'warn' || severity === 'error' ? 5000 : 3000 });
+
+  const discardDraft = () => {
+    for (const key of pastedKeysRef.current) {
+      void remove({ path: key }).catch(() => undefined);
+    }
+    pastedKeysRef.current = [];
+    if (isPristineDraft && !hasSavedRef.current && initialValues?.id) {
+      void client.models.BlogPost.delete({ id: initialValues.id }).catch(() => undefined);
+      queryClient.invalidateQueries({ queryKey: ['blogPosts'] });
+    }
+  };
+
   // A dialog had one obvious exit. A page has Back, the sidebar, and the
   // address bar, so leaving mid-edit has to be caught explicitly.
   useBlocker({
     shouldBlockFn: () => {
-      if (!isDirty || isLeavingAfterSave.current) return false;
-      return !window.confirm('Discard your changes to this musing?');
+      if (isLeavingAfterSave.current) return false;
+      if (!isDirty) {
+        if (isPristineDraft && !hasSavedRef.current) discardDraft();
+        return false;
+      }
+      const leave = window.confirm('Discard your changes to this musing?');
+      if (leave && !hasSavedRef.current) discardDraft();
+      return !leave;
     },
     enableBeforeUnload: () => isDirty && !isLeavingAfterSave.current,
   });
@@ -118,6 +153,9 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
         detail: isEdit ? 'Musing updated successfully' : 'New musing created',
         life: 3000,
       });
+
+      hasSavedRef.current = true;
+      pastedKeysRef.current = [];
 
       queryClient.invalidateQueries({ queryKey: ['blogPosts'] });
       if (isEdit && initialValues?.id) {
@@ -236,12 +274,16 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
                 )}
               </div>
             ) : (
-              <InputTextarea
+              <PastableTextarea
                 id='post-content'
                 value={content}
-                onChange={e => setContent(e.target.value)}
+                setValue={setContent}
+                onImageUploaded={key => pastedKeysRef.current.push(key)}
+                notify={notify}
                 className={`w-full ${styles.contentInput}`}
-                placeholder={'Write in markdown.\n\nUse “Insert image” to copy an image snippet, then paste it here.'}
+                placeholder={
+                  'Write in markdown.\n\nPaste or drop an image straight in, or use “Insert image” for one already uploaded.'
+                }
                 rows={20}
                 // Grows with the post so the page is the only thing that
                 // scrolls — the whole reason for moving off the dialog.

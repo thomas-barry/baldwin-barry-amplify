@@ -1,0 +1,18 @@
+.wrap {
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--primary-color, #6366f1);
+  border-radius: var(--border-radius, 6px);
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--text-color, #1f2937);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}

@@ -1,17 +1,17 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import CameraUpload from '@/modules/admin/camera/CameraUpload';
+import PhotoUpload from '@/modules/admin/upload/PhotoUpload';
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/admin/camera/')({
-  component: CameraUploadPage,
+export const Route = createFileRoute('/admin/upload/')({
+  component: PhotoUploadPage,
 });
 
-function CameraUploadPage() {
+function PhotoUploadPage() {
   return (
     <ProtectedRoute
       requireAdmin={true}
       redirectTo='/'>
-      <CameraUpload />
+      <PhotoUpload />
     </ProtectedRoute>
   );
 }

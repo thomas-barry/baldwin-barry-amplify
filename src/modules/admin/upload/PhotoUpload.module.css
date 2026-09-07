@@ -30,26 +30,8 @@
   width: 100%;
 }
 
-.hiddenInput {
-  display: none;
-}
-
-.cameraBtn {
-  width: 100%;
-}
-
-.preview {
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-}
-
-.previewImage {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.uploadBtn {
-  width: 100%;
+.hint {
+  font-size: var(--fs-300);
+  color: var(--color-text-muted);
+  margin: 0;
 }

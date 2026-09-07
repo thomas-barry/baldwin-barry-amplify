@@ -5,7 +5,15 @@ import { DynamoDBDocumentClient, PutCommand, UpdateCommand } from '@aws-sdk/lib-
 import exifReader from 'exif-reader';
 import sharp from 'sharp';
 import { Readable } from 'stream';
-import { THUMBNAIL_HEIGHT, THUMBNAIL_PREFIX, THUMBNAIL_WIDTH, UPLOADS_PREFIX } from '../../../constants';
+import {
+  DISPLAY_MAX_EDGE,
+  DISPLAY_PREFIX,
+  DISPLAY_QUALITY,
+  THUMBNAIL_HEIGHT,
+  THUMBNAIL_PREFIX,
+  THUMBNAIL_WIDTH,
+  UPLOADS_PREFIX,
+} from '../../../constants';
 import { sanitizeExif } from './exif';
 import streamToBuffer from './streamToBuffer';
 
@@ -17,6 +25,7 @@ interface ImageMetadata {
   fileName?: string;
   s3Key?: string;
   s3ThumbnailKey?: string;
+  s3DisplayKey?: string;
   [key: string]: string | undefined;
 }
 
@@ -63,6 +72,7 @@ function parseS3Metadata(s3Metadata: Record<string, string> = {}, s3Key: string)
   metadata.fileName = s3Metadata.filename || s3Metadata['filename'];
   metadata.s3Key = s3Key;
   metadata.s3ThumbnailKey = s3Key.replace(UPLOADS_PREFIX, THUMBNAIL_PREFIX);
+  metadata.s3DisplayKey = s3Key.replace(UPLOADS_PREFIX, DISPLAY_PREFIX);
   return metadata;
 }
 
@@ -165,6 +175,7 @@ async function insertImageRecords(
         contentType: contentType,
         s3Key: s3Key,
         s3ThumbnailKey: s3Metadata.s3ThumbnailKey,
+        s3DisplayKey: s3Metadata.s3DisplayKey,
         width: imageData.width || 0,
         height: imageData.height || 0,
         fileSize: imageData.size || 0,
@@ -353,6 +364,7 @@ export const handler = async (event: S3Event) => {
 
       // generate the thumbnail key by replacing 'uploads/' with 'thumbnails/'
       const thumbnailKey = key.replace(UPLOADS_PREFIX, THUMBNAIL_PREFIX);
+      const displayKey = key.replace(UPLOADS_PREFIX, DISPLAY_PREFIX);
 
       // convert stream to buffer
       const imageBuffer = await streamToBuffer(response.Body as Readable);
@@ -368,49 +380,115 @@ export const handler = async (event: S3Event) => {
         imageMetadata = { exif: {} };
       }
 
-      // generate thumbnail using sharp
-      console.log('EXTRACTING THUMBNAIL FROM IMAGE', imageMetadata);
-      const thumbnailBuffer = await sharp(imageBuffer)
-        // Bake the EXIF orientation into the pixels before resizing. sharp does
-        // not copy metadata to the output, so without this the thumbnail keeps
-        // the raw sensor orientation while browsers auto-rotate the original —
-        // leaving thumbnails 90°/180° off. Rotating first also makes
-        // `position: 'top'` crop the top of the *displayed* image.
-        .rotate()
-        .resize({
-          width: THUMBNAIL_WIDTH,
-          height: THUMBNAIL_HEIGHT,
-          fit: 'cover',
-          position: 'top',
-        })
-        .toBuffer();
+      // Thumbnailing must never cost us the record. sharp throws on formats it
+      // cannot decode — HEIC straight off a phone's photo library is the one
+      // that bites — and an unguarded throw here skips insertImageRecords
+      // entirely, leaving the file sitting in S3 and invisible to the app. The
+      // S3 write is inside the guard too: a successful decode whose upload
+      // fails leaves no thumbnail object either.
+      let thumbnailGenerated = false;
+      try {
+        console.log('EXTRACTING THUMBNAIL FROM IMAGE', imageMetadata);
+        const thumbnailBuffer = await sharp(imageBuffer)
+          // Bake the EXIF orientation into the pixels before resizing. sharp does
+          // not copy metadata to the output, so without this the thumbnail keeps
+          // the raw sensor orientation while browsers auto-rotate the original —
+          // leaving thumbnails 90°/180° off. Rotating first also makes
+          // `position: 'top'` crop the top of the *displayed* image.
+          .rotate()
+          .resize({
+            width: THUMBNAIL_WIDTH,
+            height: THUMBNAIL_HEIGHT,
+            fit: 'cover',
+            position: 'top',
+          })
+          .toBuffer();
 
-      // use the same content type for the thumbnail
-      const contentTypeForThumbnail = contentType;
+        // save the thumbnail to S3
+        const putCommand = new PutObjectCommand({
+          Bucket: bucket,
+          Key: thumbnailKey,
+          Body: thumbnailBuffer,
+          // use the same content type for the thumbnail
+          ContentType: contentType,
+          Metadata: {
+            'original-key': key,
+            'thumbnail-generator': 'amplify-sharp',
+            width: THUMBNAIL_WIDTH.toString(),
+            height: THUMBNAIL_HEIGHT.toString(),
+            // Pass through original metadata if available
+            ...(galleryId && { galleryid: galleryId }),
+            ...(title && { title }),
+            ...(description && { description }),
+          },
+        });
 
-      // save the thumbnail to S3
-      const putCommand = new PutObjectCommand({
-        Bucket: bucket,
-        Key: thumbnailKey,
-        Body: thumbnailBuffer,
-        ContentType: contentTypeForThumbnail,
-        Metadata: {
-          'original-key': key,
-          'thumbnail-generator': 'amplify-sharp',
-          width: THUMBNAIL_WIDTH.toString(),
-          height: THUMBNAIL_HEIGHT.toString(),
-          // Pass through original metadata if available
-          ...(galleryId && { galleryid: galleryId }),
-          ...(title && { title }),
-          ...(description && { description }),
-        },
-      });
+        await s3Client.send(putCommand);
 
-      await s3Client.send(putCommand);
+        thumbnailGenerated = true;
+        console.log(`successfully generated thumbnail: ${thumbnailKey}`);
+      } catch (error) {
+        console.warn(`could not generate thumbnail for ${key}, continuing without one:`, error);
+      }
 
-      console.log(`successfully generated thumbnail: ${thumbnailKey}`);
+      // Nothing should ever serve the original to a viewer: a 48MP phone photo is
+      // ~8.5MB, and the carousel was loading exactly that. Write a capped,
+      // re-encoded copy for display. Guarded like the thumbnail — losing the
+      // derivative must never cost the record.
+      let displayGenerated = false;
+      try {
+        // PNG stays PNG so anything with transparency does not flatten to black.
+        // Everything else re-encodes to JPEG, which is where the size win is.
+        const isPng = contentType === 'image/png';
+        const resized = sharp(imageBuffer)
+          // Same reasoning as the thumbnail: bake the orientation into the pixels.
+          .rotate()
+          .resize({
+            width: DISPLAY_MAX_EDGE,
+            height: DISPLAY_MAX_EDGE,
+            fit: 'inside',
+            withoutEnlargement: true,
+          });
 
-      const imageId = await insertImageRecords(docClient, s3Metadata, imageMetadata, contentType, key);
+        const displayBuffer = await (
+          isPng ? resized.png({ compressionLevel: 9 }) : resized.jpeg({ quality: DISPLAY_QUALITY })
+        )
+          // Carry EXIF and the colour profile across, but pin orientation to 1:
+          // .rotate() has already applied it, and re-attaching the original tag
+          // would rotate the image a second time on display.
+          .withMetadata({ orientation: 1 })
+          .toBuffer();
+
+        const displayPut = new PutObjectCommand({
+          Bucket: bucket,
+          Key: displayKey,
+          Body: displayBuffer,
+          ContentType: isPng ? 'image/png' : 'image/jpeg',
+          Metadata: {
+            'original-key': key,
+            'display-generator': 'amplify-sharp',
+          },
+        });
+
+        await s3Client.send(displayPut);
+
+        displayGenerated = true;
+        console.log(`successfully generated display image: ${displayKey} (${displayBuffer.length} bytes)`);
+      } catch (error) {
+        console.warn(`could not generate display image for ${key}, the original will be served instead:`, error);
+      }
+
+      // parseS3Metadata derives both derived keys from the upload key
+      // unconditionally, so on failure they would point the record at objects
+      // that were never written. Clearing them is what lets the frontend fall
+      // back to the original.
+      const recordMetadata: ImageMetadata = {
+        ...s3Metadata,
+        s3ThumbnailKey: thumbnailGenerated ? s3Metadata.s3ThumbnailKey : undefined,
+        s3DisplayKey: displayGenerated ? s3Metadata.s3DisplayKey : undefined,
+      };
+
+      const imageId = await insertImageRecords(docClient, recordMetadata, imageMetadata, contentType, key);
 
       // If galleryId is present and imageId was successfully created, link the image to the gallery
       if (s3Metadata.galleryId && imageId) {

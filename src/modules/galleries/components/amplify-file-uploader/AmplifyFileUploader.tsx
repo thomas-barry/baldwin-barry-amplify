@@ -9,9 +9,13 @@ const UPLOAD_PATH = 'uploads/';
 interface AmplifyFileUploaderProps {
   onUploadSuccess: (event: { key?: string; fileType?: string }) => void;
   galleryId?: string;
+  // Off by default so the gallery editor keeps its compact file list. Worth
+  // turning on where a batch is picked from a photo library and the previews
+  // are how you notice you grabbed the wrong ones.
+  showThumbnails?: boolean;
 }
 
-const AmplifyFileUploader = ({ onUploadSuccess, galleryId }: AmplifyFileUploaderProps) => {
+const AmplifyFileUploader = ({ onUploadSuccess, galleryId, showThumbnails = false }: AmplifyFileUploaderProps) => {
   const toast = useRef<Toast>(null);
 
   const handleUploadError = (error: string) => {
@@ -44,7 +48,7 @@ const AmplifyFileUploader = ({ onUploadSuccess, galleryId }: AmplifyFileUploader
         path={UPLOAD_PATH}
         maxFileCount={10}
         isResumable={true}
-        showThumbnails={false}
+        showThumbnails={showThumbnails}
         onUploadSuccess={onUploadSuccess}
         onUploadError={handleUploadError}
         processFile={processFile}
