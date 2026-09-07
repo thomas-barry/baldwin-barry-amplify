@@ -48,21 +48,38 @@ backend.onUploadHandler.resources.lambda.addToRolePolicy(
   }),
 );
 
-// The log viewer reads the upload Lambda's own log group. Taking the name and
-// ARN from the construct rather than reconstructing the string keeps them
-// correct across sandbox and branch deploys, where the physical name differs.
-const uploadFunction = backend.onUploadHandler.resources.lambda;
-const uploadLogGroupName = `/aws/lambda/${uploadFunction.functionName}`;
-backend.readUploadLogs.addEnvironment('UPLOAD_LOG_GROUP_NAME', uploadLogGroupName);
+// The log viewer must NOT reference the onUploadHandler construct. Doing so
+// closes a CloudFormation cycle: data depends on readUploadLogs (its resolver),
+// readUploadLogs would depend on onUploadHandler, and onUploadHandler already
+// depends on data for its table grants and GRAPHQL_ENDPOINT. The handler
+// resolves the sibling log group at runtime instead, so the only thing wired
+// here is IAM.
+const logsScope = Stack.of(backend.readUploadLogs.resources.lambda);
 backend.readUploadLogs.resources.lambda.addToRolePolicy(
   new PolicyStatement({
-    actions: ['logs:FilterLogEvents'],
-    // Scoped to this one log group — not logs:* across the account.
+    // DescribeLogGroups cannot be narrowed to a single group — it is the call
+    // that finds the group in the first place — so it is scoped to this
+    // account and region only.
+    actions: ['logs:DescribeLogGroups'],
     resources: [
-      Stack.of(uploadFunction).formatArn({
+      logsScope.formatArn({
         service: 'logs',
         resource: 'log-group',
-        resourceName: `${uploadLogGroupName}:*`,
+        resourceName: '*',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      }),
+    ],
+  }),
+);
+backend.readUploadLogs.resources.lambda.addToRolePolicy(
+  new PolicyStatement({
+    // Reading the events themselves stays restricted to upload-handler groups.
+    actions: ['logs:FilterLogEvents'],
+    resources: [
+      logsScope.formatArn({
+        service: 'logs',
+        resource: 'log-group',
+        resourceName: '/aws/lambda/*onUploadHandler*:*',
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       }),
     ],
