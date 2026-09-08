@@ -23,6 +23,14 @@
   width: var(--sidebar-width-collapsed);
 }
 
+/* A phone wide enough in landscape to clear 768px would otherwise show the
+   sidebar over a full-bleed photo. RootLayout drops the matching margin. */
+:global(body.immersive-gallery) .sidebar {
+  @media (orientation: landscape) and (max-height: 500px) and (max-width: 950px) {
+    display: none;
+  }
+}
+
 /* ── Sidebar Header spacer ────────────────────────────────────────── */
 
 .sidebarHeader {
@@ -146,6 +154,16 @@
 }
 
 /* ── Mobile Top Bar ───────────────────────────────────────────────── */
+
+/* The gallery detail route is full-bleed: the photo owns the whole viewport and
+   carries its own floating back/edit controls, so this bar would only be 64px
+   taken off the top of a photograph. The class is put on <body> by Gallery.tsx
+   and removed when it unmounts. */
+:global(body.immersive-gallery) .mobileTopBar {
+  @media (max-width: 768px), (orientation: landscape) and (max-height: 500px) and (max-width: 950px) {
+    display: none;
+  }
+}
 
 .mobileTopBar {
   display: none;

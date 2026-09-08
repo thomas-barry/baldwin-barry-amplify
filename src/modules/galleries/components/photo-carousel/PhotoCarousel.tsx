@@ -37,23 +37,41 @@ interface GalleryImage {
  *  more than one slide renders during a transition. */
 interface CarouselItem extends ReactImageGalleryItem {
   exifSummary: ExifSummary | null;
+  /** Its own position, so the counter on a slide sliding in reads its number
+   *  rather than the one still leaving. */
+  slideIndex: number;
 }
 
 interface PhotoCarouselProps {
   galleryImages: GalleryImage[];
   isLoading: boolean;
   onSlide?: (index: number) => void;
+  /** Owned by Gallery, because the floating header fades with these. */
+  chromeVisible?: boolean;
+  onToggleChrome?: () => void;
 }
 
-const PhotoCarousel = ({ galleryImages, isLoading, onSlide }: PhotoCarouselProps) => {
+/** Below this much travel, or above this long a press, a touch is a swipe or a
+ *  drag rather than a tap. */
+const TAP_SLOP_PX = 10;
+const TAP_MAX_MS = 400;
+
+const PhotoCarousel = ({
+  galleryImages,
+  isLoading,
+  onSlide,
+  chromeVisible = true,
+  onToggleChrome,
+}: PhotoCarouselProps) => {
   const galleryRef = useRef<ReactImageGallery>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
+  const tapStart = useRef<{ x: number; y: number; at: number } | null>(null);
 
   const galleryItems = useMemo<CarouselItem[]>(
     () =>
-      galleryImages.map(gi => ({
+      galleryImages.map((gi, index) => ({
         // Serve the capped display copy, not the original — a full-resolution
         // phone photo is several megabytes. Both derived keys are unset when
         // their generation failed, so the original is the fallback for each.
@@ -66,6 +84,7 @@ const PhotoCarousel = ({ galleryImages, isLoading, onSlide }: PhotoCarouselProps
         // Summarised once per image here rather than in ExifPanel, so it is not
         // recomputed on every render of every visible slide.
         exifSummary: summarizeExif(gi.image.exifData),
+        slideIndex: index,
       })),
     [galleryImages],
   );
@@ -80,6 +99,25 @@ const PhotoCarousel = ({ galleryImages, isLoading, onSlide }: PhotoCarouselProps
   const handleSlide = (index: number) => {
     setCurrentIndex(index);
     onSlide?.(index);
+  };
+
+  // react-image-gallery owns the swipe, so this cannot be a plain onClick: a
+  // swipe ends in a click too, and every navigation would also toggle the
+  // chrome. Measuring the pointer's travel separates the two.
+  const handlePointerDown = (event: React.PointerEvent) => {
+    tapStart.current = { x: event.clientX, y: event.clientY, at: Date.now() };
+  };
+
+  const handlePointerUp = (event: React.PointerEvent) => {
+    const start = tapStart.current;
+    tapStart.current = null;
+    if (!start || !onToggleChrome) return;
+    if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_SLOP_PX) return;
+    if (Date.now() - start.at > TAP_MAX_MS) return;
+    // A tap on the info button would otherwise open the panel and immediately
+    // hide the chrome it lives in.
+    if ((event.target as HTMLElement).closest('button, a')) return;
+    onToggleChrome();
   };
 
   useEffect(() => {
@@ -146,7 +184,7 @@ const PhotoCarousel = ({ galleryImages, isLoading, onSlide }: PhotoCarouselProps
         onSlide={handleSlide}
         renderLeftNav={(onClick, disabled) => (
           <button
-            className={`${styles.navBtn} ${styles.navLeft}`}
+            className={`${styles.navBtn} ${styles.navLeft} ${chromeVisible ? '' : styles.chromeHidden}`}
             onClick={onClick}
             disabled={disabled}
             aria-label='Previous image'>
@@ -155,7 +193,7 @@ const PhotoCarousel = ({ galleryImages, isLoading, onSlide }: PhotoCarouselProps
         )}
         renderRightNav={(onClick, disabled) => (
           <button
-            className={`${styles.navBtn} ${styles.navRight}`}
+            className={`${styles.navBtn} ${styles.navRight} ${chromeVisible ? '' : styles.chromeHidden}`}
             onClick={onClick}
             disabled={disabled}
             aria-label='Next image'>
@@ -163,11 +201,14 @@ const PhotoCarousel = ({ galleryImages, isLoading, onSlide }: PhotoCarouselProps
           </button>
         )}
         renderItem={(item: ReactImageGalleryItem) => {
-          const { exifSummary } = item as CarouselItem;
+          const { exifSummary, slideIndex } = item as CarouselItem;
           const src = imageUrls[item.original];
 
           return (
-            <div className={styles.imageContainer}>
+            <div
+              className={styles.imageContainer}
+              onPointerDown={handlePointerDown}
+              onPointerUp={handlePointerUp}>
               {src && (
                 <LazyLoadImage
                   src={src}
@@ -175,12 +216,19 @@ const PhotoCarousel = ({ galleryImages, isLoading, onSlide }: PhotoCarouselProps
                   className={styles.image}
                 />
               )}
-              <div className={styles.imageOverlay}>
+              <div className={`${styles.imageOverlay} ${chromeVisible ? '' : styles.chromeHidden}`}>
                 <ExifPanel
                   summary={exifSummary}
                   visible={showInfo}
                 />
                 <div className={styles.imageActions}>
+                  {/* The thumbnail strip is hidden on phones, so without this
+                        there is no way to tell where you are in the set. */}
+                  {galleryItems.length > 1 && (
+                    <span className={styles.counter}>
+                      {slideIndex + 1} / {galleryItems.length}
+                    </span>
+                  )}
                   {/* Hidden entirely for images with no camera data —
                         screenshots, PNGs, export-stripped JPEGs. */}
                   {exifSummary && (

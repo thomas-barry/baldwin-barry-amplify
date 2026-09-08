@@ -1,6 +1,5 @@
 import { Authenticator } from '@aws-amplify/ui-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { Amplify } from 'aws-amplify';
 import { PrimeReactProvider } from 'primereact/api';
@@ -41,7 +40,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           </AuthProvider>
         </PrimeReactProvider>
       </Authenticator.Provider>
-      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   </React.StrictMode>,
 );

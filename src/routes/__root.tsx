@@ -4,7 +4,6 @@ import Topbar from '@/components/Topbar';
 import { LoginDialogProvider } from '@/context/LoginDialogContext';
 import { SidebarProvider } from '@/context/SidebarContext';
 import { createRootRoute, Outlet, useRouterState } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import styles from './RootLayout.module.css';
 
 /* The BarryFi routes are OAuth redirect targets shown in a popup window, not
@@ -18,7 +17,6 @@ const RootLayout = () => {
     return (
       <>
         <Outlet />
-        {import.meta.env.DEV && <TanStackRouterDevtools />}
       </>
     );
   }
@@ -44,7 +42,6 @@ const RootLayout = () => {
         </main>
       </div>
       <LoginDialog />
-      {import.meta.env.DEV && <TanStackRouterDevtools />}
     </LoginDialogProvider>
   );
 };

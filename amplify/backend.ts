@@ -86,6 +86,23 @@ backend.readUploadLogs.resources.lambda.addToRolePolicy(
   }),
 );
 
+backend.readUploadLogs.resources.lambda.addToRolePolicy(
+  new PolicyStatement({
+    // A deleted Lambda leaves its log group behind, so the prefix search above
+    // turns up orphans from previous sandbox tear-downs. This is how the
+    // handler tells a live function from a headstone.
+    actions: ['lambda:GetFunctionConfiguration'],
+    resources: [
+      logsScope.formatArn({
+        service: 'lambda',
+        resource: 'function',
+        resourceName: '*onUploadHandler*',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      }),
+    ],
+  }),
+);
+
 backend.addOutput({
   custom: {
     onUploadHandlerFunctionName: backend.onUploadHandler.resources.lambda.functionName,

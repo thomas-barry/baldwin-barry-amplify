@@ -386,10 +386,17 @@ export const handler = async (event: S3Event) => {
       // entirely, leaving the file sitting in S3 and invisible to the app. The
       // S3 write is inside the guard too: a successful decode whose upload
       // fails leaves no thumbnail object either.
+      // PNG stays PNG so anything with transparency does not flatten to black;
+      // everything else becomes JPEG. Both derivatives need this: sharp encodes
+      // to the *input* format by default, so a DNG produced a 200x200 TIFF
+      // served as image/x-adobe-dng, which no browser will render.
+      const isPng = contentType === 'image/png';
+      const derivativeContentType = isPng ? 'image/png' : 'image/jpeg';
+
       let thumbnailGenerated = false;
       try {
         console.log('EXTRACTING THUMBNAIL FROM IMAGE', imageMetadata);
-        const thumbnailBuffer = await sharp(imageBuffer)
+        const resizedThumbnail = sharp(imageBuffer)
           // Bake the EXIF orientation into the pixels before resizing. sharp does
           // not copy metadata to the output, so without this the thumbnail keeps
           // the raw sensor orientation while browsers auto-rotate the original —
@@ -401,16 +408,21 @@ export const handler = async (event: S3Event) => {
             height: THUMBNAIL_HEIGHT,
             fit: 'cover',
             position: 'top',
-          })
-          .toBuffer();
+          });
+
+        const thumbnailBuffer = await (
+          isPng ? resizedThumbnail.png({ compressionLevel: 9 }) : resizedThumbnail.jpeg({ quality: DISPLAY_QUALITY })
+        ).toBuffer();
 
         // save the thumbnail to S3
         const putCommand = new PutObjectCommand({
           Bucket: bucket,
           Key: thumbnailKey,
           Body: thumbnailBuffer,
-          // use the same content type for the thumbnail
-          ContentType: contentType,
+          // The encoded format, not the original's — the key still carries the
+          // source extension (thumbnails/IMG_4445.dng) but ContentType is what
+          // an <img> honours on a presigned GET.
+          ContentType: derivativeContentType,
           Metadata: {
             'original-key': key,
             'thumbnail-generator': 'amplify-sharp',
@@ -437,9 +449,6 @@ export const handler = async (event: S3Event) => {
       // derivative must never cost the record.
       let displayGenerated = false;
       try {
-        // PNG stays PNG so anything with transparency does not flatten to black.
-        // Everything else re-encodes to JPEG, which is where the size win is.
-        const isPng = contentType === 'image/png';
         const resized = sharp(imageBuffer)
           // Same reasoning as the thumbnail: bake the orientation into the pixels.
           .rotate()
@@ -463,7 +472,7 @@ export const handler = async (event: S3Event) => {
           Bucket: bucket,
           Key: displayKey,
           Body: displayBuffer,
-          ContentType: isPng ? 'image/png' : 'image/jpeg',
+          ContentType: derivativeContentType,
           Metadata: {
             'original-key': key,
             'display-generator': 'amplify-sharp',

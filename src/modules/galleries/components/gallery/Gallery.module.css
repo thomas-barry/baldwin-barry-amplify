@@ -1,21 +1,53 @@
+/* The gallery detail view has two layouts. On a desktop the header is an
+   ordinary band above the carousel. On a phone it becomes floating glass over a
+   full-bleed photo, and the page's own chrome (the fixed mobile top bar, the
+   space reserved for it) is hidden by `body.immersive-gallery` — see
+   Gallery.tsx, Sidebar.module.css and RootLayout.module.css.
+
+   The immersive breakpoint is spelled out in full everywhere it is used rather
+   than aliased, so a rule always states its own condition. The second clause is
+   for phones wide enough in landscape to miss 768px; it is bounded by
+   `max-width: 950px` so a short desktop window doesn't get the phone layout
+   while the sidebar is still on screen. */
+
+.galleryStage {
+  position: relative;
+}
+
 .galleryHeader {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
   margin-bottom: var(--space-3);
   border-bottom: 1px solid var(--color-border);
 
+  a {
+    text-decoration: none;
+  }
+
   @media (max-width: 768px) {
-    flex-direction: column;
-    gap: var(--space-1);
     padding: var(--space-2);
   }
 }
 
+/* Ordered rather than DOM-ordered: the back link sits after the title on a
+   desktop and before it on a phone, and `order` buys that without rendering the
+   markup twice. */
 .galleryTitleBlock {
+  order: 1;
   min-width: 0;
+  margin-inline-end: auto;
+}
+
+.backLink {
+  order: 2;
+  flex-shrink: 0;
+}
+
+.editLink {
+  order: 3;
+  flex-shrink: 0;
 }
 
 .galleryHeading {
@@ -34,13 +66,95 @@
   line-height: 1.5;
 }
 
-.galleryHeaderActions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  flex-shrink: 0;
+/* ── Immersive (phone) ──────────────────────────────────────────────
+   Photo fills the viewport; everything else floats on top of it. */
 
-  a {
-    text-decoration: none;
+@media (max-width: 768px), (orientation: landscape) and (max-height: 500px) and (max-width: 950px) {
+  .galleryStage {
+    /* min-height, not height: the stage is a flex child of .mainContent, and a
+       fixed height there is shrinkable. Near-black rather than --color-bg
+       because a photo whose aspect ratio can't fill the screen letterboxes
+       against this, and letterboxing against the off-white page ground reads as
+       a broken layout rather than a photo viewer. */
+    min-height: 100dvh;
+    background: #0b0f14;
+  }
+
+  .galleryHeader {
+    position: absolute;
+    top: 0;
+    inset-inline: 0;
+    z-index: 20;
+    align-items: center;
+    gap: var(--space-1);
+    margin-bottom: 0;
+    border-bottom: 0;
+    padding: calc(var(--space-1) + env(safe-area-inset-top, 0px)) calc(var(--space-2) + env(safe-area-inset-right, 0px))
+      var(--space-2) calc(var(--space-2) + env(safe-area-inset-left, 0px));
+    /* A scrim, not a bar: a hard edge across the top of a photograph is worse
+       than a gradient that fades into it. */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent);
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  /* Tapping the photo drops every control — see PhotoCarousel. */
+  .chromeHidden {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+    pointer-events: none;
+  }
+
+  .galleryTitleBlock {
+    order: 1;
+  }
+
+  .backLink {
+    order: 0;
+  }
+
+  .editLink {
+    order: 2;
+  }
+
+  .galleryHeading {
+    font-size: var(--fs-500);
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  }
+
+  .galleryDescription {
+    display: none;
+  }
+
+  /* Two-class selectors on purpose: the PrimeReact theme is an unlayered
+     <link> (see index.css), so a single class can lose to `.p-button` on source
+     order alone. 44px is the iOS minimum tap target. */
+  .galleryHeader .backLink,
+  .galleryHeader .editLink {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    box-shadow: none;
+  }
+
+  /* The word "Galleries" doesn't fit beside the title on a phone; the chevron
+     carries the meaning, and aria-label carries it for screen readers. */
+  .galleryHeader .backLink :global(.p-button-label) {
+    display: none;
+  }
+
+  .galleryHeader .backLink :global(.p-button-icon-left) {
+    margin: 0;
   }
 }

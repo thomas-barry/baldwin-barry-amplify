@@ -274,9 +274,12 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
 
             try {
               const thumbnailPath = item.image.s3ThumbnailKey || item.image.s3Key;
+              // Same reason as the carousel: the original may be a RAW file the
+              // browser cannot decode, and is megabytes larger even when it can.
+              const displayPath = item.image.s3DisplayKey || item.image.s3Key;
               const [thumbnailResult, imageResult] = await Promise.all([
                 getUrl({ path: thumbnailPath }),
-                getUrl({ path: item.image.s3Key }),
+                getUrl({ path: displayPath }),
               ]);
               return {
                 ...item,
@@ -412,6 +415,9 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
       ];
       if (image.s3ThumbnailKey && image.s3ThumbnailKey !== image.s3Key) {
         deletions.push(remove({ path: image.s3ThumbnailKey }));
+      }
+      if (image.s3DisplayKey && image.s3DisplayKey !== image.s3Key) {
+        deletions.push(remove({ path: image.s3DisplayKey }));
       }
       await Promise.all(deletions);
     },

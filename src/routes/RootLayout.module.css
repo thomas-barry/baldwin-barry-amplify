@@ -19,6 +19,15 @@
       margin-left: 0;
       padding-top: var(--header-height);
     }
+
+    /* Nothing to reserve room for — the immersive gallery hides the bar this
+       padding exists for, and the sidebar with it. See Sidebar.module.css. */
+    :global(body.immersive-gallery) & {
+      @media (max-width: 768px), (orientation: landscape) and (max-height: 500px) and (max-width: 950px) {
+        margin-left: 0;
+        padding-top: 0;
+      }
+    }
   }
 }
 
