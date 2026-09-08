@@ -9,68 +9,33 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as AboutIndexRouteImport } from './routes/about/index'
-import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as BarryfiPlaidOauthRouteImport } from './routes/barryfi/plaid-oauth'
-import { Route as BlogIndexRouteImport } from './routes/blog/index'
-import { Route as ContactIndexRouteImport } from './routes/contact/index'
-import { Route as GridDemoIndexRouteImport } from './routes/grid-demo/index'
-import { Route as PhotosIndexRouteImport } from './routes/photos/index'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as SandboxIndexRouteImport } from './routes/sandbox/index'
-import { Route as AdminLogsIndexRouteImport } from './routes/admin/logs/index'
-import { Route as AdminQuipsIndexRouteImport } from './routes/admin/quips/index'
-import { Route as AdminUploadIndexRouteImport } from './routes/admin/upload/index'
-import { Route as BlogPostIdIndexRouteImport } from './routes/blog/$postId/index'
-import { Route as BlogPostIdEditRouteImport } from './routes/blog/$postId/edit'
-import { Route as BlogNewIndexRouteImport } from './routes/blog/new/index'
+import { Route as PhotosIndexRouteImport } from './routes/photos/index'
+import { Route as GridDemoIndexRouteImport } from './routes/grid-demo/index'
+import { Route as ContactIndexRouteImport } from './routes/contact/index'
+import { Route as BlogIndexRouteImport } from './routes/blog/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AboutIndexRouteImport } from './routes/about/index'
+import { Route as BarryfiPlaidOauthRouteImport } from './routes/barryfi/plaid-oauth'
 import { Route as PhotosGalleryIdIndexRouteImport } from './routes/photos/$galleryId/index'
+import { Route as BlogNewIndexRouteImport } from './routes/blog/new/index'
+import { Route as BlogPostIdIndexRouteImport } from './routes/blog/$postId/index'
+import { Route as AdminUploadIndexRouteImport } from './routes/admin/upload/index'
+import { Route as AdminQuipsIndexRouteImport } from './routes/admin/quips/index'
+import { Route as AdminLogsIndexRouteImport } from './routes/admin/logs/index'
 import { Route as PhotosGalleryIdEditRouteImport } from './routes/photos/$galleryId/edit'
+import { Route as BlogPostIdEditRouteImport } from './routes/blog/$postId/edit'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AboutIndexRoute = AboutIndexRouteImport.update({
-  id: '/about/',
-  path: '/about/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BarryfiPlaidOauthRoute = BarryfiPlaidOauthRouteImport.update({
-  id: '/barryfi/plaid-oauth',
-  path: '/barryfi/plaid-oauth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogIndexRoute = BlogIndexRouteImport.update({
-  id: '/blog/',
-  path: '/blog/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactIndexRoute = ContactIndexRouteImport.update({
-  id: '/contact/',
-  path: '/contact/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GridDemoIndexRoute = GridDemoIndexRouteImport.update({
-  id: '/grid-demo/',
-  path: '/grid-demo/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PhotosIndexRoute = PhotosIndexRouteImport.update({
-  id: '/photos/',
-  path: '/photos/',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SandboxIndexRoute = SandboxIndexRouteImport.update({
@@ -78,34 +43,39 @@ const SandboxIndexRoute = SandboxIndexRouteImport.update({
   path: '/sandbox/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminLogsIndexRoute = AdminLogsIndexRouteImport.update({
-  id: '/admin/logs/',
-  path: '/admin/logs/',
+const PhotosIndexRoute = PhotosIndexRouteImport.update({
+  id: '/photos/',
+  path: '/photos/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminQuipsIndexRoute = AdminQuipsIndexRouteImport.update({
-  id: '/admin/quips/',
-  path: '/admin/quips/',
+const GridDemoIndexRoute = GridDemoIndexRouteImport.update({
+  id: '/grid-demo/',
+  path: '/grid-demo/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminUploadIndexRoute = AdminUploadIndexRouteImport.update({
-  id: '/admin/upload/',
-  path: '/admin/upload/',
+const ContactIndexRoute = ContactIndexRouteImport.update({
+  id: '/contact/',
+  path: '/contact/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogPostIdIndexRoute = BlogPostIdIndexRouteImport.update({
-  id: '/blog/$postId/',
-  path: '/blog/$postId/',
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogPostIdEditRoute = BlogPostIdEditRouteImport.update({
-  id: '/blog/$postId/edit',
-  path: '/blog/$postId/edit',
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogNewIndexRoute = BlogNewIndexRouteImport.update({
-  id: '/blog/new/',
-  path: '/blog/new/',
+const AboutIndexRoute = AboutIndexRouteImport.update({
+  id: '/about/',
+  path: '/about/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BarryfiPlaidOauthRoute = BarryfiPlaidOauthRouteImport.update({
+  id: '/barryfi/plaid-oauth',
+  path: '/barryfi/plaid-oauth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PhotosGalleryIdIndexRoute = PhotosGalleryIdIndexRouteImport.update({
@@ -113,9 +83,39 @@ const PhotosGalleryIdIndexRoute = PhotosGalleryIdIndexRouteImport.update({
   path: '/photos/$galleryId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogNewIndexRoute = BlogNewIndexRouteImport.update({
+  id: '/blog/new/',
+  path: '/blog/new/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogPostIdIndexRoute = BlogPostIdIndexRouteImport.update({
+  id: '/blog/$postId/',
+  path: '/blog/$postId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUploadIndexRoute = AdminUploadIndexRouteImport.update({
+  id: '/admin/upload/',
+  path: '/admin/upload/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminQuipsIndexRoute = AdminQuipsIndexRouteImport.update({
+  id: '/admin/quips/',
+  path: '/admin/quips/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLogsIndexRoute = AdminLogsIndexRouteImport.update({
+  id: '/admin/logs/',
+  path: '/admin/logs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PhotosGalleryIdEditRoute = PhotosGalleryIdEditRouteImport.update({
   id: '/photos/$galleryId/edit',
   path: '/photos/$galleryId/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogPostIdEditRoute = BlogPostIdEditRouteImport.update({
+  id: '/blog/$postId/edit',
+  path: '/blog/$postId/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -123,21 +123,21 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/barryfi/plaid-oauth': typeof BarryfiPlaidOauthRoute
-  '/about/': typeof AboutIndexRoute
-  '/admin/': typeof AdminIndexRoute
-  '/blog/': typeof BlogIndexRoute
-  '/contact/': typeof ContactIndexRoute
-  '/grid-demo/': typeof GridDemoIndexRoute
-  '/photos/': typeof PhotosIndexRoute
-  '/sandbox/': typeof SandboxIndexRoute
+  '/about': typeof AboutIndexRoute
+  '/admin': typeof AdminIndexRoute
+  '/blog': typeof BlogIndexRoute
+  '/contact': typeof ContactIndexRoute
+  '/grid-demo': typeof GridDemoIndexRoute
+  '/photos': typeof PhotosIndexRoute
+  '/sandbox': typeof SandboxIndexRoute
   '/blog/$postId/edit': typeof BlogPostIdEditRoute
   '/photos/$galleryId/edit': typeof PhotosGalleryIdEditRoute
-  '/admin/logs/': typeof AdminLogsIndexRoute
-  '/admin/quips/': typeof AdminQuipsIndexRoute
-  '/admin/upload/': typeof AdminUploadIndexRoute
-  '/blog/$postId/': typeof BlogPostIdIndexRoute
-  '/blog/new/': typeof BlogNewIndexRoute
-  '/photos/$galleryId/': typeof PhotosGalleryIdIndexRoute
+  '/admin/logs': typeof AdminLogsIndexRoute
+  '/admin/quips': typeof AdminQuipsIndexRoute
+  '/admin/upload': typeof AdminUploadIndexRoute
+  '/blog/$postId': typeof BlogPostIdIndexRoute
+  '/blog/new': typeof BlogNewIndexRoute
+  '/photos/$galleryId': typeof PhotosGalleryIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -186,21 +186,21 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/barryfi/plaid-oauth'
-    | '/about/'
-    | '/admin/'
-    | '/blog/'
-    | '/contact/'
-    | '/grid-demo/'
-    | '/photos/'
-    | '/sandbox/'
+    | '/about'
+    | '/admin'
+    | '/blog'
+    | '/contact'
+    | '/grid-demo'
+    | '/photos'
+    | '/sandbox'
     | '/blog/$postId/edit'
     | '/photos/$galleryId/edit'
-    | '/admin/logs/'
-    | '/admin/quips/'
-    | '/admin/upload/'
-    | '/blog/$postId/'
-    | '/blog/new/'
-    | '/photos/$galleryId/'
+    | '/admin/logs'
+    | '/admin/quips'
+    | '/admin/upload'
+    | '/blog/$postId'
+    | '/blog/new'
+    | '/photos/$galleryId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -266,13 +266,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -280,18 +273,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/about/': {
-      id: '/about/'
-      path: '/about'
-      fullPath: '/about/'
-      preLoaderRoute: typeof AboutIndexRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sandbox/': {
+      id: '/sandbox/'
+      path: '/sandbox'
+      fullPath: '/sandbox'
+      preLoaderRoute: typeof SandboxIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/photos/': {
+      id: '/photos/'
+      path: '/photos'
+      fullPath: '/photos'
+      preLoaderRoute: typeof PhotosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/grid-demo/': {
+      id: '/grid-demo/'
+      path: '/grid-demo'
+      fullPath: '/grid-demo'
+      preLoaderRoute: typeof GridDemoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact/': {
+      id: '/contact/'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
       id: '/admin/'
       path: '/admin'
-      fullPath: '/admin/'
+      fullPath: '/admin'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/': {
+      id: '/about/'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/barryfi/plaid-oauth': {
@@ -301,88 +336,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BarryfiPlaidOauthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog/': {
-      id: '/blog/'
-      path: '/blog'
-      fullPath: '/blog/'
-      preLoaderRoute: typeof BlogIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact/': {
-      id: '/contact/'
-      path: '/contact'
-      fullPath: '/contact/'
-      preLoaderRoute: typeof ContactIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/grid-demo/': {
-      id: '/grid-demo/'
-      path: '/grid-demo'
-      fullPath: '/grid-demo/'
-      preLoaderRoute: typeof GridDemoIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/photos/': {
-      id: '/photos/'
-      path: '/photos'
-      fullPath: '/photos/'
-      preLoaderRoute: typeof PhotosIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sandbox/': {
-      id: '/sandbox/'
-      path: '/sandbox'
-      fullPath: '/sandbox/'
-      preLoaderRoute: typeof SandboxIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/logs/': {
-      id: '/admin/logs/'
-      path: '/admin/logs'
-      fullPath: '/admin/logs/'
-      preLoaderRoute: typeof AdminLogsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/quips/': {
-      id: '/admin/quips/'
-      path: '/admin/quips'
-      fullPath: '/admin/quips/'
-      preLoaderRoute: typeof AdminQuipsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/upload/': {
-      id: '/admin/upload/'
-      path: '/admin/upload'
-      fullPath: '/admin/upload/'
-      preLoaderRoute: typeof AdminUploadIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog/$postId/': {
-      id: '/blog/$postId/'
-      path: '/blog/$postId'
-      fullPath: '/blog/$postId/'
-      preLoaderRoute: typeof BlogPostIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog/$postId/edit': {
-      id: '/blog/$postId/edit'
-      path: '/blog/$postId/edit'
-      fullPath: '/blog/$postId/edit'
-      preLoaderRoute: typeof BlogPostIdEditRouteImport
+    '/photos/$galleryId/': {
+      id: '/photos/$galleryId/'
+      path: '/photos/$galleryId'
+      fullPath: '/photos/$galleryId'
+      preLoaderRoute: typeof PhotosGalleryIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/new/': {
       id: '/blog/new/'
       path: '/blog/new'
-      fullPath: '/blog/new/'
+      fullPath: '/blog/new'
       preLoaderRoute: typeof BlogNewIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/photos/$galleryId/': {
-      id: '/photos/$galleryId/'
-      path: '/photos/$galleryId'
-      fullPath: '/photos/$galleryId/'
-      preLoaderRoute: typeof PhotosGalleryIdIndexRouteImport
+    '/blog/$postId/': {
+      id: '/blog/$postId/'
+      path: '/blog/$postId'
+      fullPath: '/blog/$postId'
+      preLoaderRoute: typeof BlogPostIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/upload/': {
+      id: '/admin/upload/'
+      path: '/admin/upload'
+      fullPath: '/admin/upload'
+      preLoaderRoute: typeof AdminUploadIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/quips/': {
+      id: '/admin/quips/'
+      path: '/admin/quips'
+      fullPath: '/admin/quips'
+      preLoaderRoute: typeof AdminQuipsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/logs/': {
+      id: '/admin/logs/'
+      path: '/admin/logs'
+      fullPath: '/admin/logs'
+      preLoaderRoute: typeof AdminLogsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/photos/$galleryId/edit': {
@@ -390,6 +383,13 @@ declare module '@tanstack/react-router' {
       path: '/photos/$galleryId/edit'
       fullPath: '/photos/$galleryId/edit'
       preLoaderRoute: typeof PhotosGalleryIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$postId/edit': {
+      id: '/blog/$postId/edit'
+      path: '/blog/$postId/edit'
+      fullPath: '/blog/$postId/edit'
+      preLoaderRoute: typeof BlogPostIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
