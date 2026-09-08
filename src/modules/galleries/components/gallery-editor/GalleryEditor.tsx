@@ -408,7 +408,11 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   const deleteImageMutation = useMutation({
     mutationFn: async (imageItem: ImageWithDetails) => {
       const { image, galleryImage } = imageItem;
-      const deletions: Promise<unknown>[] = [
+      // PromiseLike, not Promise: as of aws-amplify 6.20 `remove()` returns a
+      // cancellable RemoveOperation rather than a bare Promise. It is thenable —
+      // Promise.all awaits it exactly as before — but it has no
+      // [Symbol.toStringTag], so it does not satisfy Promise itself.
+      const deletions: PromiseLike<unknown>[] = [
         remove({ path: image.s3Key }),
         clientWrite.models.GalleryImage.delete({ id: galleryImage.id }),
         clientWrite.models.Image.delete({ id: image.id }),
