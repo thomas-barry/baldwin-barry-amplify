@@ -3,7 +3,8 @@ import { summarizeExif } from '@/lib/exif';
 import { useImageUrls } from '@/lib/imageUrl';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
-import ReactImageGallery, { ReactImageGalleryItem } from 'react-image-gallery';
+import type { GalleryItem } from 'react-image-gallery';
+import ReactImageGallery from 'react-image-gallery';
 // image-gallery.css is NOT imported here — index.css imports it into
 // `layer(gallery)`. An import from a .tsx is unlayered, and unlayered CSS beats
 // every layer, so a second copy here would outrank the overrides below.
@@ -35,7 +36,7 @@ interface GalleryImage {
 /** react-image-gallery passes the whole item object through to renderItem, so
  *  per-slide data rides along on it rather than being looked up by index —
  *  more than one slide renders during a transition. */
-interface CarouselItem extends ReactImageGalleryItem {
+interface CarouselItem extends GalleryItem {
   exifSummary: ExifSummary | null;
   /** Its own position, so the counter on a slide sliding in reads its number
    *  rather than the one still leaving. */
@@ -76,7 +77,6 @@ const PhotoCarousel = ({
   chromeVisible = true,
   onToggleChrome,
 }: PhotoCarouselProps) => {
-  const galleryRef = useRef<ReactImageGallery>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
@@ -96,8 +96,6 @@ const PhotoCarousel = ({
         thumbnail: gi.image.s3ThumbnailKey || gi.image.s3Key,
         description: gi.image.description || gi.image.title || '',
         originalTitle: gi.image.title,
-        originalHeight: gi.image.height || 0,
-        originalWidth: gi.image.width || 0,
         // Summarised once per image here rather than in ExifPanel, so it is not
         // recomputed on every render of every visible slide.
         exifSummary: summarizeExif(gi.image.exifData),
@@ -202,7 +200,6 @@ const PhotoCarousel = ({
       className={styles.galleryContainer}
       ref={containerRef}>
       <ReactImageGallery
-        ref={galleryRef}
         items={galleryItems}
         showThumbnails
         showPlayButton={false}
@@ -233,7 +230,7 @@ const PhotoCarousel = ({
             <i className='pi pi-chevron-right' />
           </button>
         )}
-        renderItem={(item: ReactImageGalleryItem) => {
+        renderItem={(item: GalleryItem) => {
           const { exifSummary, slideIndex } = item as CarouselItem;
           const src = imageUrls[item.original];
           const alt = item.originalTitle || item.description || 'Gallery image';
@@ -305,7 +302,7 @@ const PhotoCarousel = ({
             </div>
           );
         }}
-        renderThumbInner={(item: ReactImageGalleryItem) => {
+        renderThumbInner={(item: GalleryItem) => {
           const src = imageUrls[item.thumbnail!];
 
           return (
