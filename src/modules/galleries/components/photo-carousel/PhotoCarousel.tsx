@@ -56,6 +56,19 @@ interface PhotoCarouselProps {
 const TAP_SLOP_PX = 10;
 const TAP_MAX_MS = 400;
 
+/** Slides this far from the current one render a real <img> rather than a lazy
+ *  placeholder — see the note on `isNear` in renderItem. */
+const RENDER_AHEAD = 1;
+/** Slides this far out are fetched into the HTTP cache but not decoded. */
+const PRELOAD_AHEAD = 2;
+
+/** Distance in slides, the short way round: react-image-gallery is `infinite`
+ *  by default, so the last slide is one step from the first. */
+const slideDistance = (index: number, current: number, total: number) => {
+  const direct = Math.abs(index - current);
+  return Math.min(direct, total - direct);
+};
+
 const PhotoCarousel = ({
   galleryImages,
   isLoading,
@@ -68,6 +81,10 @@ const PhotoCarousel = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
   const tapStart = useRef<{ x: number; y: number; at: number } | null>(null);
+  // Preloaded images are held rather than dropped: an in-flight Image with no
+  // reference to it is collectable, and mobile Safari cancels its request when
+  // it goes — the preload then silently does nothing.
+  const preloaded = useRef(new Map<string, HTMLImageElement>());
 
   const galleryItems = useMemo<CarouselItem[]>(
     () =>
@@ -121,15 +138,26 @@ const PhotoCarousel = ({
   };
 
   useEffect(() => {
-    [currentIndex - 1, currentIndex + 2]
-      .filter(i => i >= 0 && i < galleryItems.length)
-      .forEach(i => {
-        // Skip until the URL resolves, or `src` becomes the string "undefined".
-        const src = imageUrls[galleryItems[i].original];
-        if (!src) return;
-        const img = new Image();
-        img.src = src;
-      });
+    const cache = preloaded.current;
+    const wanted = new Set<string>();
+
+    galleryItems.forEach((item, index) => {
+      if (slideDistance(index, currentIndex, galleryItems.length) > PRELOAD_AHEAD) return;
+      // Skip until the URL resolves, or `src` becomes the string "undefined".
+      const src = imageUrls[item.original];
+      if (!src) return;
+      wanted.add(src);
+      if (cache.has(src)) return;
+      const img = new Image();
+      img.src = src;
+      cache.set(src, img);
+    });
+
+    // Bounded to the window, or a long gallery ends up holding every decoded
+    // bitmap it has walked past — the one thing a phone has least of.
+    cache.forEach((_, src) => {
+      if (!wanted.has(src)) cache.delete(src);
+    });
   }, [currentIndex, galleryItems, imageUrls]);
 
   if (isLoading) {
@@ -203,19 +231,40 @@ const PhotoCarousel = ({
         renderItem={(item: ReactImageGalleryItem) => {
           const { exifSummary, slideIndex } = item as CarouselItem;
           const src = imageUrls[item.original];
+          const alt = item.originalTitle || item.description || 'Gallery image';
+          // Every slide is in the DOM, but only the centre one is ever on
+          // screen: .image-gallery-slides clips its neighbours away entirely,
+          // so their IntersectionObserver never fires and LazyLoadImage leaves
+          // them without an <img> until they slide in. That is the whole reason
+          // the next photo appears to load from scratch on a swipe. The window
+          // around the current slide therefore renders eagerly instead.
+          const distance = slideDistance(slideIndex, currentIndex, galleryItems.length);
+          const isNear = distance <= RENDER_AHEAD;
 
           return (
             <div
               className={styles.imageContainer}
               onPointerDown={handlePointerDown}
               onPointerUp={handlePointerUp}>
-              {src && (
-                <LazyLoadImage
-                  src={src}
-                  alt={item.originalTitle || item.description || 'Gallery image'}
-                  className={styles.image}
-                />
-              )}
+              {src &&
+                (isNear ? (
+                  <img
+                    src={src}
+                    alt={alt}
+                    className={styles.image}
+                    decoding='async'
+                    // The neighbours are speculative; they must not compete with
+                    // the photo the viewer is actually looking at for a cold
+                    // cellular connection's bandwidth.
+                    fetchPriority={distance === 0 ? 'high' : 'low'}
+                  />
+                ) : (
+                  <LazyLoadImage
+                    src={src}
+                    alt={alt}
+                    className={styles.image}
+                  />
+                ))}
               <div className={`${styles.imageOverlay} ${chromeVisible ? '' : styles.chromeHidden}`}>
                 <ExifPanel
                   summary={exifSummary}
