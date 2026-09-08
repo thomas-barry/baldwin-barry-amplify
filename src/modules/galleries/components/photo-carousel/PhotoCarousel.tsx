@@ -112,6 +112,11 @@ const PhotoCarousel = ({
     const start = tapStart.current;
     tapStart.current = null;
     if (!start || !onToggleChrome) return;
+    // Hiding the chrome is a touch affordance: on a phone the controls sit on
+    // top of the photo and there is nowhere else to put them. With a mouse they
+    // are out of the way already, and a click that silently removes the
+    // navigation reads as a bug rather than a gesture.
+    if (event.pointerType === 'mouse') return;
     if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_SLOP_PX) return;
     if (Date.now() - start.at > TAP_MAX_MS) return;
     // A tap on the info button would otherwise open the panel and immediately
