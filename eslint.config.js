@@ -54,6 +54,11 @@ export default tseslint.config(
         'warn',
         {
           allowConstantExport: true,
+          // Tanstack Router's file-based routes export `const Route =
+          // createFileRoute(...)({ component })`. react-refresh 0.5 no longer
+          // infers "component" from the PascalCase name alone, so the route
+          // factories have to be declared as HOCs or every route file reports.
+          extraHOCs: ['createFileRoute', 'createRootRoute'],
         },
       ],
     },
