@@ -63,6 +63,18 @@ const RENDER_AHEAD = 1;
 /** Slides this far out are fetched into the HTTP cache but not decoded. */
 const PRELOAD_AHEAD = 2;
 
+/** The DOM spells this attribute `fetchpriority`, all lowercase, and React 18
+ *  passes unknown lowercase attributes straight through. It does NOT support the
+ *  camelCase `fetchPriority` — it warns and drops the attribute — even though
+ *  React 18's own types declare it, which is why writing the camelCase form
+ *  type-checked cleanly and then did nothing at all.
+ *
+ *  The cast is what that mismatch costs: the working spelling is the one the
+ *  types reject. React 19 supports the camelCase prop, so on that upgrade this
+ *  helper can go away in favour of a plain `fetchPriority={...}`. */
+const fetchPriorityAttr = (distance: number) =>
+  ({ fetchpriority: distance === 0 ? 'high' : 'low' }) as Record<string, string>;
+
 /** Distance in slides, the short way round: react-image-gallery is `infinite`
  *  by default, so the last slide is one step from the first. */
 const slideDistance = (index: number, current: number, total: number) => {
@@ -258,7 +270,7 @@ const PhotoCarousel = ({
                     // The neighbours are speculative; they must not compete with
                     // the photo the viewer is actually looking at for a cold
                     // cellular connection's bandwidth.
-                    fetchPriority={distance === 0 ? 'high' : 'low'}
+                    {...fetchPriorityAttr(distance)}
                   />
                 ) : (
                   <LazyLoadImage
