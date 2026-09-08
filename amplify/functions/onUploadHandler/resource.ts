@@ -10,7 +10,7 @@ const onUploadHandler = defineFunction({
   timeoutSeconds: 60,
   memoryMB: 2048,
   layers: {
-    sharp: 'arn:aws:lambda:us-east-1:217260976694:layer:sharp:4',
+    sharp: 'arn:aws:lambda:us-east-1:217260976694:layer:sharp:5',
   },
 });
 
