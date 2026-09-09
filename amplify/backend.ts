@@ -1,6 +1,9 @@
 import { defineBackend } from '@aws-amplify/backend';
-import { ArnFormat, Stack } from 'aws-cdk-lib';
+import type { IAspect } from 'aws-cdk-lib';
+import { ArnFormat, Aspects, Stack } from 'aws-cdk-lib';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
+import type { IConstruct } from 'constructs';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { onUploadHandler } from './functions/onUploadHandler/resource';
@@ -21,6 +24,40 @@ const backend = defineBackend({
 // a new pool under a new logical ID instead of updating the dead one, and downstream
 // references (UserPoolClient, IdentityPool, AppSync's userPoolConfig) get rewired to it.
 backend.auth.resources.cfnResources.cfnUserPool.overrideLogicalId('AdminUserPoolV2');
+
+// nodejs20.x is deprecated. Lambda blocks function *updates* from 2027-03-03,
+// which would block every backend deploy that touches a function, not just
+// deploys that change one.
+//
+// This is done as an Aspect rather than by naming our two functions, because
+// they are not the only ones in the assembly: Amplify's data-construct also
+// generates a pair of TableManagerCustomProvider framework functions, and those
+// are not reachable through `backend.<name>`. Leaving them behind would block
+// deploys in March 2027 even with our own functions upgraded.
+//
+// `defineFunction`'s typed `runtime` option would be the proper route, but it
+// tops out at 22 in backend-function 1.14.1, and reaching 24 through it needs
+// @aws-amplify/backend >= 1.21.0 — which cannot be installed, because npm fails
+// to lock that graph (bundled @aws-amplify/plugin-types pins @aws-cdk/toolkit-lib
+// at an exact version that disagrees with backend-deployer's, so `npm ci`
+// rejects the lockfile). Verified against 1.21.0: 32 missing entries.
+//
+// 22 would only buy until 2027-07-01; 24 runs to 2028-07-01 for identical work.
+// The esbuild bundling target stays at node20, whose output is valid on node24.
+// Remove this Aspect once @aws-amplify/backend can be upgraded and the runtime
+// can be set on defineFunction directly.
+//
+// NOTE: the sharp layer's prefix must match this runtime — the layer resolves
+// from /opt/nodejs/node<major>/node_modules. See onUploadHandler/resource.ts.
+class UpgradeDeprecatedNodeRuntime implements IAspect {
+  public visit(node: IConstruct): void {
+    if (node instanceof CfnFunction && node.runtime === 'nodejs20.x') {
+      node.addPropertyOverride('Runtime', 'nodejs24.x');
+    }
+  }
+}
+
+Aspects.of(Stack.of(backend.onUploadHandler.resources.lambda).node.root).add(new UpgradeDeprecatedNodeRuntime());
 
 // Grant the Lambda function access to the data layer
 backend.onUploadHandler.addEnvironment('GRAPHQL_ENDPOINT', backend.data.graphqlUrl);
