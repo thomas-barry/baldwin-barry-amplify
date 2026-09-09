@@ -34,7 +34,12 @@ const ReactKnob = ({
 }: ReactKnobProps) => {
   const valueRef = useRef(value);
   const wheelRef = useRef<HTMLDivElement | null>(null);
-  const lastTouchMoveY = useRef<number>();
+  // `undefined` means "no touchstart seen yet" — onTouchMove guards on
+  // `typeof previousY !== 'number'` and bails. Do NOT initialise this to 0 the
+  // way Knob.tsx does: 0 passes that guard, so the first touchmove would
+  // compute its delta against 0 and slam the value to the minimum. React 19's
+  // types require an explicit argument, hence the widened type.
+  const lastTouchMoveY = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     valueRef.current = value;

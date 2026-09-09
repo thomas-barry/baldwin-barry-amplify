@@ -11,6 +11,7 @@ import outputs from '../amplify_outputs.json';
 // loaded and swapped at runtime by ThemeProvider.
 import './index.css';
 
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { routeTree } from './routeTree.gen';
@@ -28,18 +29,30 @@ declare module '@tanstack/react-router' {
 
 Amplify.configure(outputs);
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById('root')!, {
+  // React 19 replaces its own console reporting when this is supplied, so the
+  // console.error is not decorative — without it every uncaught render error
+  // would vanish from the one channel this app is verified through.
+  onUncaughtError: (error, errorInfo) => {
+    console.error('Uncaught render error:', error, errorInfo.componentStack);
+  },
+}).render(
+  // ErrorBoundary wraps the whole provider stack rather than sitting inside it:
+  // a throw from QueryClientProvider or Authenticator.Provider would otherwise
+  // escape and white-screen the app, which is the case this exists for.
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Authenticator.Provider>
-        <PrimeReactProvider>
-          <AuthProvider>
-            <ThemeProvider>
-              <RouterProvider router={router} />
-            </ThemeProvider>
-          </AuthProvider>
-        </PrimeReactProvider>
-      </Authenticator.Provider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Authenticator.Provider>
+          <PrimeReactProvider>
+            <AuthProvider>
+              <ThemeProvider>
+                <RouterProvider router={router} />
+              </ThemeProvider>
+            </AuthProvider>
+          </PrimeReactProvider>
+        </Authenticator.Provider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   </React.StrictMode>,
 );
