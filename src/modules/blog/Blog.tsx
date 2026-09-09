@@ -1,5 +1,5 @@
+import { LinkButton } from '@/components/LinkButton';
 import { useAuth } from '@/context/AuthContext';
-import { Link } from '@tanstack/react-router';
 import styles from './Blog.module.css';
 import BlogPostList from './components/blog-post-list/BlogPostList';
 
@@ -14,15 +14,11 @@ const Blog = () => {
         </div>
         {isAdmin && (
           <div className={styles.headerControls}>
-            <Link
+            <LinkButton
               to='/blog/new'
-              className='p-button p-component'>
-              <span
-                className='p-button-icon pi pi-plus p-button-icon-left'
-                aria-hidden='true'
-              />
-              <span className='p-button-label'>New Post</span>
-            </Link>
+              icon='plus'
+              label='New Post'
+            />
           </div>
         )}
       </div>

@@ -1,8 +1,10 @@
-import { Icon } from '@/components/Icon';
+import { Icon, iconClass } from '@/components/Icon';
+import { LinkButton } from '@/components/LinkButton';
 import { useAuth } from '@/context/AuthContext';
 import { useImageUrls, withCacheBuster } from '@/lib/imageUrl';
 import { Gallery } from '@/modules/galleries/types';
 import { Link } from '@tanstack/react-router';
+import { Button } from 'primereact/button';
 import type { CSSProperties, MouseEvent } from 'react';
 import { useMemo } from 'react';
 import styles from './GalleryCard.module.css';
@@ -68,26 +70,26 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
         )}
         {isAdmin && (
           <div className={styles.adminOverlay}>
-            <Link
+            <LinkButton
               to='/photos/$galleryId/edit'
               params={{ galleryId: gallery.id }}
-              className='p-button p-component p-button-icon-only p-button-sm p-button-info p-button-rounded'
-              aria-label='Edit gallery'>
-              <span
-                className='p-button-icon pi pi-pencil'
-                aria-hidden='true'
-              />
-            </Link>
+              icon='pencil'
+              iconOnly
+              rounded
+              size='small'
+              severity='info'
+              aria-label='Edit gallery'
+            />
             {onDelete && (
-              <button
-                className='p-button p-component p-button-icon-only p-button-sm p-button-danger p-button-rounded'
+              <Button
+                icon={iconClass('trash')}
+                rounded
+                text={false}
+                severity='danger'
+                size='small'
                 aria-label='Delete gallery'
-                onClick={handleDelete}>
-                <span
-                  className='p-button-icon pi pi-trash'
-                  aria-hidden='true'
-                />
-              </button>
+                onClick={handleDelete}
+              />
             )}
           </div>
         )}

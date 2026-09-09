@@ -1,8 +1,9 @@
+import { LinkButton } from '@/components/LinkButton';
 import { useAuth } from '@/context/AuthContext';
 import { galleryQueryOptions } from '@/modules/galleries/queries';
 import type { Schema } from '@/schema';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { generateClient } from 'aws-amplify/data';
 import { useEffect, useState } from 'react';
 import PhotoCarousel from '../photo-carousel/PhotoCarousel';
@@ -84,27 +85,23 @@ const Gallery = ({ galleryId }: { galleryId: string }) => {
           <h2 className={styles.galleryHeading}>{isGalleryLoading ? 'Loading…' : (gallery?.name ?? 'Gallery')}</h2>
           {gallery?.description && <p className={styles.galleryDescription}>{gallery.description}</p>}
         </div>
-        <Link
+        <LinkButton
           to='/photos'
-          className={`${styles.backLink} p-button p-component p-button-secondary`}
-          aria-label='Back to galleries'>
-          <span
-            className='p-button-icon pi pi-arrow-left p-button-icon-left'
-            aria-hidden='true'
-          />
-          <span className='p-button-label'>Galleries</span>
-        </Link>
+          className={styles.backLink}
+          icon='arrow-left'
+          label='Galleries'
+          severity='secondary'
+          aria-label='Back to galleries'
+        />
         {isAdmin && (
-          <Link
+          <LinkButton
             to='/photos/$galleryId/edit'
             params={{ galleryId }}
-            className={`${styles.editLink} p-button p-component p-button-info`}
-            aria-label='Edit Gallery'>
-            <span
-              className='p-button-icon pi pi-pencil'
-              aria-hidden='true'
-            />
-          </Link>
+            className={styles.editLink}
+            icon='pencil'
+            severity='info'
+            aria-label='Edit Gallery'
+          />
         )}
       </div>
 

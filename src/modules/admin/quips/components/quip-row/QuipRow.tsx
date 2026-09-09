@@ -77,7 +77,8 @@ export const QuipRow = ({ quip, onSave, onToggleEnabled, onDelete, onPreview, is
       />
       <Button
         icon={iconClass('trash')}
-        className='p-button-text p-button-danger'
+        text
+        severity='danger'
         aria-label='Delete quip'
         disabled={isPending}
         onClick={onDelete}

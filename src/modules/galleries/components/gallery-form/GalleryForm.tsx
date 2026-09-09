@@ -119,8 +119,8 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
         label='Cancel'
         icon={iconClass('times')}
         outlined
+        text
         onClick={handleHide}
-        className='p-button-text'
       />
       <Button
         label={isSubmitting ? 'Saving...' : isEdit ? 'Update' : 'Create'}

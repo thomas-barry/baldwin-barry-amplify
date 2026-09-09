@@ -191,7 +191,7 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
               label='Cancel'
               icon={iconClass('times')}
               outlined
-              className='p-button-text'
+              text
               onClick={() => navigate({ to: '/blog' })}
             />
             <Button

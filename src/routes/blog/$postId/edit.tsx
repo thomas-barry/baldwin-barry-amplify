@@ -1,9 +1,10 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { LinkButton } from '@/components/LinkButton';
 import Skeleton from '@/components/Skeleton';
 import BlogPostForm from '@/modules/blog/components/blog-post-form/BlogPostForm';
 import { blogPostQueryOptions } from '@/modules/blog/queries';
 import { useQuery } from '@tanstack/react-query';
-import { Link, createFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/blog/$postId/edit')({
   component: RouteComponent,
@@ -46,11 +47,11 @@ function Editor({ postId }: { postId: string }) {
     return (
       <div>
         <p>Post not found.</p>
-        <Link
+        <LinkButton
           to='/blog'
-          className='p-button p-component p-button-text'>
+          variant='text'>
           ← Back to Musings
-        </Link>
+        </LinkButton>
       </div>
     );
   }
