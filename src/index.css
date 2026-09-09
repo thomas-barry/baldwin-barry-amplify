@@ -295,6 +295,42 @@ body {
   filter: blur(2px);
 }
 
+/* ── PrimeReact global overrides ─────────────────────────────────── */
+
+/* These target markup PrimeReact renders anywhere in the app, so they belong
+   in a global sheet. They used to live in GalleryForm.module.css as bare
+   `:global()` rules — the same hazard the `.w-full` note below describes: a
+   CSS module only loads with its own chunk, so every dialog and every invalid
+   input in the app silently depended on someone having opened the gallery
+   form first.
+
+   Deliberately NOT inside a layer. The PrimeReact theme is an unlayered <link>
+   appended at runtime, so moving these into a layer would change which rule
+   wins. Unlayered keeps their cascade position exactly as it was and makes
+   this a pure relocation. */
+
+.p-invalid {
+  border-color: var(--color-destructive) !important;
+}
+
+.p-dialog {
+  animation: dialog-fade-in 0.2s;
+}
+
+/* Named for the global scope it now lives in. As a module keyframe this was
+   `fadeIn`, which CSS Modules hashed; here the name is real and `fadeIn` is
+   the likeliest future collision (DiceCubeDemo.module.css has its own). */
+@keyframes dialog-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ── Utilities ───────────────────────────────────────────────────── */
 
 @layer utilities {

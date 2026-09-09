@@ -34,33 +34,8 @@
   padding-top: 1rem;
 }
 
-/* `.w-full` lives in index.css's `utilities` layer, not here: a CSS module is
-   unlayered and only loads with this component's chunk, so BlogPostForm — which
-   also uses the class — silently depended on this file being loaded. */
-
-/* Make focus visible for accessibility */
-:global(.p-inputtext:focus) {
-  outline: var(--focus-outline);
-  outline-offset: var(--focus-outline-offset);
-}
-
-/* Error state for inputs */
-:global(.p-invalid) {
-  border-color: var(--color-destructive) !important;
-}
-
-/* Animation for showing the dialog */
-:global(.p-dialog) {
-  animation: fadeIn 0.2s;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* No `:global()` rules live here any more. A CSS module is unlayered and only
+   loads with its own chunk, so a global rule in this file applied app-wide but
+   only once someone had opened the gallery form. `.w-full` moved to index.css
+   in PR #29; `.p-invalid` and `.p-dialog` followed, and the dead
+   `.p-inputtext:focus` rule was deleted outright. */
