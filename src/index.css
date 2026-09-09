@@ -1,10 +1,36 @@
-/* `primereact` is declared here on purpose: PrimeReact's own stylesheets wrap
-   themselves in `@layer primereact`, and a layer's priority is fixed by where
-   it FIRST appears. Naming it here pins it above normalize/vendor (so buttons
-   keep their theme colors) and below authored styles. Without this line the
-   theme link registers the layer itself and lands lowest, which is enough for
-   normalize's `a { background: transparent }` to blank out button fills. */
-@layer normalize, vendor, primereact, gallery, default, themes, modules, components, utilities;
+/* ── Cascade layers ───────────────────────────────────────────────────
+
+   `primereact` is declared here on purpose: PrimeReact's own stylesheets wrap
+   themselves in `@layer primereact` — verified, theme.css lines 292-6996 — and
+   a layer's priority is fixed by where it FIRST appears. Naming it here pins it
+   above normalize/vendor (so buttons keep their theme colors) and below
+   authored styles. Without this line the theme link registers the layer itself
+   and lands lowest, which is enough for normalize's `a { background:
+   transparent }` to blank out button fills.
+
+   What the layers actually hold:
+
+     normalize   normalize.css
+     vendor      primereact core, primeicons, Amplify UI
+     primereact  the runtime theme <link> — self-declared inside theme.css
+     gallery     react-image-gallery
+     default     RootLayout.module.css
+     modules     5 module stylesheets
+     components  2 module stylesheets
+     utilities   .w-full, at the bottom of this file
+
+   Everything else authored — 44 of the 52 .module.css files, and most of this
+   file — is UNLAYERED, and that is load-bearing rather than neglect. Unlayered
+   normal declarations beat every layer regardless of specificity, so an
+   unlayered module rule outranks the theme and a layered one cannot. Tidying
+   the modules into a layer would silently hand every contested property back to
+   PrimeReact, and the ones that would break are the vendor-facing files —
+   LoginDialog, GalleryEditor, AmplifyFileUploader. Measure before layering.
+
+   `!important` is the exception: there the layer order reverses and unlayered
+   becomes the WEAKEST, so an important rule in `utilities` loses to one in
+   `primereact`. See the .w-full note at the bottom. */
+@layer normalize, vendor, primereact, gallery, default, modules, components, utilities;
 
 @import url('normalize.css/normalize.css') layer(normalize);
 
@@ -13,9 +39,11 @@
    main.tsx because only a stylesheet can assign a layer to an import.
 
    The PrimeReact *theme* is deliberately NOT here: it has to be swappable at
-   runtime for dark mode (see ThemeContext), and an @import cannot be toggled.
-   It stays an unlayered <link> in index.html, so overrides of theme rules still
-   need explicit specificity. */
+   runtime for dark mode, so ThemeContext builds a <link> and appends it to
+   <head> — an @import cannot be toggled. That link is NOT unlayered: theme.css
+   declares `@layer primereact` internally, which is why the statement above
+   names that layer. So an unlayered authored rule beats a theme rule outright,
+   with no specificity contest needed. */
 @import url('primereact/resources/primereact.min.css') layer(vendor);
 @import url('primeicons/primeicons.css') layer(vendor);
 @import url('@aws-amplify/ui-react/styles.css') layer(vendor);
@@ -304,10 +332,17 @@ body {
    input in the app silently depended on someone having opened the gallery
    form first.
 
-   Deliberately NOT inside a layer. The PrimeReact theme is an unlayered <link>
-   appended at runtime, so moving these into a layer would change which rule
-   wins. Unlayered keeps their cascade position exactly as it was and makes
-   this a pure relocation. */
+   Deliberately NOT inside a layer — though not for the reason PR #32 gave. It
+   claimed the theme is an unlayered <link>; theme.css in fact declares
+   `@layer primereact`. Unlayered is still right, and more clearly so: an
+   unlayered rule beats every layer outright, so these keep the exact cascade
+   position they had inside the module and the move stays a pure relocation.
+
+   The same correction applies to that PR's deletion of `.p-inputtext:focus`.
+   It was described as dead by specificity; it was not — being unlayered, it
+   was winning. Deleting it is still a no-op, but because the app-wide
+   :focus-visible rule above is also unlayered and sets the identical outline.
+   Verified in the browser against the real theme.css, not reasoned about. */
 
 .p-invalid {
   border-color: var(--color-destructive) !important;
@@ -338,15 +373,20 @@ body {
      dropped — a ~200KB vendor sheet for six `w-full` attributes was not a
      trade worth making.
 
-     It keeps `!important`, and it lives in a layer, for one specific reason:
-     the PrimeReact theme is an unlayered <link> that ThemeProvider appends to
-     <head> at runtime, so it is always parsed last and wins ordinary ties. For
-     `!important` declarations the cascade reverses — unlayered becomes the
-     weakest — so a layered important rule beats the theme whichever order the
-     two land in. A CSS module could not do this job: modules imported from JS
-     are unlayered, which is exactly the bug this replaced (the rule used to
-     live in GalleryForm.module.css, so the blog form's inputs depended on the
-     gallery form's chunk happening to be loaded). */
+     PR #29 justified the layer + `!important` pairing by calling the theme an
+     unlayered <link> that wins ordinary ties. That was wrong: theme.css
+     declares `@layer primereact` itself. The rule works, but for a simpler
+     reason — the theme sets no `!important` width, and an important
+     declaration in any layer beats a normal one in any other. Note the layer
+     is not helping here: for important declarations the order reverses, so
+     `utilities` is weaker than `primereact`. If PrimeReact ever ships
+     `width … !important` on an input, this stops working and the fix is to
+     go unlayered, not to shuffle layer order.
+
+     What the layer placement IS doing is keeping this out of a CSS module.
+     Modules imported from JS load only with their own chunk, which is the bug
+     this replaced: the rule used to live in GalleryForm.module.css, so the
+     blog form's inputs depended on the gallery form having been opened. */
   .w-full {
     width: 100% !important;
   }
