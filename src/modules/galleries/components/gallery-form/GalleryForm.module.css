@@ -34,10 +34,9 @@
   padding-top: 1rem;
 }
 
-/* Override PrimeReact input styles for full width */
-:global(.w-full) {
-  width: 100% !important;
-}
+/* `.w-full` lives in index.css's `utilities` layer, not here: a CSS module is
+   unlayered and only loads with this component's chunk, so BlogPostForm — which
+   also uses the class — silently depended on this file being loaded. */
 
 /* Make focus visible for accessibility */
 :global(.p-inputtext:focus) {

@@ -17,7 +17,6 @@
    It stays an unlayered <link> in index.html, so overrides of theme rules still
    need explicit specificity. */
 @import url('primereact/resources/primereact.min.css') layer(vendor);
-@import url('primeflex/primeflex.css') layer(vendor);
 @import url('primeicons/primeicons.css') layer(vendor);
 @import url('@aws-amplify/ui-react/styles.css') layer(vendor);
 @import url('react-image-gallery/styles/image-gallery.css') layer(gallery);
@@ -294,4 +293,25 @@ body {
   background-image: radial-gradient(circle, var(--dot-color) 1px, transparent 1px);
   background-size: 12px 12px;
   filter: blur(2px);
+}
+
+/* ── Utilities ───────────────────────────────────────────────────── */
+
+@layer utilities {
+  /* The only PrimeFlex utility this app ever used, kept after PrimeFlex was
+     dropped — a ~200KB vendor sheet for six `w-full` attributes was not a
+     trade worth making.
+
+     It keeps `!important`, and it lives in a layer, for one specific reason:
+     the PrimeReact theme is an unlayered <link> that ThemeProvider appends to
+     <head> at runtime, so it is always parsed last and wins ordinary ties. For
+     `!important` declarations the cascade reverses — unlayered becomes the
+     weakest — so a layered important rule beats the theme whichever order the
+     two land in. A CSS module could not do this job: modules imported from JS
+     are unlayered, which is exactly the bug this replaced (the rule used to
+     live in GalleryForm.module.css, so the blog form's inputs depended on the
+     gallery form's chunk happening to be loaded). */
+  .w-full {
+    width: 100% !important;
+  }
 }
