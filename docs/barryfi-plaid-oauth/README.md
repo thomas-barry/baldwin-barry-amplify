@@ -130,8 +130,21 @@ Noticed while reading the Amplify app config; neither was changed.
 
 - **The console build spec says `pnpm run build`**, while the repo's
   `amplify.yml` says `npm run build` and `CLAUDE.md` mandates npm. The repo file
-  wins when present, so builds do use npm — the console copy is stale and only a
-  hazard if `amplify.yml` were ever deleted.
+  wins when present, so builds do use npm — confirmed in job 37's log, which runs
+  `npm run build`. The console copy is stale and only a hazard if `amplify.yml`
+  were ever deleted or renamed, at which point the app would silently build with
+  a package manager this repo does not use and has no lockfile for.
+
+  Still unfixed, because it is app configuration rather than anything in this
+  repo. To clear it, point the stored spec at the repo file so the two cannot
+  disagree:
+
+  ```
+  aws amplify update-app --app-id d1dqcbguba2y7s --build-spec file://amplify.yml
+  ```
+
+  The only functional difference is that one word; the indentation and quoting
+  Amplify shows back are its own normalisation.
 - **`customHeaders` caches `**/*.{js,css,png,jpg,gif}` as `immutable` for a
   year.** Correct for hashed bundles, but `/noise.svg` and the favicons are not
   hashed — relevant if one is ever swapped and appears not to update.
