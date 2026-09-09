@@ -77,7 +77,7 @@ function makeFaceTexture(value: number): THREE.CanvasTexture {
 interface DiceCubeProps {
   onFaceChange?: (face: number) => void;
   onRollEnd?: () => void;
-  rollRef?: React.MutableRefObject<(() => void) | null>;
+  rollRef?: React.RefObject<(() => void) | null>;
 }
 
 type DieState = 'idle' | 'spinning' | 'settling';
