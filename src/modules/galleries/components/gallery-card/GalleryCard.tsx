@@ -1,3 +1,4 @@
+import { Icon } from '@/components/Icon';
 import { useAuth } from '@/context/AuthContext';
 import { useImageUrls, withCacheBuster } from '@/lib/imageUrl';
 import { Gallery } from '@/modules/galleries/types';
@@ -56,12 +57,12 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
           />
         ) : (
           <div className={styles.imagePlaceholder}>
-            <i className='pi pi-images' />
+            <Icon name='images' />
           </div>
         )}
         {isAdmin && gallery.adminOnly && (
           <div className={styles.privateBadge}>
-            <i className='pi pi-lock' />
+            <Icon name='lock' />
             Private
           </div>
         )}

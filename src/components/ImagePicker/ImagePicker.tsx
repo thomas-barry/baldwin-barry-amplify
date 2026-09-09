@@ -1,3 +1,4 @@
+import { iconClass } from '@/components/Icon';
 import { useImageUrls } from '@/lib/imageUrl';
 import { formatImageMarkdown } from '@/lib/markdown';
 import type { Schema } from '@/schema';
@@ -230,7 +231,7 @@ const ImagePicker = ({ visible, onHide }: ImagePickerProps) => {
                           />
                         )}
                         <span className={styles.overlay}>
-                          <i className={copiedId === image.id ? 'pi pi-check' : 'pi pi-copy'} />
+                          <i className={copiedId === image.id ? iconClass('check') : iconClass('copy')} />
                           {copiedId === image.id ? 'Copied' : 'Copy markdown'}
                         </span>
                       </span>

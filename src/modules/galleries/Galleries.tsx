@@ -1,4 +1,5 @@
 import GalleryList from '@/components/GalleryList';
+import { iconClass } from '@/components/Icon';
 import type { SortValue } from '@/components/SortSelect';
 import SortSelect from '@/components/SortSelect';
 import { useAuth } from '@/context/AuthContext';
@@ -27,7 +28,7 @@ const Galleries = () => {
           {isAdmin && (
             <Button
               label='New Gallery'
-              icon='pi pi-plus'
+              icon={iconClass('plus')}
               onClick={openCreateForm}
             />
           )}

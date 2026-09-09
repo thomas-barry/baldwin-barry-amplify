@@ -1,3 +1,4 @@
+import { Icon } from '@/components/Icon';
 import styles from './SortSelect.module.css';
 
 export type SortValue = 'newest' | 'alpha';
@@ -9,9 +10,9 @@ interface SortSelectProps {
 
 const SortSelect = ({ value, onChange }: SortSelectProps) => (
   <div className={styles.wrapper}>
-    <i
-      className={`pi pi-sort-alt ${styles.icon}`}
-      aria-hidden='true'
+    <Icon
+      name='sort-alt'
+      className={styles.icon}
     />
     <select
       className={styles.select}

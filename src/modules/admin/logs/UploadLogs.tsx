@@ -1,3 +1,4 @@
+import { iconClass } from '@/components/Icon';
 import type { Schema } from '@/schema';
 import { useQuery } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
@@ -106,12 +107,12 @@ const UploadLogs = () => {
         />
         <Button
           label='Search'
-          icon='pi pi-search'
+          icon={iconClass('search')}
           onClick={() => setAppliedFilter(filterPattern)}
           disabled={isFetching}
         />
         <Button
-          icon={isFetching ? 'pi pi-spin pi-spinner' : 'pi pi-refresh'}
+          icon={isFetching ? iconClass('spinner', { spin: true }) : iconClass('refresh')}
           onClick={() => refetch()}
           disabled={isFetching}
           aria-label='Refresh'

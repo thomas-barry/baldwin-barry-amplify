@@ -1,4 +1,6 @@
 import AuthButton from '@/components/AuthButton';
+import type { IconName } from '@/components/Icon';
+import { Icon } from '@/components/Icon';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useAuth } from '@/context/AuthContext';
 import { useSidebar } from '@/context/SidebarContext';
@@ -8,29 +10,29 @@ import styles from './Sidebar.module.css';
 
 interface NavItem {
   to: string;
-  icon: string;
+  icon: IconName;
   label: string;
   exact?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', icon: 'pi pi-home', label: 'Home', exact: true },
-  { to: '/photos', icon: 'pi pi-images', label: 'Photography' },
-  { to: '/blog', icon: 'pi pi-book', label: 'Musings' },
-  { to: '/sandbox', icon: 'pi pi-th-large', label: 'Sandbox' },
-  { to: '/about', icon: 'pi pi-user', label: 'About' },
-  { to: '/contact', icon: 'pi pi-envelope', label: 'Contact' },
+  { to: '/', icon: 'home', label: 'Home', exact: true },
+  { to: '/photos', icon: 'images', label: 'Photography' },
+  { to: '/blog', icon: 'book', label: 'Musings' },
+  { to: '/sandbox', icon: 'th-large', label: 'Sandbox' },
+  { to: '/about', icon: 'user', label: 'About' },
+  { to: '/contact', icon: 'envelope', label: 'Contact' },
 ];
 
 const MOBILE_BREAKPOINT = 768;
 
 const ADMIN_NAV_ITEMS: NavItem[] = [
-  { to: '/admin', icon: 'pi pi-cog', label: 'Admin' },
-  { to: '/admin/quips', icon: 'pi pi-comment', label: 'Quips' },
+  { to: '/admin', icon: 'cog', label: 'Admin' },
+  { to: '/admin/quips', icon: 'comment', label: 'Quips' },
   // Was a loose constant rendered only in the mobile dropdown, so it never
   // appeared in the desktop sidebar at all.
-  { to: '/admin/upload', icon: 'pi pi-images', label: 'Upload Photos' },
-  { to: '/admin/logs', icon: 'pi pi-list', label: 'Upload Logs' },
+  { to: '/admin/upload', icon: 'images', label: 'Upload Photos' },
+  { to: '/admin/logs', icon: 'list', label: 'Upload Logs' },
 ];
 
 const NavLink = ({ item, showLabel, onClick }: { item: NavItem; showLabel: boolean; onClick?: () => void }) => (
@@ -40,9 +42,9 @@ const NavLink = ({ item, showLabel, onClick }: { item: NavItem; showLabel: boole
     activeProps={{ className: styles.active }}
     activeOptions={{ exact: item.exact }}
     onClick={onClick}>
-    <i
-      className={`${item.icon} ${styles.navIcon}`}
-      aria-hidden='true'
+    <Icon
+      name={item.icon}
+      className={styles.navIcon}
     />
     {showLabel && <span className={styles.navLabel}>{item.label}</span>}
   </Link>
@@ -102,10 +104,7 @@ const Sidebar = () => {
             className={styles.collapseBtn}
             onClick={() => setCollapsed(!collapsed)}
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
-            <i
-              className={`pi ${collapsed ? 'pi-chevron-right' : 'pi-chevron-left'}`}
-              aria-hidden='true'
-            />
+            <Icon name={collapsed ? 'chevron-right' : 'chevron-left'} />
             {!collapsed && <span>Collapse</span>}
           </button>
         </div>
@@ -126,10 +125,7 @@ const Sidebar = () => {
           aria-expanded={mobileOpen}
           aria-controls={MOBILE_NAV_ID}
           aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}>
-          <i
-            className='pi pi-bars'
-            aria-hidden='true'
-          />
+          <Icon name='bars' />
         </button>
       </header>
 

@@ -1,3 +1,4 @@
+import { iconClass } from '@/components/Icon';
 import type { Schema } from '@/schema';
 import { useQueryClient } from '@tanstack/react-query';
 import { generateClient } from 'aws-amplify/data';
@@ -116,14 +117,14 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
     <div className={styles.dialogFooter}>
       <Button
         label='Cancel'
-        icon='pi pi-times'
+        icon={iconClass('times')}
         outlined
         onClick={handleHide}
         className='p-button-text'
       />
       <Button
         label={isSubmitting ? 'Saving...' : isEdit ? 'Update' : 'Create'}
-        icon='pi pi-check'
+        icon={iconClass('check')}
         onClick={handleSubmit}
         disabled={isSubmitting}
         loading={isSubmitting}

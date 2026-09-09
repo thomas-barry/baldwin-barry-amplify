@@ -1,3 +1,4 @@
+import { iconClass } from '@/components/Icon';
 import { useAuth } from '@/context/AuthContext';
 import { useLoginDialog } from '@/context/LoginDialogContext';
 import { Navigate } from '@tanstack/react-router';
@@ -27,7 +28,7 @@ const LoginPage = () => {
         <p>The login dialog has been opened. If it is not visible, use the button below.</p>
         <Button
           label='Open Login Dialog'
-          icon='pi pi-sign-in'
+          icon={iconClass('sign-in')}
           onClick={openLogin}
         />
       </div>
