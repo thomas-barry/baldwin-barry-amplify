@@ -1,3 +1,4 @@
+import { Icon, iconClass } from '@/components/Icon';
 import type { SquareSelection } from '@/components/ImageSquareSelector';
 import { useAuth } from '@/context/AuthContext';
 import { useLoginDialog } from '@/context/LoginDialogContext';
@@ -91,11 +92,11 @@ const SortableImageItem = ({
       {...attributes}
       {...listeners}>
       <div className={styles.dragHandle}>
-        <i className='pi pi-bars' />
+        <Icon name='bars' />
       </div>
       <div className={styles.thumbnailToggle}>
         <Button
-          icon={isGalleryThumbnail ? 'pi pi-star-fill' : 'pi pi-star'}
+          icon={isGalleryThumbnail ? iconClass('star-fill') : iconClass('star')}
           className={`${styles.thumbnailButton} ${isGalleryThumbnail ? styles.thumbnailButtonActive : ''}`}
           onClick={handleThumbnailClick}
           size='small'
@@ -124,7 +125,7 @@ const SortableImageItem = ({
           aria-label='Delete image'
           title='Delete image'
           type='button'>
-          <i className='pi pi-trash' />
+          <Icon name='trash' />
         </button>
       </div>
     </div>
@@ -525,7 +526,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   const backButton = (
     <Button
       label='Done'
-      icon='pi pi-arrow-left'
+      icon={iconClass('arrow-left')}
       severity='secondary'
       onClick={() => navigate({ to: '/photos/$galleryId', params: { galleryId } })}
     />
@@ -534,12 +535,15 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   if (!isAuthenticated) {
     return (
       <div className={styles.errorContainer}>
-        <i className={`pi pi-lock ${styles.errorIcon}`}></i>
+        <Icon
+          name='lock'
+          className={styles.errorIcon}
+        />
         <h3>Authentication Required</h3>
         <p>You must be logged in to edit galleries.</p>
         <Button
           label='Login'
-          icon='pi pi-sign-in'
+          icon={iconClass('sign-in')}
           severity='info'
           onClick={openLogin}
         />
@@ -550,7 +554,10 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   if (!isAdmin) {
     return (
       <div className={styles.errorContainer}>
-        <i className={`pi pi-ban ${styles.errorIcon}`} />
+        <Icon
+          name='ban'
+          className={styles.errorIcon}
+        />
         <h3>Access Denied</h3>
         <p>You need admin privileges to edit galleries.</p>
         {backButton}
@@ -570,7 +577,10 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   if (galleryError) {
     return (
       <div className={styles.errorContainer}>
-        <i className={`pi pi-exclamation-triangle ${styles.errorIcon}`} />
+        <Icon
+          name='exclamation-triangle'
+          className={styles.errorIcon}
+        />
         <h3>Error loading gallery</h3>
         <p>Failed to load gallery: {galleryError.message}</p>
         {backButton}
@@ -581,7 +591,10 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   if (imagesError) {
     return (
       <div className={styles.errorContainer}>
-        <i className={`pi pi-exclamation-triangle ${styles.errorIcon}`}></i>
+        <Icon
+          name='exclamation-triangle'
+          className={styles.errorIcon}
+        />
         <p>Error loading gallery images.</p>
       </div>
     );
@@ -590,7 +603,10 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   if (!gallery) {
     return (
       <div className={styles.errorContainer}>
-        <i className={`pi pi-exclamation-triangle ${styles.errorIcon}`} />
+        <Icon
+          name='exclamation-triangle'
+          className={styles.errorIcon}
+        />
         <h3>Gallery not found</h3>
         <p>Gallery with ID "{galleryId}" does not exist or you don't have access to it.</p>
         {backButton}
@@ -617,7 +633,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
       {sortedImages.length > 0 && (
         <Card className={styles.reorderSection}>
           <h3 className={styles.sectionTitle}>
-            <i className='pi pi-sort' />
+            <Icon name='sort' />
             Reorder Images & Select Thumbnail
           </h3>
           <p className={styles.sectionDescription}>
@@ -644,7 +660,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
                       confirmDialog({
                         message: `Delete "${imageItem.image.title}"? This will permanently remove the image and cannot be undone.`,
                         header: 'Delete Image',
-                        icon: 'pi pi-exclamation-triangle',
+                        icon: iconClass('exclamation-triangle'),
                         acceptClassName: 'p-button-danger',
                         accept: () => deleteImageMutation.mutate(imageItem),
                       })
@@ -672,7 +688,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
           <div className={styles.actionButtons}>
             <Button
               label='Save Order'
-              icon='pi pi-save'
+              icon={iconClass('save')}
               onClick={handleSaveOrder}
               loading={updateOrderMutation.isPending}
             />
@@ -682,7 +698,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
 
       <Card className={styles.uploadSection}>
         <h3 className={styles.sectionTitle}>
-          <i className='pi pi-upload' />
+          <Icon name='upload' />
           Upload Images
         </h3>
         <p className={styles.sectionDescription}>Upload images to add them to this gallery.</p>
@@ -694,9 +710,9 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
           <p
             className={styles.processingNotice}
             role='status'>
-            <i
-              className='pi pi-spin pi-spinner'
-              aria-hidden='true'
+            <Icon
+              name='spinner'
+              spin
             />
             Processing upload — this list updates automatically when it&apos;s ready.
           </p>

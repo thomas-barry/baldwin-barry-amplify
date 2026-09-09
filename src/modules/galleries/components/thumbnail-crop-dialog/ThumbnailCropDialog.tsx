@@ -1,3 +1,4 @@
+import { iconClass } from '@/components/Icon';
 import ImageSquareSelector, { SquareSelection } from '@/components/ImageSquareSelector';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
@@ -38,7 +39,7 @@ const ThumbnailCropDialog = ({
       />
       <Button
         label='Save as Thumbnail'
-        icon={isSaving ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
+        icon={isSaving ? iconClass('spinner', { spin: true }) : iconClass('check')}
         disabled={!selection || isSaving}
         onClick={() => onSave(selection)}
       />

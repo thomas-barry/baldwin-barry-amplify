@@ -1,0 +1,21 @@
+/* PrimeIcons ships `pi-spin`, but it is the one class this app uses that has no
+   counterpart in @primeicons/react 8 (it is an animation, not a glyph). Owning
+   it locally means the PrimeReact 11 migration does not have to reinvent it. */
+.spin {
+  animation: icon-spin 2s linear infinite;
+}
+
+@keyframes icon-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none;
+  }
+}

@@ -151,7 +151,8 @@ const Home = () => {
             Coping with reality.
           </h1>
           <p className={styles.body}>
-            This is my sandbox for playing with web technologies. Mostly built with Claude Code.
+            This is my sandbox for playing with web technologies and screaming into the void. Built mostly with Claude
+            Code.
           </p>
         </div>
         <div

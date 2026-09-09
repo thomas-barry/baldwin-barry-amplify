@@ -1,3 +1,4 @@
+import { Icon } from '@/components/Icon';
 import { useAuth } from '@/context/AuthContext';
 import { useLoginDialog } from '@/context/LoginDialogContext';
 import styles from './AuthButton.module.css';
@@ -17,7 +18,7 @@ const AuthButton = () => {
           onClick={logout}
           aria-label='Sign out'
           title='Sign out'>
-          <i className='pi pi-sign-out' />
+          <Icon name='sign-out' />
         </button>
       </div>
     );
@@ -29,7 +30,7 @@ const AuthButton = () => {
       onClick={openLogin}
       aria-label='Sign in'
       title='Sign in'>
-      <i className='pi pi-sign-in' />
+      <Icon name='sign-in' />
     </button>
   );
 };

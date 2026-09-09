@@ -1,6 +1,9 @@
+import { iconClass } from '@/components/Icon';
+import { LinkButton } from '@/components/LinkButton';
 import { useAuth } from '@/context/AuthContext';
 import { stripMarkdown } from '@/lib/markdown';
 import { Link } from '@tanstack/react-router';
+import { Button } from 'primereact/button';
 import type { MouseEvent } from 'react';
 import type { BlogPost } from '../../types';
 import styles from './BlogPostCard.module.css';
@@ -36,26 +39,26 @@ const BlogPostCard = ({ post, onDelete }: BlogPostCardProps) => {
         {isAdmin && !post.published && <span className={styles.draftBadge}>Draft</span>}
         {isAdmin && (
           <div className={styles.adminOverlay}>
-            <Link
+            <LinkButton
               to='/blog/$postId/edit'
               params={{ postId: post.id }}
-              className='p-button p-component p-button-icon-only p-button-sm p-button-info p-button-rounded'
-              aria-label='Edit post'>
-              <span
-                className='p-button-icon pi pi-pencil'
-                aria-hidden='true'
-              />
-            </Link>
+              icon='pencil'
+              iconOnly
+              rounded
+              size='small'
+              severity='info'
+              aria-label='Edit post'
+            />
             {onDelete && (
-              <button
-                className='p-button p-component p-button-icon-only p-button-sm p-button-danger p-button-rounded'
+              <Button
+                icon={iconClass('trash')}
+                rounded
+                text={false}
+                severity='danger'
+                size='small'
                 aria-label='Delete post'
-                onClick={handleDelete}>
-                <span
-                  className='p-button-icon pi pi-trash'
-                  aria-hidden='true'
-                />
-              </button>
+                onClick={handleDelete}
+              />
             )}
           </div>
         )}

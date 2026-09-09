@@ -1,3 +1,4 @@
+import { Icon, iconClass } from '@/components/Icon';
 import Skeleton from '@/components/Skeleton';
 import { useAuth } from '@/context/AuthContext';
 import type { Schema } from '@/schema';
@@ -108,15 +109,15 @@ const BlogPostList = () => {
   if (isError) {
     return (
       <div className={styles.errorContainer}>
-        <i
-          className='pi pi-exclamation-triangle'
+        <Icon
+          name='exclamation-triangle'
           style={{ fontSize: 'var(--fs-800)', color: 'var(--color-destructive)' }}
         />
         <p>Error loading posts: {error?.message ?? 'Unknown error'}</p>
         <Button
           className={styles.retryButton}
           label='Try again'
-          icon='pi pi-refresh'
+          icon={iconClass('refresh')}
           outlined
           onClick={() => refetch()}
         />

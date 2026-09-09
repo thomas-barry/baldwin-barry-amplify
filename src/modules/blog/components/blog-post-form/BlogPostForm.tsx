@@ -1,3 +1,4 @@
+import { iconClass } from '@/components/Icon';
 import ImagePicker from '@/components/ImagePicker';
 import Markdown from '@/components/Markdown';
 import type { Schema } from '@/schema';
@@ -188,14 +189,14 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
           <div className={styles.pageActions}>
             <Button
               label='Cancel'
-              icon='pi pi-times'
+              icon={iconClass('times')}
               outlined
-              className='p-button-text'
+              text
               onClick={() => navigate({ to: '/blog' })}
             />
             <Button
               label={isSubmitting ? 'Saving...' : isEdit ? 'Update' : 'Create'}
-              icon='pi pi-check'
+              icon={iconClass('check')}
               onClick={handleSubmit}
               disabled={isSubmitting}
               loading={isSubmitting}
@@ -248,7 +249,7 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
                 {!showPreview && (
                   <Button
                     label='Insert image'
-                    icon='pi pi-image'
+                    icon={iconClass('image')}
                     text
                     size='small'
                     type='button'
@@ -257,7 +258,7 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
                 )}
                 <Button
                   label={showPreview ? 'Write' : 'Preview'}
-                  icon={showPreview ? 'pi pi-pencil' : 'pi pi-eye'}
+                  icon={showPreview ? iconClass('pencil') : iconClass('eye')}
                   text
                   size='small'
                   type='button'

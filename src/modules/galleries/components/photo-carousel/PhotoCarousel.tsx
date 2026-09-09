@@ -8,6 +8,7 @@ import ReactImageGallery from 'react-image-gallery';
 // image-gallery.css is NOT imported here — index.css imports it into
 // `layer(gallery)`. An import from a .tsx is unlayered, and unlayered CSS beats
 // every layer, so a second copy here would outrank the overrides below.
+import { Icon } from '@/components/Icon';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import ExifPanel from '../exif-panel';
 import styles from './PhotoCarousel.module.css';
@@ -175,8 +176,8 @@ const PhotoCarousel = ({
   if (!galleryItems.length) {
     return (
       <div className={styles.emptyContainer}>
-        <i
-          className='pi pi-images'
+        <Icon
+          name='images'
           style={{ fontSize: '3rem', color: 'var(--color-text-subtle)' }}
         />
         <h3>No Images Yet</h3>
@@ -218,7 +219,7 @@ const PhotoCarousel = ({
             onClick={onClick}
             disabled={disabled}
             aria-label='Previous image'>
-            <i className='pi pi-chevron-left' />
+            <Icon name='chevron-left' />
           </button>
         )}
         renderRightNav={(onClick, disabled) => (
@@ -227,7 +228,7 @@ const PhotoCarousel = ({
             onClick={onClick}
             disabled={disabled}
             aria-label='Next image'>
-            <i className='pi pi-chevron-right' />
+            <Icon name='chevron-right' />
           </button>
         )}
         renderItem={(item: GalleryItem) => {
@@ -288,14 +289,14 @@ const PhotoCarousel = ({
                       onClick={() => setShowInfo(prev => !prev)}
                       aria-label='Image details'
                       aria-pressed={showInfo}>
-                      <i className='pi pi-info-circle' />
+                      <Icon name='info-circle' />
                     </button>
                   )}
                   <button
                     className={styles.actionBtn}
                     onClick={handleFullscreen}
                     aria-label='Expand fullscreen'>
-                    <i className='pi pi-expand' />
+                    <Icon name='expand' />
                   </button>
                 </div>
               </div>

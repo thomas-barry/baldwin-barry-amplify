@@ -1,3 +1,4 @@
+import { Icon, iconClass } from '@/components/Icon';
 import Skeleton from '@/components/Skeleton';
 import type { SortValue } from '@/components/SortSelect';
 import { useAuth } from '@/context/AuthContext';
@@ -131,15 +132,15 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
   if (isErrorQuery) {
     return (
       <div className={styles.errorContainer}>
-        <i
-          className='pi pi-exclamation-triangle'
+        <Icon
+          name='exclamation-triangle'
           style={{ fontSize: 'var(--fs-800)', color: 'var(--color-destructive)' }}
         />
         <p>Error loading galleries: {error?.message || 'Unknown error'}</p>
         <Button
           className={styles.retryButton}
           label='Try again'
-          icon='pi pi-refresh'
+          icon={iconClass('refresh')}
           outlined
           onClick={() => refetch()}
         />

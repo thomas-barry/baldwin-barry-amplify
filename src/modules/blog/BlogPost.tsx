@@ -1,3 +1,5 @@
+import { Icon } from '@/components/Icon';
+import { LinkButton } from '@/components/LinkButton';
 import Markdown from '@/components/Markdown';
 import { useAuth } from '@/context/AuthContext';
 import { useQuery } from '@tanstack/react-query';
@@ -22,16 +24,16 @@ const BlogPost = ({ postId }: { postId: string }) => {
   if (isError || !post) {
     return (
       <div className={styles.errorContainer}>
-        <i
-          className='pi pi-exclamation-triangle'
+        <Icon
+          name='exclamation-triangle'
           style={{ fontSize: 'var(--fs-800)', color: 'var(--color-destructive)' }}
         />
         <p>Post not found.</p>
-        <Link
+        <LinkButton
           to='/blog'
-          className='p-button p-component p-button-text'>
+          variant='text'>
           ← Back to Musings
-        </Link>
+        </LinkButton>
       </div>
     );
   }
@@ -51,19 +53,19 @@ const BlogPost = ({ postId }: { postId: string }) => {
         <Link
           to='/blog'
           className={styles.backLink}>
-          <i className='pi pi-arrow-left' /> Back to Musings
+          <Icon name='arrow-left' /> Back to Musings
         </Link>
         {isAdmin && (
-          <Link
+          <LinkButton
             to='/blog/$postId/edit'
             params={{ postId }}
-            className='p-button p-component p-button-icon-only p-button-sm p-button-info p-button-rounded'
-            aria-label='Edit post'>
-            <span
-              className='p-button-icon pi pi-pencil'
-              aria-hidden='true'
-            />
-          </Link>
+            icon='pencil'
+            iconOnly
+            rounded
+            size='small'
+            severity='info'
+            aria-label='Edit post'
+          />
         )}
       </div>
 

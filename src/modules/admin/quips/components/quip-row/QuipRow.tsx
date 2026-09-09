@@ -1,3 +1,4 @@
+import { iconClass } from '@/components/Icon';
 import type { Quip } from '@/modules/quips';
 import { Button } from 'primereact/button';
 import { InputSwitch } from 'primereact/inputswitch';
@@ -75,8 +76,9 @@ export const QuipRow = ({ quip, onSave, onToggleEnabled, onDelete, onPreview, is
         onChange={event => onToggleEnabled(!!event.value)}
       />
       <Button
-        icon='pi pi-trash'
-        className='p-button-text p-button-danger'
+        icon={iconClass('trash')}
+        text
+        severity='danger'
         aria-label='Delete quip'
         disabled={isPending}
         onClick={onDelete}

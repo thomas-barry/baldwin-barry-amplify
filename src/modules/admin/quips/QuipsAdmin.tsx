@@ -1,3 +1,4 @@
+import { iconClass } from '@/components/Icon';
 import { QuipPanel } from '@/components/QuipPanel';
 import { allQuipsQueryOptions, type Quip } from '@/modules/quips';
 import type { Schema } from '@/schema';
@@ -96,7 +97,7 @@ const QuipsAdmin = () => {
               <p>{error instanceof Error ? error.message : 'Could not load quips.'}</p>
               <Button
                 label='Try again'
-                icon='pi pi-refresh'
+                icon={iconClass('refresh')}
                 onClick={() => refetch()}
               />
             </div>

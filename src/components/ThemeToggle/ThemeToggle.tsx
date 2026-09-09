@@ -1,3 +1,4 @@
+import { Icon } from '@/components/Icon';
 import { useTheme } from '@/context/ThemeContext';
 import styles from './ThemeToggle.module.css';
 
@@ -7,9 +8,9 @@ const ThemeToggle = () => {
 
   return (
     <div className={styles.toggle}>
-      <i
-        className={`pi pi-sun ${styles.icon} ${!isDark ? styles.iconActive : ''}`}
-        aria-hidden='true'
+      <Icon
+        name='sun'
+        className={`${styles.icon} ${!isDark ? styles.iconActive : ''}`}
       />
       <button
         className={`${styles.pill} ${isDark ? styles.pillDark : ''}`}
@@ -17,9 +18,9 @@ const ThemeToggle = () => {
         aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}>
         <span className={styles.thumb} />
       </button>
-      <i
-        className={`pi pi-moon ${styles.icon} ${isDark ? styles.iconActive : ''}`}
-        aria-hidden='true'
+      <Icon
+        name='moon'
+        className={`${styles.icon} ${isDark ? styles.iconActive : ''}`}
       />
     </div>
   );
