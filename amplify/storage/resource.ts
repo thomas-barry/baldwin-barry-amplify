@@ -10,12 +10,14 @@ export const storage = defineStorage({
   access: allow => ({
     'uploads/*': [
       allow.guest.to(['read']),
-      allow.authenticated.to(['read', 'write', 'delete']),
+      allow.authenticated.to(['read']),
+      allow.groups(['admin']).to(['read', 'write', 'delete']),
       allow.resource(onUploadHandler).to(['read']),
     ],
     'thumbnails/*': [
       allow.guest.to(['read']),
-      allow.authenticated.to(['read', 'write', 'delete']),
+      allow.authenticated.to(['read']),
+      allow.groups(['admin']).to(['read', 'write', 'delete']),
       allow.resource(onUploadHandler).to(['write']),
     ],
     // The capped, re-encoded copy the carousel serves. Without this rule the
@@ -23,7 +25,8 @@ export const storage = defineStorage({
     // original — which for a RAW file the browser cannot render at all.
     'display/*': [
       allow.guest.to(['read']),
-      allow.authenticated.to(['read', 'write', 'delete']),
+      allow.authenticated.to(['read']),
+      allow.groups(['admin']).to(['read', 'write', 'delete']),
       allow.resource(onUploadHandler).to(['write']),
     ],
   }),

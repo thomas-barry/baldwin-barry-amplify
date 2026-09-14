@@ -10,4 +10,8 @@ export const auth = defineAuth({
       mutable: true,
     },
   },
+  // Declared here, not created by hand, so Amplify gives the group its own IAM
+  // role. Storage write and delete are granted to that role instead of to every
+  // signed-in user. The data schema's allow.group('admin') matches this name.
+  groups: ['admin'],
 });
