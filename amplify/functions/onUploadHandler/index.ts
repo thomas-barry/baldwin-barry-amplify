@@ -6,7 +6,6 @@ import exifReader from 'exif-reader';
 import sharp from 'sharp';
 import { Readable } from 'stream';
 import {
-  DISPLAY_MAX_EDGE,
   DISPLAY_PREFIX,
   DISPLAY_QUALITY,
   THUMBNAIL_HEIGHT,
@@ -14,6 +13,7 @@ import {
   THUMBNAIL_WIDTH,
   UPLOADS_PREFIX,
 } from '../../../constants';
+import { encodeDisplayImage } from './display';
 import { sanitizeExif } from './exif';
 import streamToBuffer from './streamToBuffer';
 
@@ -449,24 +449,8 @@ export const handler = async (event: S3Event) => {
       // derivative must never cost the record.
       let displayGenerated = false;
       try {
-        const resized = sharp(imageBuffer)
-          // Same reasoning as the thumbnail: bake the orientation into the pixels.
-          .rotate()
-          .resize({
-            width: DISPLAY_MAX_EDGE,
-            height: DISPLAY_MAX_EDGE,
-            fit: 'inside',
-            withoutEnlargement: true,
-          });
-
-        const displayBuffer = await (
-          isPng ? resized.png({ compressionLevel: 9 }) : resized.jpeg({ quality: DISPLAY_QUALITY })
-        )
-          // Carry EXIF and the colour profile across, but pin orientation to 1:
-          // .rotate() has already applied it, and re-attaching the original tag
-          // would rotate the image a second time on display.
-          .withMetadata({ orientation: 1 })
-          .toBuffer();
+        // Colour profile only, no EXIF: see display.ts.
+        const displayBuffer = await encodeDisplayImage(imageBuffer, isPng);
 
         const displayPut = new PutObjectCommand({
           Bucket: bucket,
