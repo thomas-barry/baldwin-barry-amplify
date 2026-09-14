@@ -19,8 +19,10 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
   const photoCount = gallery.images?.length ?? 0;
 
   // A gallery can adopt a thumbnail-less image as its cover, so fall back to
-  // the original rather than rendering an empty frame.
-  const thumbnailKey = gallery.thumbnailImage?.s3ThumbnailKey ?? gallery.thumbnailImage?.s3Key;
+  // its display copy rather than rendering an empty frame. The original is a
+  // last resort: the CDN does not serve originals.
+  const thumbnailKey =
+    gallery.thumbnailImage?.s3ThumbnailKey ?? gallery.thumbnailImage?.s3DisplayKey ?? gallery.thumbnailImage?.s3Key;
   const thumbnailKeys = useMemo(() => (thumbnailKey ? [thumbnailKey] : []), [thumbnailKey]);
   const imageUrls = useImageUrls(thumbnailKeys);
   const thumbnailSrc = withCacheBuster(thumbnailKey ? imageUrls[thumbnailKey] : undefined, gallery.updatedAt);

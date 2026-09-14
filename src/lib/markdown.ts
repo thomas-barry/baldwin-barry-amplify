@@ -9,6 +9,19 @@
  * `src`, while `uploads/photo.jpg` passes through untouched.
  */
 
+import { DISPLAY_PREFIX, UPLOADS_PREFIX } from '../../constants';
+
+/**
+ * The key a reader is actually served for an image target. Posts store the
+ * original's key (`uploads/…`), which the upload Lambda mirrors as a capped,
+ * EXIF-free copy under `display/`. Originals are not publicly readable, so an
+ * original's key is swapped for its display copy at render time — which also
+ * covers every post written before this mapping existed.
+ */
+export function toServedKey(key: string): string {
+  return key.startsWith(UPLOADS_PREFIX) ? DISPLAY_PREFIX + key.slice(UPLOADS_PREFIX.length) : key;
+}
+
 /**
  * `![alt](target "optional title")`, with the CommonMark `<...>` form for
  * targets containing spaces. Kept deliberately loose — it only has to find
@@ -27,12 +40,15 @@ export function isS3Key(target: string): boolean {
   return target.length > 0 && !HAS_SCHEME.test(target) && !target.startsWith('/') && !target.startsWith('#');
 }
 
-/** Every distinct S3 key referenced by an image in `markdown`, in first-use order. */
+/**
+ * Every distinct S3 key an image in `markdown` is served from, in first-use
+ * order — already mapped through `toServedKey`.
+ */
 export function extractImageKeys(markdown: string): string[] {
   const keys = new Set<string>();
   for (const match of markdown.matchAll(IMAGE_PATTERN)) {
     const target = match[2] ?? match[3] ?? '';
-    if (isS3Key(target)) keys.add(target);
+    if (isS3Key(target)) keys.add(toServedKey(target));
   }
   return [...keys];
 }

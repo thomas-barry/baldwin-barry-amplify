@@ -1,5 +1,5 @@
 import { useImageUrls } from '@/lib/imageUrl';
-import { extractImageKeys, isS3Key } from '@/lib/markdown';
+import { extractImageKeys, isS3Key, toServedKey } from '@/lib/markdown';
 import { useMemo } from 'react';
 import type { Components } from 'react-markdown';
 import ReactMarkdown from 'react-markdown';
@@ -31,7 +31,8 @@ const Markdown = ({ children }: MarkdownProps) => {
     () => ({
       img: ({ src, alt, title }) => {
         const target = typeof src === 'string' ? src : '';
-        const resolved = isS3Key(target) ? imageUrls[target] : target;
+        // Stored keys point at originals; readers get the display copy.
+        const resolved = isS3Key(target) ? imageUrls[toServedKey(target)] : target;
 
         // Presigned URLs arrive asynchronously in the sandbox. Render nothing
         // rather than a broken image for the frame before they land.
