@@ -91,10 +91,13 @@ const PhotoCarousel = ({
     () =>
       galleryImages.map((gi, index) => ({
         // Serve the capped display copy, not the original — a full-resolution
-        // phone photo is several megabytes. Both derived keys are unset when
-        // their generation failed, so the original is the fallback for each.
-        original: gi.image.s3DisplayKey || gi.image.s3Key,
-        thumbnail: gi.image.s3ThumbnailKey || gi.image.s3Key,
+        // phone photo is several megabytes, and originals keep the camera's
+        // EXIF, so the CDN does not serve them at all. Each derived key is
+        // unset when its generation failed, so the other derivative is tried
+        // first; the original is a last resort that only resolves for signed-in
+        // presigned URLs.
+        original: gi.image.s3DisplayKey || gi.image.s3ThumbnailKey || gi.image.s3Key,
+        thumbnail: gi.image.s3ThumbnailKey || gi.image.s3DisplayKey || gi.image.s3Key,
         description: gi.image.description || gi.image.title || '',
         originalTitle: gi.image.title,
         // Summarised once per image here rather than in ExifPanel, so it is not

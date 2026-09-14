@@ -1,7 +1,7 @@
 import { defineBackend } from '@aws-amplify/backend';
 import type { IAspect } from 'aws-cdk-lib';
 import { ArnFormat, Aspects, Stack } from 'aws-cdk-lib';
-import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import type { IConstruct } from 'constructs';
 import { auth } from './auth/resource';
@@ -63,6 +63,39 @@ backend.storage.resources.cfnResources.cfnBucket.lifecycleConfiguration = {
     },
   ],
 };
+
+// The image CDN reads the bucket through its origin access control, so its
+// permission lives in the bucket policy. It used to be written by hand, which
+// replaced Amplify's policy wholesale (dropping the HTTPS-only deny) and would
+// have been wiped by any deploy that touched the policy. Declaring it here
+// keeps both. Only the derivatives are readable: originals keep the camera's
+// full EXIF, GPS included, and are never served publicly.
+//
+// The distribution itself is not managed by this stack, so its id comes from
+// the environment. A sandbox without a CDN simply serves presigned URLs.
+const cloudfrontDistributionId = process.env.CLOUDFRONT_DISTRIBUTION_ID;
+if (cloudfrontDistributionId) {
+  const mediaBucket = backend.storage.resources.bucket;
+  mediaBucket.addToResourcePolicy(
+    new PolicyStatement({
+      sid: 'AllowCloudFrontReadDerivatives',
+      principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
+      actions: ['s3:GetObject'],
+      resources: [mediaBucket.arnForObjects('display/*'), mediaBucket.arnForObjects('thumbnails/*')],
+      conditions: {
+        StringEquals: {
+          'AWS:SourceArn': `arn:aws:cloudfront::${Stack.of(mediaBucket).account}:distribution/${cloudfrontDistributionId}`,
+        },
+      },
+    }),
+  );
+} else if (!isSandbox) {
+  // Deploying a branch without it would remove the CDN's access and break
+  // every image on the site.
+  throw new Error(
+    'CLOUDFRONT_DISTRIBUTION_ID must be set for branch deploys (Amplify console > Environment variables).',
+  );
+}
 
 // nodejs20.x is deprecated. Lambda blocks function *updates* from 2027-03-03,
 // which would block every backend deploy that touches a function, not just
