@@ -9,16 +9,16 @@
  * approach DynamoDB's 400KB item limit while carrying nothing the UI can show.
  * Measured on a Nokia Lumia 820 photo: 32,374 bytes raw, 687 bytes sanitised.
  *
- * NOTE ON GPS: the GPSInfo block is deliberately retained here, but is never
- * surfaced by the frontend (see src/lib/exif.ts). Because the Image model
- * allows `publicApiKey` reads, anything stored in this field is fetchable by
- * anyone holding the API key — treat GPSInfo as public, not private.
+ * NOTE ON GPS: GPSInfo is dropped. The Image model allows `publicApiKey` reads,
+ * so everything stored in this field is public, and a photo taken at home
+ * carries a home address. Rows written before this change were cleaned by
+ * amplify/scripts/backfill-strip-gps.ts.
  */
 
-/** Blocks worth keeping. Dropped: `bigEndian` (a bare boolean), `Thumbnail`
- *  (byte offsets into the camera's own embedded thumbnail — we generate our
- *  own) and `Iop` (interoperability index). */
-const KEPT_BLOCKS = ['Image', 'Photo', 'GPSInfo'] as const;
+/** Blocks worth keeping. Dropped: `GPSInfo` (see above), `bigEndian` (a bare
+ *  boolean), `Thumbnail` (byte offsets into the camera's own embedded
+ *  thumbnail — we generate our own) and `Iop` (interoperability index). */
+const KEPT_BLOCKS = ['Image', 'Photo'] as const;
 
 /** Guards against a pathological UserComment or Software value. */
 const MAX_STRING_LENGTH = 512;

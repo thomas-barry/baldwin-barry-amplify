@@ -4,8 +4,9 @@
  * already strips Buffers, unknown numeric tags and converts Dates to ISO
  * strings (see amplify/functions/onUploadHandler/exif.ts).
  *
- * NOTE ON GPS: the stored blob may contain a GPSInfo block. It is deliberately
- * never read here — the gallery displays camera settings only.
+ * NOTE ON GPS: the Lambda no longer stores a GPSInfo block, and older rows were
+ * backfilled without one. Nothing here reads location either — the gallery
+ * displays camera settings only.
  */
 
 export interface ExifSummary {
