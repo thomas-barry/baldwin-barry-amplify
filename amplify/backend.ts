@@ -25,6 +25,45 @@ const backend = defineBackend({
 // references (UserPoolClient, IdentityPool, AppSync's userPoolConfig) get rewired to it.
 backend.auth.resources.cfnResources.cfnUserPool.overrideLogicalId('AdminUserPoolV2');
 
+// Self sign-up is on by default and defineAuth has no option to turn it off.
+// `<Authenticator hideSignUp />` only hides the tab; Cognito's SignUp API stays
+// open to anyone holding the client ID from the bundle. Admins are created with
+// `aws cognito-idp admin-create-user` instead.
+const { cfnUserPool } = backend.auth.resources.cfnResources;
+cfnUserPool.adminCreateUserConfig = {
+  ...(cfnUserPool.adminCreateUserConfig as object | undefined),
+  allowAdminCreateUserOnly: true,
+};
+
+// Nothing in this backend could be restored after a bad delete: no bucket
+// versioning, no DynamoDB point-in-time recovery, no deletion protection.
+// Recovery is on everywhere. Deletion protection is not applied to sandboxes,
+// where it would block `ampx sandbox delete`.
+const isSandbox = Stack.of(cfnUserPool).node.tryGetContext('amplify-backend-type') === 'sandbox';
+const protectFromDeletion = !isSandbox;
+
+cfnUserPool.deletionProtection = protectFromDeletion ? 'ACTIVE' : 'INACTIVE';
+
+for (const table of Object.values(backend.data.resources.cfnResources.amplifyDynamoDbTables)) {
+  table.pointInTimeRecoveryEnabled = true;
+  table.deletionProtectionEnabled = protectFromDeletion;
+}
+
+// Versioning is switched on in storage/resource.ts. Old versions expire after
+// 30 days, so a delete stays recoverable for a month without storage growing.
+// Set on the L1 resource: `resources.bucket` is typed as IBucket, which has no
+// addLifecycleRule.
+backend.storage.resources.cfnResources.cfnBucket.lifecycleConfiguration = {
+  rules: [
+    {
+      id: 'ExpireNoncurrentVersions',
+      status: 'Enabled',
+      noncurrentVersionExpiration: { noncurrentDays: 30 },
+      abortIncompleteMultipartUpload: { daysAfterInitiation: 7 },
+    },
+  ],
+};
+
 // nodejs20.x is deprecated. Lambda blocks function *updates* from 2027-03-03,
 // which would block every backend deploy that touches a function, not just
 // deploys that change one.
