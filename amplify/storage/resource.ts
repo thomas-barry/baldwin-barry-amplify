@@ -4,6 +4,9 @@ import { onUploadHandler } from '../functions/onUploadHandler/resource';
 export const storage = defineStorage({
   name: 'media',
   isDefault: true,
+  // Without versioning a deleted or overwritten photo is gone for good. The
+  // lifecycle rule that keeps old versions from piling up is in backend.ts.
+  versioned: true,
   access: allow => ({
     'uploads/*': [
       allow.guest.to(['read']),
