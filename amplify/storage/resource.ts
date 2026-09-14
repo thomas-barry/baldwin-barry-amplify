@@ -8,14 +8,17 @@ export const storage = defineStorage({
   // lifecycle rule that keeps old versions from piling up is in backend.ts.
   versioned: true,
   access: allow => ({
+    // No guest access to originals: they keep the camera's full EXIF, GPS
+    // included. Visitors are served the thumbnail and display derivatives.
     'uploads/*': [
-      allow.guest.to(['read']),
       allow.authenticated.to(['read']),
       allow.groups(['admin']).to(['read', 'write', 'delete']),
       allow.resource(onUploadHandler).to(['read']),
     ],
+    // Guests get objects by key but cannot list, so the bucket's contents
+    // cannot be enumerated.
     'thumbnails/*': [
-      allow.guest.to(['read']),
+      allow.guest.to(['get']),
       allow.authenticated.to(['read']),
       allow.groups(['admin']).to(['read', 'write', 'delete']),
       allow.resource(onUploadHandler).to(['write']),
@@ -24,7 +27,7 @@ export const storage = defineStorage({
     // Lambda's PutObject is denied and every image silently falls back to the
     // original — which for a RAW file the browser cannot render at all.
     'display/*': [
-      allow.guest.to(['read']),
+      allow.guest.to(['get']),
       allow.authenticated.to(['read']),
       allow.groups(['admin']).to(['read', 'write', 'delete']),
       allow.resource(onUploadHandler).to(['write']),
