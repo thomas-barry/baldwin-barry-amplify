@@ -1,4 +1,5 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { publicGalleries } from '../functions/publicGalleries/resource';
 import { readUploadLogs } from '../functions/readUploadLogs/resource';
 
 const schema = a.schema({
@@ -13,10 +14,9 @@ const schema = a.schema({
       adminOnly: a.boolean(),
       images: a.hasMany('GalleryImage', 'galleryId'),
     })
-    .authorization(allow => [
-      allow.publicApiKey().to(['read']),
-      allow.group('admin').to(['create', 'update', 'delete']), // Only admin group can modify
-    ]),
+    // Admin-only, like Image, GalleryImage and BlogPost: see the public shapes
+    // below and docs/adr/0005.
+    .authorization(allow => [allow.group('admin')]),
 
   Image: a
     .model({
@@ -36,10 +36,7 @@ const schema = a.schema({
       galleries: a.hasMany('GalleryImage', 'imageId'),
       thumbnailForGallery: a.hasOne('Gallery', 'thumbnailImageId'),
     })
-    .authorization(allow => [
-      allow.publicApiKey().to(['read']),
-      allow.group('admin').to(['create', 'update', 'delete']),
-    ]),
+    .authorization(allow => [allow.group('admin')]),
 
   GalleryImage: a
     .model({
@@ -50,10 +47,7 @@ const schema = a.schema({
       addedDate: a.datetime().required(),
       order: a.integer(),
     })
-    .authorization(allow => [
-      allow.publicApiKey().to(['read']), // Allow public read access
-      allow.group('admin').to(['create', 'update', 'delete']), // Only admin group can modify
-    ]),
+    .authorization(allow => [allow.group('admin')]),
 
   Quip: a
     .model({
@@ -77,10 +71,99 @@ const schema = a.schema({
       published: a.boolean().required(),
       publishedDate: a.datetime(),
     })
-    .authorization(allow => [
-      allow.publicApiKey().to(['read']),
-      allow.group('admin').to(['create', 'update', 'delete']),
-    ]),
+    .authorization(allow => [allow.group('admin')]),
+
+  // Public read paths for galleries and musings. API-key auth has no row-level
+  // filter, so a public model `read` let anyone list drafts, admin-only
+  // galleries and every image by dropping the page's filter. The models above
+  // are admin-only; visitors get these operations, which apply the filter on
+  // the server and return only the fields the pages render. See docs/adr/0005.
+  PublicImage: a.customType({
+    id: a.id().required(),
+    title: a.string().required(),
+    description: a.string(),
+    s3Key: a.string().required(),
+    s3ThumbnailKey: a.string(),
+    s3DisplayKey: a.string(),
+    uploadDate: a.datetime().required(),
+    contentType: a.string(),
+    width: a.integer(),
+    height: a.integer(),
+    // Only on gallery photos, not covers. Already stripped of GPS on upload.
+    exifData: a.json(),
+  }),
+
+  PublicGalleryImage: a.customType({
+    id: a.id().required(),
+    galleryId: a.id().required(),
+    imageId: a.id().required(),
+    addedDate: a.datetime().required(),
+    order: a.integer(),
+    image: a.ref('PublicImage').required(),
+  }),
+
+  PublicGallery: a.customType({
+    id: a.id().required(),
+    name: a.string().required(),
+    description: a.string(),
+    createdDate: a.datetime().required(),
+    updatedAt: a.datetime(),
+    thumbnailCrop: a.json(),
+    photoCount: a.integer().required(),
+    // Set by listPublicGalleries only.
+    thumbnailImage: a.ref('PublicImage'),
+    // Set by getPublicGallery only, already in display order.
+    images: a.ref('PublicGalleryImage').required().array(),
+  }),
+
+  // Visible galleries only: never admin-only, never empty.
+  listPublicGalleries: a
+    .query()
+    .returns(a.ref('PublicGallery').required().array().required())
+    .authorization(allow => [allow.publicApiKey()])
+    .handler(a.handler.function(publicGalleries)),
+
+  // Null for an admin-only or missing gallery.
+  getPublicGallery: a
+    .query()
+    .arguments({ id: a.id().required() })
+    .returns(a.ref('PublicGallery'))
+    .authorization(allow => [allow.publicApiKey()])
+    .handler(a.handler.function(publicGalleries)),
+
+  PublicBlogPost: a.customType({
+    id: a.id().required(),
+    title: a.string().required(),
+    content: a.string().required(),
+    excerpt: a.string(),
+    tags: a.string().array(),
+    publishedDate: a.datetime(),
+    createdAt: a.datetime().required(),
+    updatedAt: a.datetime(),
+  }),
+
+  PublicBlogPostPage: a.customType({
+    items: a.ref('PublicBlogPost').required().array().required(),
+    nextToken: a.string(),
+  }),
+
+  listPublishedBlogPosts: a
+    .query()
+    .arguments({
+      limit: a.integer(),
+      nextToken: a.string(),
+    })
+    .returns(a.ref('PublicBlogPostPage'))
+    .authorization(allow => [allow.publicApiKey()])
+    .handler(a.handler.custom({ dataSource: a.ref('BlogPost'), entry: './blog/listPublishedBlogPosts.js' })),
+
+  // Null for a draft or a missing post.
+  getPublishedBlogPost: a
+    .query()
+    .arguments({ id: a.id().required() })
+    .returns(a.ref('PublicBlogPost'))
+    .authorization(allow => [allow.publicApiKey()])
+    .handler(a.handler.custom({ dataSource: a.ref('BlogPost'), entry: './blog/getPublishedBlogPost.js' })),
 
   // One parsed line from the upload Lambda's CloudWatch log stream.
   UploadLogEntry: a.customType({

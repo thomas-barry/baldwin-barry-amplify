@@ -26,7 +26,7 @@ function RouteComponent() {
  * from props, and remounting it later would discard whatever had been typed.
  */
 function Editor({ postId }: { postId: string }) {
-  const { data: post, isLoading, isError } = useQuery(blogPostQueryOptions(postId));
+  const { data: post, isLoading, isError } = useQuery(blogPostQueryOptions(postId, true));
 
   if (isLoading) {
     // Was a bare, uncentred ProgressSpinner. Stand in for the editor's shape —

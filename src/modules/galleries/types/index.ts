@@ -22,6 +22,35 @@ export interface Gallery {
     contentType?: string | null;
   } | null;
   images?: { id: string }[] | null;
+  /** Set by the public list, which does not return the memberships themselves. */
+  photoCount?: number | null;
   thumbnailCrop?: SquareSelection | null;
   adminOnly?: boolean | null;
+}
+
+/** A gallery membership joined to its image, as the carousel renders it. */
+export interface GalleryPhoto {
+  id: string;
+  galleryId: string;
+  imageId: string;
+  addedDate: string;
+  order?: number | null;
+  image: {
+    id: string;
+    title: string;
+    s3Key: string;
+    s3ThumbnailKey?: string | null;
+    s3DisplayKey?: string | null;
+    description?: string | null;
+    uploadDate: string;
+    contentType?: string | null;
+    width: number | null;
+    height: number | null;
+    exifData?: unknown;
+  };
+}
+
+export interface GalleryView {
+  gallery: Gallery;
+  images: GalleryPhoto[];
 }

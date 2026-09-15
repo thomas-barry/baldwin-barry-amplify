@@ -12,7 +12,8 @@ import { Toast } from 'primereact/toast';
 import { useMemo, useRef, useState } from 'react';
 import styles from './ImagePicker.module.css';
 
-const client = generateClient<Schema>({ authMode: 'apiKey' });
+// Admin-only screen; the gallery models are admin-only (docs/adr/0005).
+const client = generateClient<Schema>({ authMode: 'userPool' });
 
 /** Pages are walked to completion so the grid never silently hides an image. */
 const PAGE_SIZE = 100;

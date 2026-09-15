@@ -9,9 +9,16 @@ import styles from './BlogPost.module.css';
 import { blogPostQueryOptions } from './queries';
 
 const BlogPost = ({ postId }: { postId: string }) => {
-  const { isAdmin } = useAuth();
+  const { isAdmin, isLoading: isAuthLoading } = useAuth();
 
-  const { data: post, isLoading, isError } = useQuery(blogPostQueryOptions(postId));
+  // Held until the session loads, since isAdmin decides which query runs — a
+  // visitor's query returns nothing for a draft.
+  const {
+    data: post,
+    isLoading: isQueryLoading,
+    isError,
+  } = useQuery({ ...blogPostQueryOptions(postId, isAdmin), enabled: !isAuthLoading });
+  const isLoading = isAuthLoading || isQueryLoading;
 
   if (isLoading) {
     return (

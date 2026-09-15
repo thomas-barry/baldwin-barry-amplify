@@ -8,34 +8,28 @@ import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { Toast } from 'primereact/toast';
 import { useMemo, useRef } from 'react';
+import { blogPostsQueryOptions } from '../../queries';
 import type { BlogPost } from '../../types';
 import BlogPostCard from '../blog-post-card/BlogPostCard';
 import styles from './BlogPostList.module.css';
 
-const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
 const clientWrite = generateClient<Schema>({ authMode: 'userPool' });
 
 const SKELETON_COUNT = 3;
 
 const BlogPostList = () => {
-  const { isAdmin } = useAuth();
+  const { isAdmin, isLoading: isAuthLoading } = useAuth();
   const queryClient = useQueryClient();
   const toast = useRef<Toast>(null);
 
   const {
     data: posts,
-    isLoading,
+    isLoading: isQueryLoading,
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ['blogPosts', isAdmin],
-    queryFn: async () => {
-      const filter = isAdmin ? undefined : { published: { eq: true } };
-      const response = await clientRead.models.BlogPost.list({ filter });
-      return response.data as unknown as BlogPost[];
-    },
-  });
+  } = useQuery({ ...blogPostsQueryOptions(isAdmin), enabled: !isAuthLoading });
+  const isLoading = isAuthLoading || isQueryLoading;
 
   const sortedPosts = useMemo(() => {
     if (!posts) return [];

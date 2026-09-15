@@ -1,5 +1,6 @@
 import AuthButton from '@/components/AuthButton';
 import ThemeToggle from '@/components/ThemeToggle';
+import { useAuth } from '@/context/AuthContext';
 import { galleryQueryOptions } from '@/modules/galleries/queries';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useRouterState } from '@tanstack/react-router';
@@ -37,10 +38,12 @@ const Topbar = () => {
       s.matches.find(match => match.routeId.includes('$galleryId'))?.params as { galleryId?: string } | undefined,
   })?.galleryId;
 
-  const { data: gallery } = useQuery({
-    ...galleryQueryOptions(galleryId ?? ''),
-    enabled: Boolean(galleryId),
+  const { isAdmin, isLoading: isAuthLoading } = useAuth();
+  const { data: galleryView } = useQuery({
+    ...galleryQueryOptions(galleryId ?? '', isAdmin),
+    enabled: Boolean(galleryId) && !isAuthLoading,
   });
+  const gallery = galleryView?.gallery;
 
   const crumbs: Crumb[] = [{ label: SITE_NAME, to: '/' }];
 

@@ -16,7 +16,7 @@ interface GalleryCardProps {
 
 const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
   const { isAdmin } = useAuth();
-  const photoCount = gallery.images?.length ?? 0;
+  const photoCount = gallery.photoCount ?? gallery.images?.length ?? 0;
 
   // A gallery can adopt a thumbnail-less image as its cover, so fall back to
   // its display copy rather than rendering an empty frame. The original is a

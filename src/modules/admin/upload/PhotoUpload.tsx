@@ -8,7 +8,8 @@ import { Toast } from 'primereact/toast';
 import { useRef, useState } from 'react';
 import styles from './PhotoUpload.module.css';
 
-const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
+// Admin-only screen; the gallery models are admin-only (docs/adr/0005).
+const clientRead = generateClient<Schema>({ authMode: 'userPool' });
 
 interface GalleryOption {
   label: string;
