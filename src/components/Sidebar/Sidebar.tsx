@@ -31,7 +31,6 @@ const MOBILE_BREAKPOINT = 768;
 const COMPLAINT_QUEUE_PATH = '/admin/complaints';
 
 const ADMIN_NAV_ITEMS: NavItem[] = [
-  { to: '/admin', icon: 'cog', label: 'Admin' },
   { to: '/admin/quips', icon: 'comment', label: 'Quips' },
   { to: COMPLAINT_QUEUE_PATH, icon: 'megaphone', label: 'Complaint Queue' },
   // Was a loose constant rendered only in the mobile dropdown, so it never
