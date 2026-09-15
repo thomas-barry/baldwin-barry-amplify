@@ -305,6 +305,33 @@ body {
   overflow-x: auto;
 }
 
+/* Scroll lock for the open mobile nav. The panel is `position: fixed`, so
+   without this the document scrolls away underneath it.
+
+   Not `overflow: hidden`, which was tried first and measured: `html` is the
+   scrolling element here, and clamping its overflow drops scrollY to 0, so
+   closing the menu dumped you at the top of the page (opened at y=200, closed
+   at y=0). Taking body out of flow leaves html with nothing tall to scroll and
+   keeps the offset recoverable — Sidebar.tsx saves it, writes it to `top`, and
+   restores it on cleanup.
+
+   A body class rather than inline styles, mirroring `immersive-gallery` — see
+   Gallery.tsx. Sidebar.tsx derives it from `mobileOpen` in an effect so the
+   cleanup always runs; toggling it imperatively next to setMobileOpen would
+   strand the lock when the resize handler force-closes the menu. */
+body.nav-open {
+  position: fixed;
+  inset-inline: 0;
+  /* Overrides `height: 100%` above, which would resolve against the viewport
+     once body is fixed and clip it to one screen: at `top: -200px` that left a
+     200px band below the body box painting as bare canvas. `auto` lets body
+     keep its content height so the visible slice always covers the viewport;
+     `min-height: 100dvh` above still floors it on short pages. */
+  height: auto;
+  overflow: hidden;
+  /* `top` is set inline, to minus the saved scroll offset. */
+}
+
 #root {
   width: 100%;
   height: 100%;

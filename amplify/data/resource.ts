@@ -165,6 +165,73 @@ const schema = a.schema({
     .authorization(allow => [allow.publicApiKey()])
     .handler(a.handler.custom({ dataSource: a.ref('BlogPost'), entry: './blog/getPublishedBlogPost.js' })),
 
+  ComplaintStatus: a.enum(['PENDING', 'APPROVED']),
+
+  // Admin-only on purpose, unlike every model above. Complainants reach this
+  // table solely through submitComplaint and listApprovedComplaints below: a
+  // public model `read` would list pending complaints to anyone who drops the
+  // page's filter, and a public `create` would let a caller write APPROVED.
+  // See docs/adr/0002 and docs/adr/0003.
+  Complaint: a
+    .model({
+      text: a.string().required(),
+      nickname: a.string(),
+      dissatisfaction: a.integer().required(),
+      status: a.ref('ComplaintStatus').required(),
+      // Set by the submit resolver, not Amplify's createdAt: that resolver
+      // writes the row directly, and this is the index's sort key.
+      submittedAt: a.datetime().required(),
+    })
+    .secondaryIndexes(index => [
+      // Named explicitly because listApprovedComplaints.js queries it by name.
+      // The generated query inherits the model's admin-only auth.
+      index('status').sortKeys(['submittedAt']).name('complaintsByStatus').queryField('listComplaintsByStatus'),
+    ])
+    .authorization(allow => [allow.group('admin')]),
+
+  // The public shape of an approved complaint. Separate from the model so the
+  // payload cannot carry `status` or the full `submittedAt` timestamp.
+  PublicComplaint: a.customType({
+    id: a.id().required(),
+    text: a.string().required(),
+    nickname: a.string(),
+    dissatisfaction: a.integer().required(),
+    submittedOn: a.date().required(),
+  }),
+
+  PublicComplaintPage: a.customType({
+    items: a.ref('PublicComplaint').required().array().required(),
+    nextToken: a.string(),
+  }),
+
+  submitComplaint: a
+    .mutation()
+    .arguments({
+      text: a.string().required(),
+      nickname: a.string(),
+      dissatisfaction: a.integer().required(),
+      // Honeypot: left empty by people, filled in by form bots.
+      website: a.string(),
+    })
+    .returns(a.boolean())
+    .authorization(allow => [allow.publicApiKey()])
+    // A pipeline: store first, then notify. Reversed, a failed write would still
+    // send an email. The notify step never fails the mutation.
+    .handler([
+      a.handler.custom({ dataSource: a.ref('Complaint'), entry: './complaints/submitComplaint.js' }),
+      a.handler.custom({ dataSource: 'ComplaintNotificationDataSource', entry: './complaints/notifyComplaint.js' }),
+    ]),
+
+  listApprovedComplaints: a
+    .query()
+    .arguments({
+      limit: a.integer(),
+      nextToken: a.string(),
+    })
+    .returns(a.ref('PublicComplaintPage'))
+    .authorization(allow => [allow.publicApiKey()])
+    .handler(a.handler.custom({ dataSource: a.ref('Complaint'), entry: './complaints/listApprovedComplaints.js' })),
+
   // One parsed line from the upload Lambda's CloudWatch log stream.
   UploadLogEntry: a.customType({
     timestamp: a.string(),
@@ -205,7 +272,11 @@ export const data = defineData({
   authorizationModes: {
     defaultAuthorizationMode: 'userPool',
     apiKeyAuthorizationMode: {
-      expiresInDays: 30,
+      // The key now gates a write path (submitComplaint), not just cached public
+      // reads, so a lapse breaks a form rather than degrading a page. 365 is
+      // AppSync's maximum. Expiry is counted from each deploy, so any deploy
+      // within the year pushes it out again; no rotation override is needed.
+      expiresInDays: 365,
     },
   },
 });

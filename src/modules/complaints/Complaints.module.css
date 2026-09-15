@@ -1,0 +1,75 @@
+.page {
+  padding: var(--page-padding);
+  /* `main` is a flex row, so without `width: 100%` this shrink-wraps its
+     content and `margin-inline: auto` centres a too-narrow box. */
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+}
+
+.header {
+  margin-bottom: var(--space-4);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-black);
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+  margin: 0 0 var(--space-1);
+}
+
+.subtitle {
+  font-size: var(--fs-400);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.section {
+  margin-bottom: var(--space-4);
+}
+
+.sectionHeading {
+  font-family: var(--font-display);
+  font-size: var(--fs-h6);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-accent-2);
+  margin: 0 0 var(--space-2);
+}
+
+.note {
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-3);
+  line-height: 1.6;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.empty {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.error {
+  color: var(--color-text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-3);
+}

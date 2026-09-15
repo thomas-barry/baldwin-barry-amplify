@@ -260,6 +260,15 @@
     top: var(--header-height);
     left: 0;
     right: 0;
+    /* The panel is fixed, so anything past the fold was unreachable: as admin
+       it runs ten 60px rows plus dividers and the auth row, ~675px starting
+       64px down. Scrolls itself rather than relying on the document, which the
+       nav-open lock holds still anyway. */
+    max-height: calc(100dvh - var(--header-height));
+    overflow-y: auto;
+    /* Keeps a touch rubber-band at the panel's scroll edge from propagating to
+       the visual viewport; the body lock handles the document itself. */
+    overscroll-behavior: contain;
     background: var(--color-bg);
     border-radius: 0;
     border-bottom: 1px solid var(--color-border);
@@ -273,6 +282,13 @@
       transform 150ms ease,
       opacity 150ms ease;
   }
+}
+
+/* Without this the column flexbox honours the max-height by shrinking every
+   row instead of scrolling: measured 60px rows collapsing to 48px at a 420px
+   viewport, against Paper's ~60px. Rows keep their height; the panel scrolls. */
+.mobileDropdown > * {
+  flex-shrink: 0;
 }
 
 .mobileDropdown.dropdownOpen {
@@ -305,3 +321,37 @@
 /* No dark-mode contrast patch here any more: --color-nav-text is legible on the
    rail in both themes (6.7:1 light, 7.4:1 dark), so the token fixes it at the
    source instead of at these two call sites. */
+
+/* Pending-complaint count on the Complaint Queue item. Pushed to the row's end
+   when labels show; pinned to the icon's corner when the sidebar is collapsed
+   and there is no label to sit beside. */
+.navBadge {
+  margin-left: auto;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--color-badge);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: var(--fw-bold);
+  line-height: 1.25rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.collapsed .navItem {
+  position: relative;
+}
+
+.collapsed .navBadge {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.35rem;
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 0.25rem;
+  font-size: 0.6rem;
+  line-height: 1rem;
+}

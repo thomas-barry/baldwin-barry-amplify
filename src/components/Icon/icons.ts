@@ -8,7 +8,7 @@
  * entirely: icons become React components from `@primeicons/react`, and v11's
  * Button has no `icon` prop, so string icons become children. Routing all ~47
  * call sites through here means that migration edits this file and the call
- * sites' props, not 47 scattered class strings. All 39 names below are
+ * sites' props, not 47 scattered class strings. All 40 names below are
  * confirmed present in @primeicons/react 8. */
 
 import styles from './Icon.module.css';
@@ -34,6 +34,7 @@ export type IconName =
   | 'info-circle'
   | 'list'
   | 'lock'
+  | 'megaphone'
   | 'moon'
   | 'pencil'
   | 'plus'

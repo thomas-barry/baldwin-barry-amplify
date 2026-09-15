@@ -37,13 +37,24 @@ There are no automated tests. Verification is manual in the browser.
 
 ### Data Schema (`amplify/data/resource.ts`)
 
-Three DynamoDB models via AppSync GraphQL:
+DynamoDB models via AppSync GraphQL, including:
 
 - **Gallery** — name, description, createdDate, thumbnailImageId → has many GalleryImages
 - **Image** — title, s3Key, s3ThumbnailKey, EXIF data, dimensions → has many GalleryImages
 - **GalleryImage** — join table linking Gallery ↔ Image with order and addedDate
+- **Quip**, **BlogPost** — home page lines and musings
+- **Complaint** — anonymous complaints; pending until an admin approves them
 
-Authorization: Cognito `admin` group for model reads and mutations. `Gallery`, `Image`, `GalleryImage` and `BlogPost` are admin-only; visitors read them through `listPublicGalleries` / `getPublicGallery` (Lambda in `amplify/functions/publicGalleries/`) and `listPublishedBlogPosts` / `getPublishedBlogPost` (JS resolvers in `amplify/data/blog/`), which filter drafts and admin-only galleries on the server — see `docs/adr/0005`. Queries shared by admins and visitors take `isAdmin` and cache per audience. Only `Quip` keeps public API-key model reads.
+Authorization: Cognito `admin` group for model reads and mutations. `Gallery`, `Image`, `GalleryImage` and `BlogPost` are admin-only; visitors read them through `listPublicGalleries` / `getPublicGallery` (Lambda in `amplify/functions/publicGalleries/`) and `listPublishedBlogPosts` / `getPublishedBlogPost` (JS resolvers in `amplify/data/blog/`), which filter drafts and admin-only galleries on the server — see `docs/adr/0005`. Queries shared by admins and visitors take `isAdmin` and cache per audience. Only `Quip` keeps public API-key model reads. **Complaint follows the same pattern**: the model is admin-only, and the public reaches it only through the `submitComplaint` / `listApprovedComplaints` custom operations, whose AppSync JS resolvers live in `amplify/data/complaints/`. Those `.js` files are uploaded verbatim (no bundler, no TypeScript, APPSYNC_JS runtime — no `throw`/`try`, no regex, no imports beyond `@aws-appsync/utils`). See `docs/adr/0002` and `0003`.
+
+### Complaint notifications
+
+`submitComplaint` is a two-step pipeline: store the complaint, then publish a heads-up to an SNS topic (`amplify/data/complaints/notifyComplaint.js`, see `docs/adr/0004`). Synth-time environment variables, read in `amplify/backend.ts`:
+
+- `COMPLAINT_NOTIFY_EMAIL` — address subscribed to the topic. Unset means no subscription (publishes reach nobody). AWS emails a confirmation link that must be clicked.
+- `COMPLAINT_REVIEW_URL` — optional absolute link to `/admin/complaints` included in the email.
+
+`ampx sandbox` reads them from the shell it was started in, so changing them means restarting the sandbox. For a deployed branch, set them in the Amplify console.
 
 ### Lambda: `onUploadHandler`
 

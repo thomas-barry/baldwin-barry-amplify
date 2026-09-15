@@ -1,0 +1,1 @@
+export { ComplaintCard } from './ComplaintCard';

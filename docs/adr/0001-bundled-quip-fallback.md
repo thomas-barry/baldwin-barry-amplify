@@ -10,7 +10,8 @@ This is not migration leftovers. The hero curtain has no acceptable loading
 state — a spinner or an empty panel inside 3rem black display type reads as a
 bug, and the whole point of the panel is that the punchline lands the instant
 the curtain lifts. The public read also goes through the AppSync API key, which
-`amplify/data/resource.ts` sets to expire every 30 days, so "the database is
+`amplify/data/resource.ts` sets to expire (30 days when this was written, 365 since
+the complaints page), so "the database is
 unreachable" is a live failure mode for an element that previously could not
 fail. With the bundled list the page degrades to its old behaviour; without it,
 it degrades to a black rectangle.
