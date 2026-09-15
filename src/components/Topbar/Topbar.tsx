@@ -16,7 +16,8 @@ const SECTIONS = {
   blog: { label: 'Musings', to: '/blog' },
   about: { label: 'About', to: '/about' },
   complaints: { label: 'Complaints', to: '/complaints' },
-  admin: { label: 'Admin', to: '/admin' },
+  // There is no /admin page; admin pages still get the label, unlinked.
+  admin: { label: 'Admin', to: undefined },
   'grid-demo': { label: 'Grid Demo', to: '/grid-demo' },
 } as const;
 

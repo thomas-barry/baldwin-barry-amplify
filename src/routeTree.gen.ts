@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
-import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as BarryfiPlaidOauthRouteImport } from './routes/barryfi/plaid-oauth'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as ComplaintsIndexRouteImport } from './routes/complaints/index'
@@ -43,11 +42,6 @@ const LoginRoute = LoginRouteImport.update({
 const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
   path: '/about/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BarryfiPlaidOauthRoute = BarryfiPlaidOauthRouteImport.update({
@@ -136,7 +130,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/barryfi/plaid-oauth': typeof BarryfiPlaidOauthRoute
   '/about/': typeof AboutIndexRoute
-  '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/complaints/': typeof ComplaintsIndexRoute
   '/contact/': typeof ContactIndexRoute
@@ -158,7 +151,6 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/barryfi/plaid-oauth': typeof BarryfiPlaidOauthRoute
   '/about': typeof AboutIndexRoute
-  '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/complaints': typeof ComplaintsIndexRoute
   '/contact': typeof ContactIndexRoute
@@ -181,7 +173,6 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/barryfi/plaid-oauth': typeof BarryfiPlaidOauthRoute
   '/about/': typeof AboutIndexRoute
-  '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/complaints/': typeof ComplaintsIndexRoute
   '/contact/': typeof ContactIndexRoute
@@ -205,7 +196,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/barryfi/plaid-oauth'
     | '/about/'
-    | '/admin/'
     | '/blog/'
     | '/complaints/'
     | '/contact/'
@@ -227,7 +217,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/barryfi/plaid-oauth'
     | '/about'
-    | '/admin'
     | '/blog'
     | '/complaints'
     | '/contact'
@@ -249,7 +238,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/barryfi/plaid-oauth'
     | '/about/'
-    | '/admin/'
     | '/blog/'
     | '/complaints/'
     | '/contact/'
@@ -272,7 +260,6 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   BarryfiPlaidOauthRoute: typeof BarryfiPlaidOauthRoute
   AboutIndexRoute: typeof AboutIndexRoute
-  AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ComplaintsIndexRoute: typeof ComplaintsIndexRoute
   ContactIndexRoute: typeof ContactIndexRoute
@@ -311,13 +298,6 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about/'
       preLoaderRoute: typeof AboutIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/': {
-      id: '/admin/'
-      path: '/admin'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/barryfi/plaid-oauth': {
@@ -440,7 +420,6 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   BarryfiPlaidOauthRoute: BarryfiPlaidOauthRoute,
   AboutIndexRoute: AboutIndexRoute,
-  AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   ComplaintsIndexRoute: ComplaintsIndexRoute,
   ContactIndexRoute: ContactIndexRoute,
