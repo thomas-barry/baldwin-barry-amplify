@@ -54,7 +54,7 @@
 .navSection {
   font-size: var(--fs-100);
   font-weight: var(--fw-bold);
-  color: color-mix(in srgb, var(--color-text) 50%, var(--color-text-muted));
+  color: var(--color-accent);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 0.625rem 1.5rem 0.25rem;
