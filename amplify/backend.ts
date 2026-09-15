@@ -1,9 +1,12 @@
 import { defineBackend } from '@aws-amplify/backend';
 import type { IAspect } from 'aws-cdk-lib';
-import { ArnFormat, Aspects, Stack } from 'aws-cdk-lib';
+import { ArnFormat, Aspects, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { ReadWriteType, Trail } from 'aws-cdk-lib/aws-cloudtrail';
 import type { CfnUserPool } from 'aws-cdk-lib/aws-cognito';
 import { PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
+import { BlockPublicAccess, Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
+import { CfnWebACL, CfnWebACLAssociation } from 'aws-cdk-lib/aws-wafv2';
 import type { IConstruct } from 'constructs';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
@@ -251,6 +254,124 @@ backend.readUploadLogs.resources.lambda.addToRolePolicy(
     ],
   }),
 );
+
+// Rate limiting and an audit trail (audit M2 and M6). Both cost money every
+// month, so they deploy to branches only; set SANDBOX_SECURITY_MONITORING=1
+// before `npx ampx sandbox` to rehearse them, and restart without it to remove.
+const deploySecurityMonitoring = !isSandbox || process.env.SANDBOX_SECURITY_MONITORING === '1';
+if (deploySecurityMonitoring) {
+  const api = backend.data.resources.graphqlApi;
+  const apiStack = Stack.of(api);
+
+  // Public calls carry the bundle's API key; signed-in admin calls carry a
+  // Cognito token instead. Rate limits count only the former, so an admin
+  // polling the gallery editor during an upload (one call every 2s) is never
+  // throttled.
+  const hasApiKey: CfnWebACL.StatementProperty = {
+    sizeConstraintStatement: {
+      fieldToMatch: { singleHeader: { Name: 'x-api-key' } },
+      comparisonOperator: 'GT',
+      size: 0,
+      textTransformations: [{ priority: 0, type: 'NONE' }],
+    },
+  };
+  const visibility = (metricName: string): CfnWebACL.VisibilityConfigProperty => ({
+    cloudWatchMetricsEnabled: true,
+    metricName,
+    sampledRequestsEnabled: true,
+  });
+
+  const webAcl = new CfnWebACL(apiStack, 'PublicApiWebAcl', {
+    scope: 'REGIONAL',
+    defaultAction: { allow: {} },
+    visibilityConfig: visibility('PublicApiWebAcl'),
+    rules: [
+      {
+        name: 'AmazonIpReputationList',
+        priority: 0,
+        statement: { managedRuleGroupStatement: { vendorName: 'AWS', name: 'AWSManagedRulesAmazonIpReputationList' } },
+        overrideAction: { none: {} },
+        visibilityConfig: visibility('AmazonIpReputationList'),
+      },
+      {
+        // The one public write: each accepted complaint stores a row and emails
+        // the admin. Ten per five minutes from one address is far past a person.
+        name: 'SubmitComplaintRate',
+        priority: 1,
+        action: { block: {} },
+        statement: {
+          rateBasedStatement: {
+            limit: 10,
+            evaluationWindowSec: 300,
+            aggregateKeyType: 'IP',
+            scopeDownStatement: {
+              andStatement: {
+                statements: [
+                  hasApiKey,
+                  {
+                    byteMatchStatement: {
+                      fieldToMatch: { body: { oversizeHandling: 'CONTINUE' } },
+                      positionalConstraint: 'CONTAINS',
+                      searchString: 'submitComplaint',
+                      textTransformations: [{ priority: 0, type: 'NONE' }],
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+        visibilityConfig: visibility('SubmitComplaintRate'),
+      },
+      {
+        // Page views make a handful of public calls each; 300 per five minutes
+        // from one address is a script, not a visitor.
+        name: 'PublicApiRate',
+        priority: 2,
+        action: { block: {} },
+        statement: {
+          rateBasedStatement: {
+            limit: 300,
+            evaluationWindowSec: 300,
+            aggregateKeyType: 'IP',
+            scopeDownStatement: hasApiKey,
+          },
+        },
+        visibilityConfig: visibility('PublicApiRate'),
+      },
+    ],
+  });
+
+  new CfnWebACLAssociation(apiStack, 'PublicApiWebAclAssociation', {
+    resourceArn: api.arn,
+    webAclArn: webAcl.attrArn,
+  });
+
+  // Who uploaded or deleted what, and when: the record that was missing when
+  // anyone could sign up and write to the bucket (audit C1). Writes only, and
+  // no management events, so it stays a few cents a month. Lives beside the
+  // bucket to avoid a cross-stack reference.
+  const mediaBucket = backend.storage.resources.bucket;
+  const storageStack = Stack.of(mediaBucket);
+  const trailBucket = new Bucket(storageStack, 'MediaAuditTrailBucket', {
+    blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+    encryption: BucketEncryption.S3_MANAGED,
+    enforceSSL: true,
+    // Kept if a branch stack is ever deleted; a rehearsal sandbox cleans up.
+    removalPolicy: isSandbox ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
+    autoDeleteObjects: isSandbox,
+  });
+  const trail = new Trail(storageStack, 'MediaAuditTrail', {
+    bucket: trailBucket,
+    isMultiRegionTrail: false,
+    includeGlobalServiceEvents: false,
+    managementEvents: ReadWriteType.NONE,
+  });
+  trail.addS3EventSelector([{ bucket: mediaBucket }], {
+    readWriteType: ReadWriteType.WRITE_ONLY,
+    includeManagementEvents: false,
+  });
+}
 
 backend.addOutput({
   custom: {
