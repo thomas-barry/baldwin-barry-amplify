@@ -72,7 +72,11 @@ const LoginDialog = () => {
           </div>
         ) : (
           <div className={styles.authenticatorWrap}>
-            <Authenticator hideSignUp />
+            <Authenticator
+              hideSignUp
+              // Names the entry in the authenticator app; the default is "AWSCognito".
+              formFields={{ setupTotp: { QR: { totpIssuer: 'Baldwin Barry' } } }}
+            />
           </div>
         )}
       </div>
