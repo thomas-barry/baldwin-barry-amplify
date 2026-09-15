@@ -1,6 +1,7 @@
 import { defineBackend } from '@aws-amplify/backend';
 import type { IAspect } from 'aws-cdk-lib';
 import { ArnFormat, Aspects, Stack } from 'aws-cdk-lib';
+import type { CfnUserPool } from 'aws-cdk-lib/aws-cognito';
 import { PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import type { IConstruct } from 'constructs';
@@ -35,6 +36,20 @@ const { cfnUserPool } = backend.auth.resources.cfnResources;
 cfnUserPool.adminCreateUserConfig = {
   ...(cfnUserPool.adminCreateUserConfig as object | undefined),
   allowAdminCreateUserOnly: true,
+};
+
+// defineAuth has no password policy option, and Amplify's default minimum is 8.
+// Raised to 14 on the L1 resource; Amplify reads the policy back from this same
+// resource for amplify_outputs.json, so the Authenticator's client-side check
+// follows. Cognito applies it when a password is next set, so existing
+// passwords keep working until then.
+const existingPolicies = cfnUserPool.policies as CfnUserPool.PoliciesProperty | undefined;
+cfnUserPool.policies = {
+  ...existingPolicies,
+  passwordPolicy: {
+    ...(existingPolicies?.passwordPolicy as CfnUserPool.PasswordPolicyProperty | undefined),
+    minimumLength: 14,
+  },
 };
 
 // Nothing in this backend could be restored after a bad delete: no bucket
