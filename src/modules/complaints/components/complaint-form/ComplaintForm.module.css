@@ -23,6 +23,12 @@
   border-radius: var(--radius-lg);
 }
 
+/* Dragging the knob often overshoots onto these; selecting them is just noise. */
+.knobCaption,
+.knobLevel {
+  user-select: none;
+}
+
 .knobCaption {
   font-family: var(--font-display);
   font-size: var(--fs-300);

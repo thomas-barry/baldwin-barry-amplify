@@ -21,7 +21,9 @@
 }
 
 .tickActive::after {
-  background-color: rgba(var(--color-knob-light), 1);
-  box-shadow: 0 0 0.3em 0.08em rgba(var(--color-knob-light), 0.9);
+  /* --knob-tick-mix is 0% at the minimum value and 100% at the maximum. */
+  --tick-color: color-mix(in srgb, var(--knob-tick-high) var(--knob-tick-mix), var(--knob-tick-low));
+  background-color: var(--tick-color);
+  box-shadow: 0 0 0.3em 0.08em color-mix(in srgb, var(--tick-color) 90%, transparent);
   transition: all 50ms ease-in;
 }

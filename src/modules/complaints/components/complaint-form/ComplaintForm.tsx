@@ -17,6 +17,10 @@ import {
 import { clientPublic, throwOnErrors } from '../../queries';
 import styles from './ComplaintForm.module.css';
 
+/** The dial's lit ticks run from yellow when mildly miffed to red when incandescent. */
+const KNOB_LOW_COLOR = '#ffd60a';
+const KNOB_HIGH_COLOR = '#ff3b1f';
+
 interface ComplaintInput {
   text: string;
   nickname?: string;
@@ -79,6 +83,8 @@ export const ComplaintForm = () => {
           maxValue={DISSATISFACTION_MAX}
           minMaxLabels={false}
           ticks={DISSATISFACTION_MAX - DISSATISFACTION_MIN + 1}
+          lowColor={KNOB_LOW_COLOR}
+          highColor={KNOB_HIGH_COLOR}
           aria-label='Dissatisfaction'
           // Announces "8 out of 11, Fuming" rather than the Knob's default percentage.
           valueText={value => `${Math.round(value)} out of ${DISSATISFACTION_MAX}, ${dissatisfactionLabel(value)}`}

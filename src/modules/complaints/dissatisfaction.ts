@@ -3,7 +3,7 @@
 // from here. Change both together.
 export const DISSATISFACTION_MIN = 1;
 export const DISSATISFACTION_MAX = 11;
-export const DISSATISFACTION_DEFAULT = 6;
+export const DISSATISFACTION_DEFAULT = DISSATISFACTION_MIN;
 export const TEXT_MIN = 10;
 export const TEXT_MAX = 1000;
 export const NICKNAME_MAX = 40;

@@ -21,7 +21,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/', icon: 'home', label: 'Home', exact: true },
   { to: '/photos', icon: 'images', label: 'Photography' },
   { to: '/blog', icon: 'book', label: 'Musings' },
-  { to: '/contact', icon: 'megaphone', label: 'Complaints' },
+  { to: '/complaints', icon: 'megaphone', label: 'Complaints' },
   { to: '/sandbox', icon: 'th-large', label: 'Sandbox' },
   { to: '/about', icon: 'user', label: 'About' },
 ];

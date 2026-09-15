@@ -18,7 +18,6 @@ const Complaints = () => {
     <div className={styles.page}>
       <header className={styles.header}>
         <h1 className={styles.heading}>Complaints Department</h1>
-        <p className={styles.subtitle}>Don&apos;t call me. I&apos;ll call you.</p>
       </header>
 
       <section

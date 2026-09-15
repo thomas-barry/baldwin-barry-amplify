@@ -15,6 +15,7 @@ import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as BarryfiPlaidOauthRouteImport } from './routes/barryfi/plaid-oauth'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
+import { Route as ComplaintsIndexRouteImport } from './routes/complaints/index'
 import { Route as ContactIndexRouteImport } from './routes/contact/index'
 import { Route as GridDemoIndexRouteImport } from './routes/grid-demo/index'
 import { Route as PhotosIndexRouteImport } from './routes/photos/index'
@@ -57,6 +58,11 @@ const BarryfiPlaidOauthRoute = BarryfiPlaidOauthRouteImport.update({
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComplaintsIndexRoute = ComplaintsIndexRouteImport.update({
+  id: '/complaints/',
+  path: '/complaints/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactIndexRoute = ContactIndexRouteImport.update({
@@ -132,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/complaints/': typeof ComplaintsIndexRoute
   '/contact/': typeof ContactIndexRoute
   '/grid-demo/': typeof GridDemoIndexRoute
   '/photos/': typeof PhotosIndexRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
+  '/complaints': typeof ComplaintsIndexRoute
   '/contact': typeof ContactIndexRoute
   '/grid-demo': typeof GridDemoIndexRoute
   '/photos': typeof PhotosIndexRoute
@@ -175,6 +183,7 @@ export interface FileRoutesById {
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/complaints/': typeof ComplaintsIndexRoute
   '/contact/': typeof ContactIndexRoute
   '/grid-demo/': typeof GridDemoIndexRoute
   '/photos/': typeof PhotosIndexRoute
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/admin/'
     | '/blog/'
+    | '/complaints/'
     | '/contact/'
     | '/grid-demo/'
     | '/photos/'
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/blog'
+    | '/complaints'
     | '/contact'
     | '/grid-demo'
     | '/photos'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/admin/'
     | '/blog/'
+    | '/complaints/'
     | '/contact/'
     | '/grid-demo/'
     | '/photos/'
@@ -262,6 +274,7 @@ export interface RootRouteChildren {
   AboutIndexRoute: typeof AboutIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  ComplaintsIndexRoute: typeof ComplaintsIndexRoute
   ContactIndexRoute: typeof ContactIndexRoute
   GridDemoIndexRoute: typeof GridDemoIndexRoute
   PhotosIndexRoute: typeof PhotosIndexRoute
@@ -319,6 +332,13 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog/'
       preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/complaints/': {
+      id: '/complaints/'
+      path: '/complaints'
+      fullPath: '/complaints/'
+      preLoaderRoute: typeof ComplaintsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact/': {
@@ -422,6 +442,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutIndexRoute: AboutIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
+  ComplaintsIndexRoute: ComplaintsIndexRoute,
   ContactIndexRoute: ContactIndexRoute,
   GridDemoIndexRoute: GridDemoIndexRoute,
   PhotosIndexRoute: PhotosIndexRoute,
