@@ -40,6 +40,23 @@
   color: var(--color-text-muted);
 }
 
+.response {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  padding-left: var(--space-2);
+  border-left: 3px solid var(--color-accent);
+}
+
+.responder {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-300);
+  font-weight: var(--fw-bold);
+  color: var(--color-accent-strong);
+}
+
 .reading {
   font-weight: var(--fw-bold);
   font-variant-numeric: tabular-nums;

@@ -31,7 +31,8 @@ export function response(ctx) {
   // Mapped field by field so the public payload can only ever carry these.
   // `submittedOn` is the date alone: the page shows only the day, and an exact
   // timestamp would let anyone who knows when a friend visited identify their
-  // complaint — so it never leaves the table.
+  // complaint — so it never leaves the table. The response goes out as text
+  // alone; `respondedAt` stays admin-side.
   const items = [];
   for (const item of ctx.result.items) {
     items.push({
@@ -40,6 +41,7 @@ export function response(ctx) {
       nickname: item.nickname ?? null,
       dissatisfaction: item.dissatisfaction,
       submittedOn: item.submittedAt.slice(0, 10),
+      response: item.response ?? null,
     });
   }
 

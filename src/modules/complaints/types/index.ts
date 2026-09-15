@@ -6,6 +6,8 @@ export interface PublicComplaint {
   dissatisfaction: number;
   /** The submission date alone, `YYYY-MM-DD` in UTC. Never the time. */
   submittedOn: string;
+  /** The Management's response, if there is one. */
+  response: string | null;
 }
 
 export interface PublicComplaintPage {
@@ -23,6 +25,9 @@ export interface Complaint {
   dissatisfaction: number;
   status: ComplaintStatus;
   submittedAt: string;
+  response: string | null;
+  /** When the response was last saved. */
+  respondedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
