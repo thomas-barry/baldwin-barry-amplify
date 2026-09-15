@@ -3,6 +3,7 @@ import Skeleton from '@/components/Skeleton';
 import type { SortValue } from '@/components/SortSelect';
 import { useAuth } from '@/context/AuthContext';
 import GalleryCard from '@/modules/galleries/components/gallery-card/GalleryCard';
+import { galleriesQueryOptions } from '@/modules/galleries/queries';
 import { Gallery } from '@/modules/galleries/types';
 import type { Schema } from '@/schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -17,54 +18,41 @@ interface GalleryListProps {
   sort?: SortValue;
 }
 
-const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
 const clientWrite = generateClient<Schema>({ authMode: 'userPool' });
 
 const SKELETON_COUNT = 6;
 
 const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
   const queryClient = useQueryClient();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isLoading: isAuthLoading } = useAuth();
   const toast = useRef<Toast>(null);
 
   const {
     data: galleries,
-    isLoading,
+    isLoading: isQueryLoading,
     isError: isErrorQuery,
     error,
     refetch,
   } = useQuery({
-    queryKey: ['galleries'],
-    queryFn: async () => {
-      const response = await clientRead.models.Gallery.list({
-        selectionSet: [
-          'id',
-          'name',
-          'description',
-          'createdDate',
-          'updatedAt',
-          'thumbnailImage.*',
-          'images.id',
-          'thumbnailCrop',
-          'adminOnly',
-        ],
-      });
-      return response.data as unknown as Gallery[];
-    },
+    ...galleriesQueryOptions(isAdmin),
+    // isAdmin is false until the session loads; waiting avoids a public fetch an
+    // admin would immediately throw away.
+    enabled: !isAuthLoading,
   });
+  const isLoading = isAuthLoading || isQueryLoading;
 
   const sortedGalleries = useMemo(() => {
     if (!galleries) return [];
-    // Non-admins never see admin-only galleries, nor empty ones — a gallery with
-    // no images has nothing to show and reads as a broken link.
-    const copy = galleries.filter(g => isAdmin || (!g.adminOnly && !!g.images?.length));
+    // Visitors never receive admin-only or empty galleries: the public query
+    // leaves them out on the server.
+    const copy = [...galleries];
     if (sort === 'alpha') {
       copy.sort((a, b) => a.name.localeCompare(b.name));
     } else {
       copy.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
     }
     return copy;
-  }, [galleries, sort, isAdmin]);
+  }, [galleries, sort]);
 
   const deleteMutation = useMutation({
     mutationFn: async (galleryId: string) => {

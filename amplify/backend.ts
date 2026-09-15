@@ -7,6 +7,7 @@ import type { IConstruct } from 'constructs';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { onUploadHandler } from './functions/onUploadHandler/resource';
+import { publicGalleries } from './functions/publicGalleries/resource';
 import { readUploadLogs } from './functions/readUploadLogs/resource';
 import { storage } from './storage/resource';
 
@@ -15,6 +16,7 @@ const backend = defineBackend({
   data,
   storage,
   onUploadHandler,
+  publicGalleries,
   readUploadLogs,
 });
 
@@ -154,6 +156,29 @@ backend.onUploadHandler.resources.lambda.addToRolePolicy(
   new PolicyStatement({
     actions: ['cloudfront:CreateInvalidation'],
     resources: ['*'],
+  }),
+);
+
+// The public gallery reads. Read-only, and only these three tables: the models
+// themselves are admin-only (docs/adr/0005). Both sit in the data stack, so the
+// table references add no cross-stack edge.
+for (const [envName, modelName] of [
+  ['GALLERY_TABLE_NAME', 'Gallery'],
+  ['IMAGE_TABLE_NAME', 'Image'],
+  ['GALLERY_IMAGE_TABLE_NAME', 'GalleryImage'],
+] as const) {
+  const table = backend.data.resources.tables[modelName];
+  table.grantReadData(backend.publicGalleries.resources.lambda);
+  backend.publicGalleries.addEnvironment(envName, table.tableName);
+}
+
+// grantReadData covers the tables but not their indexes: Amplify's table
+// construct does not tell CDK it has any, so no `index/*` ARN is added. The
+// handler queries exactly one.
+backend.publicGalleries.resources.lambda.addToRolePolicy(
+  new PolicyStatement({
+    actions: ['dynamodb:Query'],
+    resources: [`${backend.data.resources.tables['GalleryImage'].tableArn}/index/gsi-Gallery.images`],
   }),
 );
 

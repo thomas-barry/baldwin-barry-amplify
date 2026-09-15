@@ -43,7 +43,7 @@ Three DynamoDB models via AppSync GraphQL:
 - **Image** — title, s3Key, s3ThumbnailKey, EXIF data, dimensions → has many GalleryImages
 - **GalleryImage** — join table linking Gallery ↔ Image with order and addedDate
 
-Authorization: public API key for reads; Cognito `admin` group for mutations.
+Authorization: Cognito `admin` group for model reads and mutations. `Gallery`, `Image`, `GalleryImage` and `BlogPost` are admin-only; visitors read them through `listPublicGalleries` / `getPublicGallery` (Lambda in `amplify/functions/publicGalleries/`) and `listPublishedBlogPosts` / `getPublishedBlogPost` (JS resolvers in `amplify/data/blog/`), which filter drafts and admin-only galleries on the server — see `docs/adr/0005`. Queries shared by admins and visitors take `isAdmin` and cache per audience. Only `Quip` keeps public API-key model reads.
 
 ### Lambda: `onUploadHandler`
 
