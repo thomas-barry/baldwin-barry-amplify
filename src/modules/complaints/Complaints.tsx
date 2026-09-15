@@ -1,4 +1,5 @@
 import { iconClass } from '@/components/Icon';
+import { useAuth } from '@/context/AuthContext';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Button } from 'primereact/button';
 import { ProgressSpinner } from 'primereact/progressspinner';
@@ -8,6 +9,7 @@ import { ComplaintForm } from './components/complaint-form';
 import { approvedComplaintsQueryOptions } from './queries';
 
 const Complaints = () => {
+  const { isAdmin } = useAuth();
   const { data, isLoading, isError, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
     approvedComplaintsQueryOptions(),
   );
@@ -57,7 +59,8 @@ const Complaints = () => {
           </div>
         )}
 
-        {!isLoading && !isError && complaints.length === 0 && (
+        {/* Only admins need telling the wall is empty; visitors just see no list. */}
+        {isAdmin && !isLoading && !isError && complaints.length === 0 && (
           <p className={styles.empty}>No complaints on file. This is statistically improbable.</p>
         )}
 
