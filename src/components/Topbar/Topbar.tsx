@@ -15,8 +15,7 @@ const SECTIONS = {
   photos: { label: 'Photography', to: '/photos' },
   blog: { label: 'Musings', to: '/blog' },
   about: { label: 'About', to: '/about' },
-  // The route kept its old path; the page behind it is the Complaints Department.
-  contact: { label: 'Complaints', to: '/contact' },
+  complaints: { label: 'Complaints', to: '/complaints' },
   admin: { label: 'Admin', to: '/admin' },
   'grid-demo': { label: 'Grid Demo', to: '/grid-demo' },
 } as const;

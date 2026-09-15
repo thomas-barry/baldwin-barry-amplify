@@ -3,6 +3,10 @@
   --color-knob-light: 255, 190, 60;
   --color-knob-tick: 200, 200, 200;
   --color-knob-label: 200, 200, 200;
+  /* Lit ticks blend from low to high as the value rises; Knob overrides these
+     from its lowColor/highColor props. */
+  --knob-tick-low: rgb(var(--color-knob-light));
+  --knob-tick-high: rgb(var(--color-knob-light));
 
   position: relative;
   width: 200px;

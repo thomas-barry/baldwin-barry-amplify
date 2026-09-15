@@ -1,8 +1,8 @@
-import Complaints from '@/modules/complaints/Complaints';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
-// The route stays /contact so existing links keep working; the page behind it
-// is the Complaints Department.
+// The Complaints Department launched at /contact; keep old links working.
 export const Route = createFileRoute('/contact/')({
-  component: Complaints,
+  beforeLoad: () => {
+    throw redirect({ to: '/complaints', replace: true });
+  },
 });

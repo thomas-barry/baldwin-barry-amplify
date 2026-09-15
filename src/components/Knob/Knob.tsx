@@ -18,6 +18,10 @@ interface KnobProps {
   /** What a screen reader announces for a value. Defaults to a percentage of
    *  the range, which is meaningless on a scale with its own words. */
   valueText?: (value: number) => string;
+  /** Lit-tick colour at minValue. Any CSS colour; defaults to the knob's amber. */
+  lowColor?: string;
+  /** Lit-tick colour at maxValue. In between, lit ticks blend from lowColor to this. */
+  highColor?: string;
 }
 
 /** The range the wheel and drag factors below were tuned on (the default
@@ -42,6 +46,8 @@ const Knob = ({
   minMaxLabels = true,
   'aria-label': ariaLabel,
   valueText,
+  lowColor,
+  highColor,
 }: KnobProps) => {
   // The unrounded position. Parents commonly round what onChange reports (see
   // KnobDemo, ComplaintForm), so continuing each gesture from the rounded prop
@@ -136,7 +142,15 @@ const Knob = ({
     lastTouchMoveY.current = e.touches[0].clientY;
   };
 
-  const angle = ((value - minValue) / (maxValue - minValue)) * 270;
+  const fraction = Math.min(Math.max((value - minValue) / (maxValue - minValue), 0), 1);
+  const angle = fraction * 270;
+
+  // Unset colours are left out of the inline style, so Knob.module.css's defaults apply.
+  const tickColors = {
+    '--knob-tick-low': lowColor,
+    '--knob-tick-high': highColor,
+    '--knob-tick-mix': `${fraction * 100}%`,
+  } as React.CSSProperties;
 
   return (
     <div
@@ -144,6 +158,7 @@ const Knob = ({
       role='slider'
       tabIndex={0}
       className={`${styles.container}${className ? ` ${className}` : ''}`}
+      style={tickColors}
       onKeyDown={onKeyDown}
       onMouseDown={onMouseDown}
       onTouchStart={onTouchStart}
