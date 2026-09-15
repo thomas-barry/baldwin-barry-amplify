@@ -1,11 +1,14 @@
 import { defineBackend } from '@aws-amplify/backend';
 import type { IAspect } from 'aws-cdk-lib';
 import { ArnFormat, Aspects, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { ReadWriteType, Trail } from 'aws-cdk-lib/aws-cloudtrail';
 import type { CfnUserPool } from 'aws-cdk-lib/aws-cognito';
 import { PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { BlockPublicAccess, Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
+import { Topic } from 'aws-cdk-lib/aws-sns';
+import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { CfnWebACL, CfnWebACLAssociation } from 'aws-cdk-lib/aws-wafv2';
 import type { IConstruct } from 'constructs';
 import { auth } from './auth/resource';
@@ -254,6 +257,58 @@ backend.readUploadLogs.resources.lambda.addToRolePolicy(
     ],
   }),
 );
+
+// Complaint notifications. submitComplaint's second pipeline step publishes to
+// this topic over a SigV4-signed HTTP data source, so no Lambda and no new SDK
+// dependency. See docs/adr/0004-complaint-notifications-publish-from-the-resolver.md.
+//
+// Everything lives in the data stack: the resolver pipeline already does, and
+// a topic elsewhere would add a cross-stack edge for no benefit.
+const COMPLAINT_NOTIFICATION_DATA_SOURCE = 'ComplaintNotificationDataSource';
+const dataStack = Stack.of(backend.data.resources.graphqlApi);
+
+const complaintTopic = new Topic(dataStack, 'ComplaintNotificationTopic', {
+  displayName: 'Complaints Department',
+});
+
+// Set COMPLAINT_NOTIFY_EMAIL in your environment before running `npx ampx sandbox`
+// (or as a branch environment variable in the Amplify console). Unset, the topic
+// still exists and publishes still succeed; they simply reach nobody. AWS sends
+// a confirmation email to the address, which must be clicked before delivery.
+const complaintNotifyEmail = process.env.COMPLAINT_NOTIFY_EMAIL;
+if (complaintNotifyEmail) {
+  complaintTopic.addSubscription(new EmailSubscription(complaintNotifyEmail));
+}
+
+const complaintNotificationDataSource = backend.data.resources.graphqlApi.addHttpDataSource(
+  COMPLAINT_NOTIFICATION_DATA_SOURCE,
+  `https://sns.${dataStack.region}.amazonaws.com/`,
+  {
+    name: COMPLAINT_NOTIFICATION_DATA_SOURCE,
+    authorizationConfig: { signingRegion: dataStack.region, signingServiceName: 'sns' },
+  },
+);
+complaintTopic.grantPublish(complaintNotificationDataSource.grantPrincipal);
+
+// Amplify creates pipeline functions depending only on the API, so nothing stops
+// CloudFormation creating the notify function before the data source it names.
+for (const construct of dataStack.node.findAll()) {
+  if (
+    construct instanceof CfnFunctionConfiguration &&
+    construct.dataSourceName === COMPLAINT_NOTIFICATION_DATA_SOURCE
+  ) {
+    construct.node.addDependency(complaintNotificationDataSource);
+  }
+}
+
+// The resolver file is uploaded verbatim and cannot have the ARN built in, so it
+// reads it from the API's environment variables as ctx.env.
+backend.data.resources.cfnResources.cfnGraphqlApi.environmentVariables = {
+  COMPLAINT_TOPIC_ARN: complaintTopic.topicArn,
+  // Optional absolute link to /admin/complaints for the email, e.g.
+  // https://example.com/admin/complaints. AppSync rejects empty values.
+  ...(process.env.COMPLAINT_REVIEW_URL ? { COMPLAINT_REVIEW_URL: process.env.COMPLAINT_REVIEW_URL } : {}),
+};
 
 // Rate limiting and an audit trail (audit M2 and M6). Both cost money every
 // month, so they deploy to branches only; set SANDBOX_SECURITY_MONITORING=1
