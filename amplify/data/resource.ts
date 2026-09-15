@@ -194,6 +194,14 @@ export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
   schema,
+  // Errors only, and never the query, headers or context: verbose content would
+  // put complaint text and admin requests in CloudWatch. Enough to see failed
+  // or rejected calls after the fact (audit M6).
+  logging: {
+    fieldLogLevel: 'error',
+    excludeVerboseContent: true,
+    retention: '1 month',
+  },
   authorizationModes: {
     defaultAuthorizationMode: 'userPool',
     apiKeyAuthorizationMode: {
