@@ -120,13 +120,15 @@ export const ComplaintRow = ({ complaint, onApprove, onDelete, onSaveResponse, i
             onClick={() => setDraft(complaint.response ?? '')}
           />
         )}
+        {/* Unavailable mid-edit, like Delete below: approving would put the
+            complaint on the wall without the response still being written. */}
         {onApprove && (
           <Button
             label='Approve'
             icon={iconClass('check')}
             severity='success'
             size='small'
-            disabled={isPending}
+            disabled={isPending || isEditing}
             onClick={onApprove}
           />
         )}
