@@ -130,12 +130,14 @@ export const ComplaintRow = ({ complaint, onApprove, onDelete, onSaveResponse, i
             onClick={onApprove}
           />
         )}
+        {/* Unavailable mid-edit: deleting the complaint under an open editor
+            would throw away whatever was being typed into it. */}
         <Button
           icon={iconClass('trash')}
           text
           severity='danger'
           aria-label='Delete complaint'
-          disabled={isPending}
+          disabled={isPending || isEditing}
           onClick={onDelete}
         />
       </div>
