@@ -1,7 +1,7 @@
 import { CloudFrontClient, CreateInvalidationCommand } from '@aws-sdk/client-cloudfront';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { DynamoDBDocumentClient, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import exifReader from 'exif-reader';
 import sharp from 'sharp';
 import { Readable } from 'stream';
@@ -17,6 +17,7 @@ import {
 } from '../../../constants';
 import { encodeDisplayImage } from './display';
 import { sanitizeExif } from './exif';
+import { cleanText, isGalleryId, MAX_DESCRIPTION_LENGTH, MAX_FILE_NAME_LENGTH, MAX_TITLE_LENGTH } from './metadata';
 import streamToBuffer from './streamToBuffer';
 
 // Utility functions for metadata handling
@@ -68,10 +69,20 @@ interface S3Event {
 
 function parseS3Metadata(s3Metadata: Record<string, string> = {}, s3Key: string): ImageMetadata {
   const metadata: ImageMetadata = {};
-  metadata.galleryId = s3Metadata.galleryid || s3Metadata['gallery-id'] || s3Metadata.gallery_id;
-  metadata.title = s3Metadata.title || s3Metadata['image-title'] || s3Metadata.imagetitle;
-  metadata.description = s3Metadata.description || s3Metadata['image-description'] || s3Metadata.imagedescription;
-  metadata.fileName = s3Metadata.filename || s3Metadata['filename'];
+  // Cleaned here, once, because the values reach two sinks: the Image row and
+  // the thumbnail object's own metadata.
+  const galleryId = s3Metadata.galleryid || s3Metadata['gallery-id'] || s3Metadata.gallery_id;
+  if (galleryId && !isGalleryId(galleryId)) {
+    console.warn(`ignoring malformed gallery id on ${s3Key}`);
+  } else {
+    metadata.galleryId = galleryId;
+  }
+  metadata.title = cleanText(s3Metadata.title || s3Metadata['image-title'] || s3Metadata.imagetitle, MAX_TITLE_LENGTH);
+  metadata.description = cleanText(
+    s3Metadata.description || s3Metadata['image-description'] || s3Metadata.imagedescription,
+    MAX_DESCRIPTION_LENGTH,
+  );
+  metadata.fileName = cleanText(s3Metadata.filename, MAX_FILE_NAME_LENGTH);
   metadata.s3Key = s3Key;
   metadata.s3ThumbnailKey = s3Key.replace(UPLOADS_PREFIX, THUMBNAIL_PREFIX);
   metadata.s3DisplayKey = s3Key.replace(UPLOADS_PREFIX, DISPLAY_PREFIX);
@@ -193,6 +204,27 @@ async function insertImageRecords(
     console.error('Error inserting image record:', error);
     return undefined;
   }
+}
+
+// The join row has no condition to lean on — it lives in another table — so
+// look the gallery up first. Without this a stale or mistyped id leaves an
+// orphan GalleryImage row that nothing ever cleans up.
+async function galleryExists(docClient: DynamoDBDocumentClient, galleryId: string): Promise<boolean> {
+  const galleryTableName = process.env.GALLERY_TABLE_NAME;
+
+  if (!galleryTableName) {
+    console.error('GALLERY_TABLE_NAME environment variable is not set');
+    return false;
+  }
+
+  const { Item } = await docClient.send(
+    new GetCommand({
+      TableName: galleryTableName,
+      Key: { id: galleryId },
+      ProjectionExpression: 'id',
+    }),
+  );
+  return Item !== undefined;
 }
 
 // Insert a GalleryImage record to link an image to a gallery
@@ -506,9 +538,14 @@ export const handler = async (event: S3Event) => {
       const imageId = await insertImageRecords(docClient, recordMetadata, imageMetadata, contentType, key);
 
       // If galleryId is present and imageId was successfully created, link the image to the gallery
+      // The image stays in the library either way; only the link is skipped.
       if (s3Metadata.galleryId && imageId) {
-        await insertGalleryImageRecord(docClient, s3Metadata.galleryId, imageId);
-        await setDefaultGalleryThumbnail(docClient, s3Metadata.galleryId, imageId);
+        if (await galleryExists(docClient, s3Metadata.galleryId)) {
+          await insertGalleryImageRecord(docClient, s3Metadata.galleryId, imageId);
+          await setDefaultGalleryThumbnail(docClient, s3Metadata.galleryId, imageId);
+        } else {
+          console.warn(`gallery ${s3Metadata.galleryId} does not exist, not linking image ${imageId}`);
+        }
       }
     } catch (error) {
       console.error('error processing image:', error);
