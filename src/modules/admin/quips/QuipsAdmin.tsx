@@ -1,9 +1,8 @@
 import { iconClass } from '@/components/Icon';
 import { QuipPanel } from '@/components/QuipPanel';
+import { getAdminClient } from '@/lib/dataClient';
 import { allQuipsQueryOptions, type Quip } from '@/modules/quips';
-import type { Schema } from '@/schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { generateClient } from 'aws-amplify/data';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { ProgressSpinner } from 'primereact/progressspinner';
@@ -12,8 +11,6 @@ import type { KeyboardEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { QuipRow } from './components/quip-row';
 import styles from './QuipsAdmin.module.css';
-
-const clientWrite = generateClient<Schema>({ authMode: 'userPool' });
 
 const QuipsAdmin = () => {
   const queryClient = useQueryClient();
@@ -36,7 +33,7 @@ const QuipsAdmin = () => {
   const createMutation = useMutation({
     // `enabled` is written explicitly rather than left to the schema default, so
     // no row can carry a null and the rotation's `eq: true` filter stays safe.
-    mutationFn: (text: string) => clientWrite.models.Quip.create({ text, enabled: true }),
+    mutationFn: (text: string) => getAdminClient().models.Quip.create({ text, enabled: true }),
     onSuccess: () => {
       setDraft('');
       invalidate();
@@ -45,13 +42,13 @@ const QuipsAdmin = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (input: { id: string; text?: string; enabled?: boolean }) => clientWrite.models.Quip.update(input),
+    mutationFn: (input: { id: string; text?: string; enabled?: boolean }) => getAdminClient().models.Quip.update(input),
     onSuccess: invalidate,
     onError: showError('Could not save quip'),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => clientWrite.models.Quip.delete({ id }),
+    mutationFn: (id: string) => getAdminClient().models.Quip.delete({ id }),
     onSuccess: invalidate,
     onError: showError('Could not delete quip'),
   });

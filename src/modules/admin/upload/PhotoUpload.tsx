@@ -1,15 +1,11 @@
+import { getAdminClient } from '@/lib/dataClient';
 import AmplifyFileUploader from '@/modules/galleries/components/amplify-file-uploader/AmplifyFileUploader';
-import type { Schema } from '@/schema';
 import { useQuery } from '@tanstack/react-query';
-import { generateClient } from 'aws-amplify/data';
 import { Dropdown } from 'primereact/dropdown';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Toast } from 'primereact/toast';
 import { useRef, useState } from 'react';
 import styles from './PhotoUpload.module.css';
-
-// Admin-only screen; the gallery models are admin-only (docs/adr/0005).
-const clientRead = generateClient<Schema>({ authMode: 'userPool' });
 
 interface GalleryOption {
   label: string;
@@ -24,7 +20,7 @@ const PhotoUpload = () => {
   const { data: galleryOptions, isLoading: galleriesLoading } = useQuery({
     queryKey: ['galleries'],
     queryFn: async (): Promise<GalleryOption[]> => {
-      const response = await clientRead.models.Gallery.list({
+      const response = await getAdminClient().models.Gallery.list({
         selectionSet: ['id', 'name'],
       });
       return (response.data ?? []).map(g => ({ label: g.name, value: g.id }));

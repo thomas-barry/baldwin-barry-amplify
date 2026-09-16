@@ -2,6 +2,7 @@ import { Icon, iconClass } from '@/components/Icon';
 import type { SquareSelection } from '@/components/ImageSquareSelector';
 import { useAuth } from '@/context/AuthContext';
 import { useLoginDialog } from '@/context/LoginDialogContext';
+import { getAdminClient } from '@/lib/dataClient';
 import type { Schema } from '@/schema';
 import { StorageImage } from '@aws-amplify/ui-react-storage';
 import {
@@ -18,7 +19,6 @@ import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from '@d
 import { CSS } from '@dnd-kit/utilities';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { generateClient } from 'aws-amplify/data';
 import { getUrl, remove, uploadData } from 'aws-amplify/storage';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
@@ -162,9 +162,6 @@ async function cropImageToBlob(imageUrl: string, crop: SquareSelection, outputSi
   });
 }
 
-// Reads too: the gallery models are admin-only (docs/adr/0005).
-const client = generateClient<Schema>({ authMode: 'userPool' });
-
 // The upload handler is an S3-triggered Lambda, so the GalleryImage record does
 // not exist yet when the browser's upload finishes. Poll for it rather than
 // refetching once and showing a stale list.
@@ -206,7 +203,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
     queryKey: ['gallery', galleryId],
     queryFn: async () => {
       try {
-        const response = await client.models.Gallery.get({ id: galleryId });
+        const response = await getAdminClient().models.Gallery.get({ id: galleryId });
         return response.data;
       } catch (error) {
         console.error('Error fetching gallery:', error);
@@ -223,7 +220,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   } = useQuery({
     queryKey: ['galleryImagesWithDetails', galleryId],
     queryFn: async () => {
-      const response = await client.models.GalleryImage.list({
+      const response = await getAdminClient().models.GalleryImage.list({
         filter: { galleryId: { eq: galleryId } },
         selectionSet: ['id', 'galleryId', 'imageId', 'addedDate', 'order', 'image.*'],
       });
@@ -324,7 +321,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   // Mutation to update gallery thumbnail
   const updateThumbnailMutation = useMutation({
     mutationFn: async (imageId: string) => {
-      const response = await client.models.Gallery.update({
+      const response = await getAdminClient().models.Gallery.update({
         id: galleryId,
         thumbnailImageId: imageId,
       });
@@ -353,7 +350,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   // Mutation to toggle admin-only visibility
   const updateAdminOnlyMutation = useMutation({
     mutationFn: async (adminOnly: boolean) => {
-      return client.models.Gallery.update({ id: galleryId, adminOnly });
+      return getAdminClient().models.Gallery.update({ id: galleryId, adminOnly });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['gallery', galleryId] });
@@ -384,7 +381,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
         }).result;
       }
 
-      return client.models.Gallery.update({
+      return getAdminClient().models.Gallery.update({
         id: galleryId,
         thumbnailImageId: imageId,
         thumbnailCrop: null,
@@ -415,8 +412,8 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
       // [Symbol.toStringTag], so it does not satisfy Promise itself.
       const deletions: PromiseLike<unknown>[] = [
         remove({ path: image.s3Key }),
-        client.models.GalleryImage.delete({ id: galleryImage.id }),
-        client.models.Image.delete({ id: image.id }),
+        getAdminClient().models.GalleryImage.delete({ id: galleryImage.id }),
+        getAdminClient().models.Image.delete({ id: image.id }),
       ];
       if (image.s3ThumbnailKey && image.s3ThumbnailKey !== image.s3Key) {
         deletions.push(remove({ path: image.s3ThumbnailKey }));
@@ -430,9 +427,9 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
       setSortedImages(prev => prev.filter(i => i.galleryImage.id !== imageItem.galleryImage.id));
       queryClient.invalidateQueries({ queryKey: ['galleryImagesWithDetails', galleryId] });
       if (gallery?.thumbnailImageId === imageItem.image.id) {
-        client.models.Gallery.update({ id: galleryId, thumbnailImageId: null }).catch(err =>
-          console.error('Error clearing thumbnail:', err),
-        );
+        getAdminClient()
+          .models.Gallery.update({ id: galleryId, thumbnailImageId: null })
+          .catch(err => console.error('Error clearing thumbnail:', err));
         queryClient.invalidateQueries({ queryKey: ['gallery', galleryId] });
       }
       toast.current?.show({ severity: 'success', summary: 'Image deleted', life: 3000 });
@@ -447,7 +444,7 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
     mutationFn: async (updates: { id: string; order: number }[]) => {
       const promises = updates.map(async update => {
         try {
-          const result = await client.models.GalleryImage.update({
+          const result = await getAdminClient().models.GalleryImage.update({
             id: update.id,
             order: update.order,
           });
