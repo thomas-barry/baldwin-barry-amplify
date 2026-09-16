@@ -336,6 +336,18 @@
   padding: 0.75rem 1.25rem;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+}
+
+/* Signed in, AuthButton renders the user pill and the icon in one wrapper.
+   Stretching the wrapper keeps the pill on the left and the icon on the right,
+   matching the signed-out row, where the icon is the only child. */
+.mobileAuthRow > div {
+  flex: 1;
+}
+
+.mobileAuthRow > div > button:last-child {
+  margin-left: auto;
 }
 
 /* No dark-mode contrast patch here any more: --color-nav-text is legible on the
