@@ -6,7 +6,7 @@
 # block without blocking anything. frame-ancestors is ignored in report-only
 # mode, which is why X-Frame-Options is enforced separately.
 customHeaders:
-  - pattern: '**/*.{js,css,png,jpg,gif}'
+  - pattern: '**/*.{js,css,png,jpg,gif,woff,woff2}'
     headers:
       - key: Cache-Control
         value: public,max-age=31536000,immutable
@@ -27,4 +27,4 @@ customHeaders:
       - key: Permissions-Policy
         value: camera=(), microphone=(), geolocation=(), payment=(), usb=()
       - key: Content-Security-Policy-Report-Only
-        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://d3v1ijc4huf10a.cloudfront.net https://*.s3.us-east-1.amazonaws.com https://picsum.photos https://fastly.picsum.photos; connect-src 'self' https://*.appsync-api.us-east-1.amazonaws.com https://cognito-idp.us-east-1.amazonaws.com https://cognito-identity.us-east-1.amazonaws.com https://*.s3.us-east-1.amazonaws.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://d3v1ijc4huf10a.cloudfront.net https://*.s3.us-east-1.amazonaws.com https://picsum.photos https://fastly.picsum.photos; connect-src 'self' https://*.appsync-api.us-east-1.amazonaws.com https://cognito-idp.us-east-1.amazonaws.com https://cognito-identity.us-east-1.amazonaws.com https://*.s3.us-east-1.amazonaws.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"

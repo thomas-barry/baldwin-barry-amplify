@@ -49,6 +49,19 @@
 @import url('@aws-amplify/ui-react/styles.css') layer(vendor);
 @import url('react-image-gallery/styles/image-gallery.css') layer(gallery);
 
+/* Self-hosted fonts (audit L6): Google Fonts used to see every visitor's IP.
+   The same static cuts the old Google request asked for — Inter at 400/500/600,
+   Inter Tight at 400/600/700/800, no italics — so bolder or italic Inter is
+   still synthesized. Each file declares every subset with its unicode-range,
+   and browsers only fetch the subsets a page actually uses. */
+@import url('@fontsource/inter/400.css') layer(vendor);
+@import url('@fontsource/inter/500.css') layer(vendor);
+@import url('@fontsource/inter/600.css') layer(vendor);
+@import url('@fontsource/inter-tight/400.css') layer(vendor);
+@import url('@fontsource/inter-tight/600.css') layer(vendor);
+@import url('@fontsource/inter-tight/700.css') layer(vendor);
+@import url('@fontsource/inter-tight/800.css') layer(vendor);
+
 /* ── Paper Design System: Light (default) ────────────────────────── */
 :root {
   /* Color tokens — light mode */
@@ -113,7 +126,7 @@
   --font-body: 'Inter', system-ui, sans-serif;
   --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
 
-  /* Font weights — must stay within the weights loaded in index.html. */
+  /* Font weights — must stay within the weights imported at the top of this file. */
   --fw-regular: 400;
   --fw-medium: 500;
   --fw-bold: 600;
