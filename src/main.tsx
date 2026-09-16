@@ -1,11 +1,12 @@
+// Must stay first: configures Amplify before any module calling generateClient() loads.
+import '@/lib/amplifyConfig';
+
 import { Authenticator } from '@aws-amplify/ui-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
-import { Amplify } from 'aws-amplify';
 import { PrimeReactProvider } from 'primereact/api';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import outputs from '../amplify_outputs.json';
 // Vendor CSS (PrimeReact core, PrimeFlex, primeicons, Amplify UI) is imported
 // from index.css so it can be assigned a cascade layer. The PrimeReact theme is
 // loaded and swapped at runtime by ThemeProvider.
@@ -26,8 +27,6 @@ declare module '@tanstack/react-router' {
     router: typeof router;
   }
 }
-
-Amplify.configure(outputs);
 
 ReactDOM.createRoot(document.getElementById('root')!, {
   // React 19 replaces its own console reporting when this is supplied, so the
