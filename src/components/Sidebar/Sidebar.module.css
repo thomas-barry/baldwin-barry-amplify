@@ -260,11 +260,11 @@
     top: var(--header-height);
     left: 0;
     right: 0;
-    /* The panel is fixed, so anything past the fold was unreachable: as admin
-       it runs ten 60px rows plus dividers and the auth row, ~675px starting
-       64px down. Scrolls itself rather than relying on the document, which the
-       nav-open lock holds still anyway. */
-    max-height: calc(100dvh - var(--header-height));
+    /* Fills the viewport below the top bar so the auth row can sit at the
+       bottom. As admin the rows run past the fold (~650px starting 64px down),
+       so the panel scrolls itself rather than relying on the document, which
+       the nav-open lock holds still anyway. */
+    height: calc(100dvh - var(--header-height));
     overflow-y: auto;
     /* Keeps a touch rubber-band at the panel's scroll edge from propagating to
        the visual viewport; the body lock handles the document itself. */
@@ -305,6 +305,12 @@
   padding: 0 1.25rem;
 }
 
+/* Tucks the last row's border under the auth row's, which would otherwise
+   stack into a 2px line once the rows reach the bottom. */
+.mobileDropdown .navItem:has(+ .mobileAuthRow) {
+  margin-bottom: -1px;
+}
+
 .mobileDropdown .navItem.active {
   background: transparent;
   color: var(--color-text);
@@ -312,7 +318,15 @@
   box-shadow: none;
 }
 
+/* margin-top: auto pins the row to the bottom of the full-height panel. When
+   the rows overflow (as admin) it resolves to 0, and sticky keeps the row on
+   the panel's bottom edge while the rows scroll behind it. */
 .mobileAuthRow {
+  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
   padding: 0.75rem 1.25rem;
   display: flex;
   align-items: center;
