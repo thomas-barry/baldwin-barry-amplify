@@ -8,6 +8,8 @@ import { Readable } from 'stream';
 import {
   DISPLAY_PREFIX,
   DISPLAY_QUALITY,
+  MAX_INPUT_PIXELS,
+  MAX_UPLOAD_BYTES,
   THUMBNAIL_HEIGHT,
   THUMBNAIL_PREFIX,
   THUMBNAIL_WIDTH,
@@ -99,7 +101,9 @@ function isTransposed(orientation?: number): boolean {
 }
 
 async function extractImageMetadata(imageBuffer: Buffer): Promise<ExtractedImageMetadata> {
-  const image = sharp(imageBuffer);
+  // metadata() reads the header only, so no pixel limit here: the handler needs
+  // the dimensions to refuse an oversized image before anything decodes it.
+  const image = sharp(imageBuffer, { limitInputPixels: false });
   const metadata = await image.metadata();
   const transposed = isTransposed(metadata.orientation);
 
@@ -360,6 +364,15 @@ export const handler = async (event: S3Event) => {
         continue;
       }
 
+      // Refuse oversized originals before buffering them (audit M5). The object
+      // stays in S3 with no record; nothing is deleted on the Lambda's say-so.
+      const contentLength = response.ContentLength ?? 0;
+      if (contentLength > MAX_UPLOAD_BYTES) {
+        (response.Body as Readable).destroy();
+        console.warn(`skipping oversized image: ${key} is ${contentLength} bytes, limit ${MAX_UPLOAD_BYTES}`);
+        continue;
+      }
+
       console.log(`processing image: ${key}`);
 
       // generate the thumbnail key by replacing 'uploads/' with 'thumbnails/'
@@ -367,7 +380,7 @@ export const handler = async (event: S3Event) => {
       const displayKey = key.replace(UPLOADS_PREFIX, DISPLAY_PREFIX);
 
       // convert stream to buffer
-      const imageBuffer = await streamToBuffer(response.Body as Readable);
+      const imageBuffer = await streamToBuffer(response.Body as Readable, MAX_UPLOAD_BYTES);
 
       // extract detailed image metadata — degrade rather than abort, so a file
       // sharp cannot introspect still gets a thumbnail and a DynamoDB record
@@ -378,6 +391,15 @@ export const handler = async (event: S3Event) => {
       } catch (error) {
         console.warn('could not extract image metadata, continuing without it:', error);
         imageMetadata = { exif: {} };
+      }
+
+      // A decompression bomb is small on disk, so the byte cap misses it. Every
+      // decode below also passes limitInputPixels, but skipping here keeps the
+      // record out too — otherwise the frontend would serve the raw original.
+      const pixels = (imageMetadata.width ?? 0) * (imageMetadata.height ?? 0);
+      if (pixels > MAX_INPUT_PIXELS) {
+        console.warn(`skipping oversized image: ${key} is ${pixels} pixels, limit ${MAX_INPUT_PIXELS}`);
+        continue;
       }
 
       // Thumbnailing must never cost us the record. sharp throws on formats it
@@ -396,7 +418,7 @@ export const handler = async (event: S3Event) => {
       let thumbnailGenerated = false;
       try {
         console.log(`generating thumbnail for: ${key}`);
-        const resizedThumbnail = sharp(imageBuffer)
+        const resizedThumbnail = sharp(imageBuffer, { limitInputPixels: MAX_INPUT_PIXELS })
           // Bake the EXIF orientation into the pixels before resizing. sharp does
           // not copy metadata to the output, so without this the thumbnail keeps
           // the raw sensor orientation while browsers auto-rotate the original —
