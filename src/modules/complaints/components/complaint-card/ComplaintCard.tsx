@@ -1,4 +1,4 @@
-import { ANONYMOUS, DISSATISFACTION_MAX, dissatisfactionLabel } from '../../dissatisfaction';
+import { ANONYMOUS, DISSATISFACTION_MAX, dissatisfactionLabel, RESPONDER } from '../../dissatisfaction';
 import type { PublicComplaint } from '../../types';
 import styles from './ComplaintCard.module.css';
 
@@ -30,6 +30,12 @@ export const ComplaintCard = ({ complaint }: ComplaintCardProps) => (
       </span>{' '}
       · {dissatisfactionLabel(complaint.dissatisfaction)}
     </p>
+    {complaint.response && (
+      <div className={styles.response}>
+        <p className={styles.responder}>{RESPONDER} responds</p>
+        <p className={styles.text}>{complaint.response}</p>
+      </div>
+    )}
   </li>
 );
 

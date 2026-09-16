@@ -181,6 +181,14 @@ const schema = a.schema({
       // Set by the submit resolver, not Amplify's createdAt: that resolver
       // writes the row directly, and this is the index's sort key.
       submittedAt: a.datetime().required(),
+      // The Management's one answer, written and revised by admins through the
+      // generated model API. No resolver validates it: ADR 0003's resolver rule
+      // exists for anonymous API-key callers, and an admin can already write
+      // anything to this row. Absent means no response. Public only via
+      // listApprovedComplaints, so a response on a pending complaint stays hidden.
+      response: a.string(),
+      // Updated on every save; admin-only, never mapped into PublicComplaint.
+      respondedAt: a.datetime(),
     })
     .secondaryIndexes(index => [
       // Named explicitly because listApprovedComplaints.js queries it by name.
@@ -197,6 +205,7 @@ const schema = a.schema({
     nickname: a.string(),
     dissatisfaction: a.integer().required(),
     submittedOn: a.date().required(),
+    response: a.string(),
   }),
 
   PublicComplaintPage: a.customType({

@@ -10,6 +10,12 @@ export const NICKNAME_MAX = 40;
 
 export const ANONYMOUS = 'Anonymous';
 
+// Responses are written by admins, so this cap is enforced only in the admin
+// form — nothing server-side mirrors it.
+export const RESPONSE_MAX = 1000;
+/** Who every response is attributed to. No author is stored. */
+export const RESPONDER = 'The Management';
+
 /** One word per reading, from DISSATISFACTION_MIN (1) to DISSATISFACTION_MAX (11). */
 const DISSATISFACTION_LABELS = [
   'Miffed',

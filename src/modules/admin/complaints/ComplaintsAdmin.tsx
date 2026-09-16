@@ -50,14 +50,36 @@ const ComplaintsAdmin = () => {
     onError: showError('Could not delete complaint'),
   });
 
+  // Blank is stored as absent, which removes the response.
+  const responseMutation = useMutation({
+    mutationFn: async ({ id, response }: { id: string; response: string }) => {
+      const trimmed = response.trim();
+      const { errors } = await clientAdmin.models.Complaint.update({
+        id,
+        response: trimmed === '' ? null : trimmed,
+        respondedAt: trimmed === '' ? null : new Date().toISOString(),
+      });
+      throwOnErrors(errors);
+    },
+    onSuccess: invalidate,
+    onError: showError('Could not save response'),
+  });
+
   const busyId = approveMutation.isPending
     ? approveMutation.variables
     : deleteMutation.isPending
       ? deleteMutation.variables
-      : undefined;
+      : responseMutation.isPending
+        ? responseMutation.variables?.id
+        : undefined;
 
   const handleDelete = (complaint: Complaint) => {
-    if (window.confirm(`Delete this complaint from ${complaint.nickname ?? ANONYMOUS}? This cannot be undone.`)) {
+    const alsoResponse = complaint.response ? ' and its response' : '';
+    if (
+      window.confirm(
+        `Delete this complaint from ${complaint.nickname ?? ANONYMOUS}${alsoResponse}? This cannot be undone.`,
+      )
+    ) {
       deleteMutation.mutate(complaint.id);
     }
   };
@@ -86,6 +108,9 @@ const ComplaintsAdmin = () => {
             isPending={busyId === complaint.id}
             onApprove={approvable ? () => approveMutation.mutate(complaint.id) : undefined}
             onDelete={() => handleDelete(complaint)}
+            onSaveResponse={async response => {
+              await responseMutation.mutateAsync({ id: complaint.id, response });
+            }}
           />
         ))}
       </ul>
@@ -98,7 +123,8 @@ const ComplaintsAdmin = () => {
       <header className={styles.header}>
         <h1 className={styles.title}>Complaints</h1>
         <p className={styles.subtitle}>
-          Nothing is public until it is approved. Anything you would not approve, delete — there is no editing.
+          Nothing is public until it is approved. Anything you would not approve, delete — complaints can't be edited.
+          Responses can, any time, and show on the wall once the complaint is approved.
         </p>
       </header>
 

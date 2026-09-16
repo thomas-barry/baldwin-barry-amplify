@@ -21,7 +21,9 @@ shown once before any is repeated.
 ## Complaint
 
 One grievance submitted anonymously through the complaints page. Every complaint
-is either pending or approved; only approved complaints are shown publicly.
+is either pending or approved; only approved complaints are shown publicly. A
+complaint's own words are never edited; an admin either approves it as submitted
+or deletes it.
 _Avoid_: Grievance, feedback, review, post
 
 ## Complainant
@@ -52,3 +54,10 @@ _Avoid_: Draft, queued, unapproved
 A complaint an admin has accepted for public display. There is no rejected
 state — a complaint that is not approved is deleted.
 _Avoid_: Published, live, accepted
+
+## Response
+
+The Management's single public answer to a complaint. A complaint has at most one
+response. It can be written while the complaint is pending, revised or removed at
+any time, and is shown publicly only once the complaint is approved.
+_Avoid_: Reply, comment, answer
