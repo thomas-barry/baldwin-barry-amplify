@@ -3,7 +3,7 @@ import { createUploadKey } from '@/lib/uploadKey';
 import { FileUploader } from '@aws-amplify/ui-react-storage';
 import { Toast } from 'primereact/toast';
 import { useRef } from 'react';
-import { UPLOADS_PREFIX } from '../../../../../constants';
+import { MAX_UPLOAD_BYTES, UPLOADS_PREFIX } from '../../../../../constants';
 import styles from './AmplifyFileUploader.module.css';
 
 interface AmplifyFileUploaderProps {
@@ -14,6 +14,14 @@ interface AmplifyFileUploaderProps {
   // are how you notice you grabbed the wrong ones.
   showThumbnails?: boolean;
 }
+
+// The upload Lambda ignores anything larger, so without this a big file uploads
+// in full and then never appears. FileUploader marks it in the list instead.
+// Its default message formats the cap in decimal units ("104.9 MB").
+const MAX_UPLOAD_MB = MAX_UPLOAD_BYTES / (1024 * 1024);
+const DISPLAY_TEXT = {
+  getFileSizeErrorText: () => `Too large: images must be ${MAX_UPLOAD_MB} MB or smaller`,
+};
 
 const AmplifyFileUploader = ({ onUploadSuccess, galleryId, showThumbnails = false }: AmplifyFileUploaderProps) => {
   const toast = useRef<Toast>(null);
@@ -50,6 +58,8 @@ const AmplifyFileUploader = ({ onUploadSuccess, galleryId, showThumbnails = fals
         acceptedFileTypes={['image/*']}
         path={UPLOADS_PREFIX}
         maxFileCount={10}
+        maxFileSize={MAX_UPLOAD_BYTES}
+        displayText={DISPLAY_TEXT}
         isResumable={true}
         showThumbnails={showThumbnails}
         onUploadSuccess={onUploadSuccess}
