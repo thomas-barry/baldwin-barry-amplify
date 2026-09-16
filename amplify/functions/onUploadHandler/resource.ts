@@ -9,6 +9,8 @@ const onUploadHandler = defineFunction({
   // memory bump is really a CPU bump — peak usage was only ~320MB.
   timeoutSeconds: 60,
   memoryMB: 2048,
+  // Lambda keeps logs forever by default.
+  logging: { retention: '1 month' },
   // The layer resolves from /opt/nodejs/node<major>/node_modules, so its prefix
   // must match the function's runtime. v5 is nodejs/node20; v6 is nodejs/node24,
   // matching the runtime the Aspect in backend.ts sets. Same payload otherwise —

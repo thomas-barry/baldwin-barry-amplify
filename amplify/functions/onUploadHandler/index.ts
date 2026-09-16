@@ -154,9 +154,7 @@ async function insertImageRecords(
   const now = new Date().toISOString();
 
   try {
-    console.log('INSERTING IMAGE RECORD');
-    console.log('S3 metadata', s3Metadata);
-    console.log('image metadata', imageData);
+    console.log('inserting image record for:', s3Key);
 
     // Extract filename from s3Key if not provided in metadata
     const fileName = s3Metadata.fileName || s3Key.split('/').pop() || 'unknown';
@@ -300,7 +298,9 @@ async function invalidateCloudFront(key: string): Promise<void> {
 }
 
 export const handler = async (event: S3Event) => {
-  console.log('received S3 event:', JSON.stringify(event, null, 2));
+  // Only the count: the full event and the image's EXIF were once dumped here,
+  // and log groups are readable long after the data they describe is gone.
+  console.log(`received S3 event with ${event.Records.length} record(s)`);
 
   // get the S3 client
   const s3Client = new S3Client({});
@@ -395,7 +395,7 @@ export const handler = async (event: S3Event) => {
 
       let thumbnailGenerated = false;
       try {
-        console.log('EXTRACTING THUMBNAIL FROM IMAGE', imageMetadata);
+        console.log(`generating thumbnail for: ${key}`);
         const resizedThumbnail = sharp(imageBuffer)
           // Bake the EXIF orientation into the pixels before resizing. sharp does
           // not copy metadata to the output, so without this the thumbnail keeps

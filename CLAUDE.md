@@ -25,7 +25,7 @@ There are no automated tests. Verification is manual in the browser.
 
 **Frontend**: React 18 + TypeScript (strict) + Vite 7. Routing via **Tanstack Router** (file-based, `src/routes/`). Server state via **Tanstack Query** v5. UI via **PrimeReact** + **PrimeFlex** utility classes. CSS via **CSS Modules** + Lightning CSS transformer.
 
-**Backend**: AWS Amplify Gen 2 — Cognito (auth), DynamoDB via AppSync GraphQL (data), S3 (storage), Lambda (functions). Backend is defined in `amplify/` which has its own `package.json` and `node_modules`.
+**Backend**: AWS Amplify Gen 2 — Cognito (auth), DynamoDB via AppSync GraphQL (data), S3 (storage), Lambda (functions). Backend is defined in `amplify/`. Its `package.json` only sets `"type": "module"`; backend and Lambda code resolve every dependency from the root `node_modules`. Don't add a `node_modules` under `amplify/`: esbuild resolves the nearest one first, so a stale copy there is what ends up bundled in the Lambdas.
 
 ### Critical: amplify_outputs.json
 

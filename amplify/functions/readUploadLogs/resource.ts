@@ -11,6 +11,8 @@ const readUploadLogs = defineFunction({
   resourceGroupName: 'data',
   // CloudWatch paginates slowly over a wide time range; 3s is not enough.
   timeoutSeconds: 30,
+  // Lambda keeps logs forever by default.
+  logging: { retention: '1 month' },
 });
 
 export { readUploadLogs };

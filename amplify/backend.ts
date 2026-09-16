@@ -72,6 +72,36 @@ for (const table of Object.values(backend.data.resources.cfnResources.amplifyDyn
   table.deletionProtectionEnabled = protectFromDeletion;
 }
 
+// The browser talks to the bucket directly for uploads, deletes and presigned
+// reads. Amplify's default CORS rule allows every origin, which lets any
+// website drive those calls from a signed-in admin's browser. Credentials are
+// still required, so this narrows rather than closes anything. A sandbox is
+// used from the local dev server, including `npm run dev:lan` on a .local name.
+const siteOrigins = isSandbox
+  ? ['http://localhost:*', 'http://*.local:5173']
+  : [
+      'https://www.baldwinbarry.com',
+      'https://baldwinbarry.com',
+      // The app is also served on its default Amplify domain.
+      ...(process.env.AWS_APP_ID ? [`https://*.${process.env.AWS_APP_ID}.amplifyapp.com`] : []),
+    ];
+backend.storage.resources.cfnResources.cfnBucket.corsConfiguration = {
+  corsRules: [
+    {
+      allowedHeaders: ['*'],
+      allowedMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
+      allowedOrigins: siteOrigins,
+      exposedHeaders: ['x-amz-server-side-encryption', 'x-amz-request-id', 'x-amz-id-2', 'ETag'],
+      maxAge: 3000,
+    },
+  ],
+};
+
+// The schema is public anyway (it is in the bundle), but there is no reason
+// to hand it out to anyone who asks. Amplify generates the client types from
+// the local schema, not from the deployed API.
+backend.data.resources.cfnResources.cfnGraphqlApi.introspectionConfig = 'DISABLED';
+
 // Versioning is switched on in storage/resource.ts. Old versions expire after
 // 30 days, so a delete stays recoverable for a month without storage growing.
 // Set on the L1 resource: `resources.bucket` is typed as IBucket, which has no
@@ -172,13 +202,16 @@ backend.onUploadHandler.addEnvironment(
 
 // CloudFront invalidation: set CLOUDFRONT_DISTRIBUTION_ID in your environment before running
 // `npx ampx sandbox` (or in CI secrets). The Lambda will skip invalidation if unset.
-backend.onUploadHandler.addEnvironment('CLOUDFRONT_DISTRIBUTION_ID', process.env.CLOUDFRONT_DISTRIBUTION_ID ?? '');
-backend.onUploadHandler.resources.lambda.addToRolePolicy(
-  new PolicyStatement({
-    actions: ['cloudfront:CreateInvalidation'],
-    resources: ['*'],
-  }),
-);
+backend.onUploadHandler.addEnvironment('CLOUDFRONT_DISTRIBUTION_ID', cloudfrontDistributionId ?? '');
+if (cloudfrontDistributionId) {
+  const uploadHandlerStack = Stack.of(backend.onUploadHandler.resources.lambda);
+  backend.onUploadHandler.resources.lambda.addToRolePolicy(
+    new PolicyStatement({
+      actions: ['cloudfront:CreateInvalidation'],
+      resources: [`arn:aws:cloudfront::${uploadHandlerStack.account}:distribution/${cloudfrontDistributionId}`],
+    }),
+  );
+}
 
 // The public gallery reads. Read-only, and only these three tables: the models
 // themselves are admin-only (docs/adr/0005). Both sit in the data stack, so the
