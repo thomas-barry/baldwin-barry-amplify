@@ -9,6 +9,8 @@ const publicGalleries = defineFunction({
   resourceGroupName: 'data',
   // A cold start plus a few full-table scans can pass the 3s default.
   timeoutSeconds: 15,
+  // Lambda keeps logs forever by default.
+  logging: { retention: '1 month' },
 });
 
 export { publicGalleries };
