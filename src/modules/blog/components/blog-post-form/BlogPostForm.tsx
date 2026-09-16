@@ -1,10 +1,9 @@
 import { iconClass } from '@/components/Icon';
 import ImagePicker from '@/components/ImagePicker';
 import Markdown from '@/components/Markdown';
-import type { Schema } from '@/schema';
+import { getAdminClient } from '@/lib/dataClient';
 import { useQueryClient } from '@tanstack/react-query';
 import { useBlocker, useNavigate } from '@tanstack/react-router';
-import { generateClient } from 'aws-amplify/data';
 import { remove } from 'aws-amplify/storage';
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
@@ -15,8 +14,6 @@ import { useRef, useState } from 'react';
 import type { BlogPost } from '../../types';
 import styles from './BlogPostForm.module.css';
 import PastableTextarea from './PastableTextarea';
-
-const client = generateClient<Schema>({ authMode: 'userPool' });
 
 interface BlogPostFormProps {
   initialValues?: BlogPost;
@@ -73,7 +70,9 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
     }
     pastedKeysRef.current = [];
     if (isPristineDraft && !hasSavedRef.current && initialValues?.id) {
-      void client.models.BlogPost.delete({ id: initialValues.id }).catch(() => undefined);
+      void getAdminClient()
+        .models.BlogPost.delete({ id: initialValues.id })
+        .catch(() => undefined);
       queryClient.invalidateQueries({ queryKey: ['blogPosts'] });
     }
   };
@@ -128,7 +127,7 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
         const publishedDate =
           published && !wasPublished ? new Date().toISOString() : (initialValues.publishedDate ?? null);
 
-        await client.models.BlogPost.update({
+        await getAdminClient().models.BlogPost.update({
           id: initialValues.id,
           title: title.trim(),
           content,
@@ -138,7 +137,7 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
           publishedDate,
         });
       } else {
-        await client.models.BlogPost.create({
+        await getAdminClient().models.BlogPost.create({
           title: title.trim(),
           content,
           excerpt: excerpt.trim() || null,

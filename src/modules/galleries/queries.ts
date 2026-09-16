@@ -1,14 +1,11 @@
 import type { SquareSelection } from '@/components/ImageSquareSelector';
-import type { Schema } from '@/schema';
+import { getAdminClient, getPublicClient } from '@/lib/dataClient';
 import { queryOptions } from '@tanstack/react-query';
-import { generateClient } from 'aws-amplify/data';
 import type { Gallery, GalleryPhoto, GalleryView } from './types';
 
 // Visitors read through the public operations, which filter on the server; the
 // models themselves are admin-only (docs/adr/0005). Admins read the models so
 // they see admin-only and empty galleries too.
-const clientPublic = generateClient<Schema>({ authMode: 'apiKey' });
-const clientAdmin = generateClient<Schema>({ authMode: 'userPool' });
 
 /** Throws the first GraphQL error, which the Amplify client returns rather than throws. */
 const throwOnErrors = (errors: readonly { message: string }[] | undefined) => {
@@ -47,7 +44,7 @@ export const galleriesQueryOptions = (isAdmin: boolean) =>
     queryKey: ['galleries', audience(isAdmin)],
     queryFn: async (): Promise<Gallery[]> => {
       if (!isAdmin) {
-        const { data, errors } = await clientPublic.queries.listPublicGalleries();
+        const { data, errors } = await getPublicClient().queries.listPublicGalleries();
         throwOnErrors(errors);
         return (data ?? []).map(gallery => ({
           ...(gallery as unknown as Gallery),
@@ -56,7 +53,7 @@ export const galleriesQueryOptions = (isAdmin: boolean) =>
         }));
       }
 
-      const { data, errors } = await clientAdmin.models.Gallery.list({
+      const { data, errors } = await getAdminClient().models.Gallery.list({
         selectionSet: [
           'id',
           'name',
@@ -88,7 +85,7 @@ export const galleryQueryOptions = (galleryId: string, isAdmin: boolean) =>
     queryKey: ['gallery', galleryId, audience(isAdmin)],
     queryFn: async (): Promise<GalleryView | null> => {
       if (!isAdmin) {
-        const { data, errors } = await clientPublic.queries.getPublicGallery({ id: galleryId });
+        const { data, errors } = await getPublicClient().queries.getPublicGallery({ id: galleryId });
         throwOnErrors(errors);
         if (!data) return null;
         return {
@@ -99,8 +96,8 @@ export const galleryQueryOptions = (galleryId: string, isAdmin: boolean) =>
       }
 
       const [galleryResponse, imagesResponse] = await Promise.all([
-        clientAdmin.models.Gallery.get({ id: galleryId }),
-        clientAdmin.models.GalleryImage.list({
+        getAdminClient().models.Gallery.get({ id: galleryId }),
+        getAdminClient().models.GalleryImage.list({
           filter: { galleryId: { eq: galleryId } },
           selectionSet: ['id', 'galleryId', 'imageId', 'addedDate', 'order', 'image.*'],
         }),

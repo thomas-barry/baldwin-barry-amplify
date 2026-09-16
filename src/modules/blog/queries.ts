@@ -1,13 +1,11 @@
+import { getAdminClient, getPublicClient } from '@/lib/dataClient';
 import type { Schema } from '@/schema';
 import { queryOptions } from '@tanstack/react-query';
-import { generateClient } from 'aws-amplify/data';
 import type { BlogPost } from './types';
 
 // Visitors read through the public operations, which never return drafts; the
 // model itself is admin-only (docs/adr/0005). Admins read the model so they
 // see drafts too.
-const clientPublic = generateClient<Schema>({ authMode: 'apiKey' });
-const clientAdmin = generateClient<Schema>({ authMode: 'userPool' });
 
 /** Throws the first GraphQL error, which the Amplify client returns rather than throws. */
 const throwOnErrors = (errors: readonly { message: string }[] | undefined) => {
@@ -31,7 +29,7 @@ export const blogPostsQueryOptions = (isAdmin: boolean) =>
     queryKey: ['blogPosts', audience(isAdmin)],
     queryFn: async (): Promise<BlogPost[]> => {
       if (isAdmin) {
-        const { data, errors } = await clientAdmin.models.BlogPost.list({ limit: 1000 });
+        const { data, errors } = await getAdminClient().models.BlogPost.list({ limit: 1000 });
         throwOnErrors(errors);
         return data as unknown as BlogPost[];
       }
@@ -41,8 +39,8 @@ export const blogPostsQueryOptions = (isAdmin: boolean) =>
       const posts: BlogPost[] = [];
       let nextToken: string | null = null;
       do {
-        const response: Awaited<ReturnType<typeof clientPublic.queries.listPublishedBlogPosts>> =
-          await clientPublic.queries.listPublishedBlogPosts({ nextToken });
+        const response: Awaited<ReturnType<ReturnType<typeof getPublicClient>['queries']['listPublishedBlogPosts']>> =
+          await getPublicClient().queries.listPublishedBlogPosts({ nextToken });
         throwOnErrors(response.errors);
         posts.push(...(response.data?.items ?? []).map(fromPublic));
         nextToken = response.data?.nextToken ?? null;
@@ -62,12 +60,12 @@ export const blogPostQueryOptions = (postId: string, isAdmin: boolean) =>
     queryKey: ['blogPost', postId, audience(isAdmin)],
     queryFn: async (): Promise<BlogPost | null> => {
       if (isAdmin) {
-        const { data, errors } = await clientAdmin.models.BlogPost.get({ id: postId });
+        const { data, errors } = await getAdminClient().models.BlogPost.get({ id: postId });
         throwOnErrors(errors);
         return data as unknown as BlogPost | null;
       }
 
-      const { data, errors } = await clientPublic.queries.getPublishedBlogPost({ id: postId });
+      const { data, errors } = await getPublicClient().queries.getPublishedBlogPost({ id: postId });
       throwOnErrors(errors);
       return data ? fromPublic(data) : null;
     },

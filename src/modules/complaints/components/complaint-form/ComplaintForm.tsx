@@ -1,4 +1,5 @@
 import Knob from '@/components/Knob';
+import { getPublicClient } from '@/lib/dataClient';
 import { useMutation } from '@tanstack/react-query';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
@@ -14,7 +15,7 @@ import {
   TEXT_MIN,
   dissatisfactionLabel,
 } from '../../dissatisfaction';
-import { clientPublic, throwOnErrors } from '../../queries';
+import { throwOnErrors } from '../../queries';
 import styles from './ComplaintForm.module.css';
 
 /** The dial's lit ticks run from yellow when mildly miffed to red when incandescent. */
@@ -36,7 +37,7 @@ export const ComplaintForm = () => {
 
   const mutation = useMutation({
     mutationFn: async (input: ComplaintInput) => {
-      const { errors } = await clientPublic.mutations.submitComplaint(input);
+      const { errors } = await getPublicClient().mutations.submitComplaint(input);
       throwOnErrors(errors);
     },
     onSuccess: () => {

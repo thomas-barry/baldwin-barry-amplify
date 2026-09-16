@@ -1,13 +1,10 @@
-import type { Schema } from '@/schema';
+import { getAdminClient, getPublicClient } from '@/lib/dataClient';
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
-import { generateClient } from 'aws-amplify/data';
 import type { Complaint, ComplaintStatus, PublicComplaintPage } from './types';
 
 // Public calls go through the API key even when an admin is signed in: the
 // custom operations only grant `publicApiKey`, and the default auth mode here
 // is the user pool.
-export const clientPublic = generateClient<Schema>({ authMode: 'apiKey' });
-export const clientAdmin = generateClient<Schema>({ authMode: 'userPool' });
 
 export const PAGE_SIZE = 20;
 
@@ -21,7 +18,7 @@ export const approvedComplaintsQueryOptions = () =>
   infiniteQueryOptions({
     queryKey: ['complaints', 'approved'],
     queryFn: async ({ pageParam }) => {
-      const { data, errors } = await clientPublic.queries.listApprovedComplaints({
+      const { data, errors } = await getPublicClient().queries.listApprovedComplaints({
         limit: PAGE_SIZE,
         nextToken: pageParam,
       });
@@ -42,7 +39,7 @@ export const complaintsByStatusQueryOptions = (status: ComplaintStatus) =>
   queryOptions({
     queryKey: ['complaints', 'admin', status],
     queryFn: async () => {
-      const { data, errors } = await clientAdmin.models.Complaint.listComplaintsByStatus(
+      const { data, errors } = await getAdminClient().models.Complaint.listComplaintsByStatus(
         { status },
         { sortDirection: status === 'PENDING' ? 'ASC' : 'DESC', limit: 1000 },
       );

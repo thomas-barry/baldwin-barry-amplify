@@ -1,9 +1,9 @@
 import { iconClass } from '@/components/Icon';
+import { getAdminClient } from '@/lib/dataClient';
 import { useImageUrls } from '@/lib/imageUrl';
 import { formatImageMarkdown } from '@/lib/markdown';
 import type { Schema } from '@/schema';
 import { useQuery } from '@tanstack/react-query';
-import { generateClient } from 'aws-amplify/data';
 import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
@@ -11,9 +11,6 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { Toast } from 'primereact/toast';
 import { useMemo, useRef, useState } from 'react';
 import styles from './ImagePicker.module.css';
-
-// Admin-only screen; the gallery models are admin-only (docs/adr/0005).
-const client = generateClient<Schema>({ authMode: 'userPool' });
 
 /** Pages are walked to completion so the grid never silently hides an image. */
 const PAGE_SIZE = 100;
@@ -72,7 +69,10 @@ const ImagePicker = ({ visible, onHide }: ImagePickerProps) => {
     queryKey: ['images'],
     enabled: visible,
     queryFn: async () => {
-      const items = await listAll(nextToken => client.models.Image.list({ limit: PAGE_SIZE, nextToken }), MAX_IMAGES);
+      const items = await listAll(
+        nextToken => getAdminClient().models.Image.list({ limit: PAGE_SIZE, nextToken }),
+        MAX_IMAGES,
+      );
       // DynamoDB returns scan order; newest-first is what you want when the
       // image you are reaching for is usually the one just uploaded.
       return items.sort((a, b) => b.uploadDate.localeCompare(a.uploadDate));
@@ -86,7 +86,8 @@ const ImagePicker = ({ visible, onHide }: ImagePickerProps) => {
     enabled: visible,
     queryFn: async () => {
       const items = await listAll(
-        nextToken => client.models.Gallery.list({ limit: PAGE_SIZE, nextToken, selectionSet: ['id', 'name'] }),
+        nextToken =>
+          getAdminClient().models.Gallery.list({ limit: PAGE_SIZE, nextToken, selectionSet: ['id', 'name'] }),
         MAX_IMAGES,
       );
       return items.sort((a, b) => a.name.localeCompare(b.name));
@@ -102,7 +103,11 @@ const ImagePicker = ({ visible, onHide }: ImagePickerProps) => {
     queryFn: async () => {
       const items = await listAll(
         nextToken =>
-          client.models.GalleryImage.list({ limit: PAGE_SIZE, nextToken, selectionSet: ['galleryId', 'imageId'] }),
+          getAdminClient().models.GalleryImage.list({
+            limit: PAGE_SIZE,
+            nextToken,
+            selectionSet: ['galleryId', 'imageId'],
+          }),
         MAX_MEMBERSHIPS,
       );
       const byGallery = new Map<string, Set<string>>();

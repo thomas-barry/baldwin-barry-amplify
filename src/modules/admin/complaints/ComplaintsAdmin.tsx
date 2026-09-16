@@ -1,11 +1,6 @@
 import { iconClass } from '@/components/Icon';
-import {
-  ANONYMOUS,
-  clientAdmin,
-  type Complaint,
-  complaintsByStatusQueryOptions,
-  throwOnErrors,
-} from '@/modules/complaints';
+import { getAdminClient } from '@/lib/dataClient';
+import { ANONYMOUS, type Complaint, complaintsByStatusQueryOptions, throwOnErrors } from '@/modules/complaints';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from 'primereact/button';
 import { ProgressSpinner } from 'primereact/progressspinner';
@@ -33,7 +28,7 @@ const ComplaintsAdmin = () => {
 
   const approveMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { errors } = await clientAdmin.models.Complaint.update({ id, status: 'APPROVED' });
+      const { errors } = await getAdminClient().models.Complaint.update({ id, status: 'APPROVED' });
       throwOnErrors(errors);
     },
     onSuccess: invalidate,
@@ -43,7 +38,7 @@ const ComplaintsAdmin = () => {
   // There is no rejected state: a complaint that is not approved is deleted.
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { errors } = await clientAdmin.models.Complaint.delete({ id });
+      const { errors } = await getAdminClient().models.Complaint.delete({ id });
       throwOnErrors(errors);
     },
     onSuccess: invalidate,
@@ -54,7 +49,7 @@ const ComplaintsAdmin = () => {
   const responseMutation = useMutation({
     mutationFn: async ({ id, response }: { id: string; response: string }) => {
       const trimmed = response.trim();
-      const { errors } = await clientAdmin.models.Complaint.update({
+      const { errors } = await getAdminClient().models.Complaint.update({
         id,
         response: trimmed === '' ? null : trimmed,
         respondedAt: trimmed === '' ? null : new Date().toISOString(),

@@ -1,11 +1,8 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import Skeleton from '@/components/Skeleton';
-import type { Schema } from '@/schema';
+import { getAdminClient } from '@/lib/dataClient';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { generateClient } from 'aws-amplify/data';
 import { useEffect, useRef, useState } from 'react';
-
-const client = generateClient<Schema>({ authMode: 'userPool' });
 
 export const Route = createFileRoute('/blog/new/')({
   component: RouteComponent,
@@ -37,7 +34,7 @@ function CreateDraft() {
 
     void (async () => {
       try {
-        const { data, errors } = await client.models.BlogPost.create({
+        const { data, errors } = await getAdminClient().models.BlogPost.create({
           title: '',
           content: '',
           excerpt: null,

@@ -1,9 +1,6 @@
-import type { Schema } from '@/schema';
+import { getPublicClient } from '@/lib/dataClient';
 import { queryOptions } from '@tanstack/react-query';
-import { generateClient } from 'aws-amplify/data';
 import type { Quip } from './types';
-
-const clientRead = generateClient<Schema>({ authMode: 'apiKey' });
 
 /**
  * The rotation: enabled quips only, for the public home page.
@@ -17,7 +14,7 @@ export const rotationQueryOptions = () =>
   queryOptions({
     queryKey: ['quips', 'enabled'],
     queryFn: async () => {
-      const response = await clientRead.models.Quip.list({
+      const response = await getPublicClient().models.Quip.list({
         filter: { enabled: { eq: true } },
       });
       return response.data as unknown as Quip[];
@@ -31,7 +28,7 @@ export const allQuipsQueryOptions = () =>
   queryOptions({
     queryKey: ['quips', 'all'],
     queryFn: async () => {
-      const response = await clientRead.models.Quip.list();
+      const response = await getPublicClient().models.Quip.list();
       return response.data as unknown as Quip[];
     },
   });

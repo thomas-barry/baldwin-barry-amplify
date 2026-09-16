@@ -1,8 +1,7 @@
 import { Amplify } from 'aws-amplify';
 import outputs from '../../amplify_outputs.json';
 
-// Imported for its side effect, and first, from main.tsx. Imports are hoisted,
-// so anything main.tsx imports is evaluated before main.tsx's own statements —
-// and several modules call generateClient() at load, which reads the config and
-// warns if Amplify.configure() has not run yet.
+// Imported for its side effect, first, from main.tsx. Data clients are created
+// on first use (@/lib/dataClient), so nothing depends on this module being
+// evaluated before the others.
 Amplify.configure(outputs);

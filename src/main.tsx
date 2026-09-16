@@ -1,4 +1,5 @@
-// Must stay first: configures Amplify before any module calling generateClient() loads.
+// Configures Amplify. Kept first for intent; clients are created lazily (see
+// @/lib/dataClient) because import order does not survive production chunking.
 import '@/lib/amplifyConfig';
 
 import { Authenticator } from '@aws-amplify/ui-react';

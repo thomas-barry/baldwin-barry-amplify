@@ -1,9 +1,8 @@
 import { Icon, iconClass } from '@/components/Icon';
 import Skeleton from '@/components/Skeleton';
 import { useAuth } from '@/context/AuthContext';
-import type { Schema } from '@/schema';
+import { getAdminClient } from '@/lib/dataClient';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { generateClient } from 'aws-amplify/data';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { Toast } from 'primereact/toast';
@@ -12,8 +11,6 @@ import { blogPostsQueryOptions } from '../../queries';
 import type { BlogPost } from '../../types';
 import BlogPostCard from '../blog-post-card/BlogPostCard';
 import styles from './BlogPostList.module.css';
-
-const clientWrite = generateClient<Schema>({ authMode: 'userPool' });
 
 const SKELETON_COUNT = 3;
 
@@ -42,7 +39,7 @@ const BlogPostList = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (postId: string) => {
-      return clientWrite.models.BlogPost.delete({ id: postId });
+      return getAdminClient().models.BlogPost.delete({ id: postId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogPosts'] });

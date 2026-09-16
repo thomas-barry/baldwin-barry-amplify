@@ -2,12 +2,11 @@ import { Icon, iconClass } from '@/components/Icon';
 import Skeleton from '@/components/Skeleton';
 import type { SortValue } from '@/components/SortSelect';
 import { useAuth } from '@/context/AuthContext';
+import { getAdminClient } from '@/lib/dataClient';
 import GalleryCard from '@/modules/galleries/components/gallery-card/GalleryCard';
 import { galleriesQueryOptions } from '@/modules/galleries/queries';
 import { Gallery } from '@/modules/galleries/types';
-import type { Schema } from '@/schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { generateClient } from 'aws-amplify/data';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { Toast } from 'primereact/toast';
@@ -17,8 +16,6 @@ import styles from './GalleryList.module.css';
 interface GalleryListProps {
   sort?: SortValue;
 }
-
-const clientWrite = generateClient<Schema>({ authMode: 'userPool' });
 
 const SKELETON_COUNT = 6;
 
@@ -56,17 +53,17 @@ const GalleryList = ({ sort = 'newest' }: GalleryListProps) => {
 
   const deleteMutation = useMutation({
     mutationFn: async (galleryId: string) => {
-      const galleryImagesResponse = await clientWrite.models.GalleryImage.list({
+      const galleryImagesResponse = await getAdminClient().models.GalleryImage.list({
         filter: { galleryId: { eq: galleryId } },
       });
 
       if (galleryImagesResponse.data) {
         for (const galleryImage of galleryImagesResponse.data) {
-          await clientWrite.models.GalleryImage.delete({ id: galleryImage.id });
+          await getAdminClient().models.GalleryImage.delete({ id: galleryImage.id });
         }
       }
 
-      return clientWrite.models.Gallery.delete({ id: galleryId });
+      return getAdminClient().models.Gallery.delete({ id: galleryId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['galleries'] });

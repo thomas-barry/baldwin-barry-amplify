@@ -1,7 +1,6 @@
 import { iconClass } from '@/components/Icon';
-import type { Schema } from '@/schema';
+import { getAdminClient } from '@/lib/dataClient';
 import { useQueryClient } from '@tanstack/react-query';
-import { generateClient } from 'aws-amplify/data';
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
 import { Dialog } from 'primereact/dialog';
@@ -10,8 +9,6 @@ import { Toast } from 'primereact/toast';
 import { useRef, useState } from 'react';
 import { Gallery } from '../../types';
 import styles from './GalleryForm.module.css';
-
-const client = generateClient<Schema>({ authMode: 'userPool' });
 
 interface GalleryFormProps {
   visible: boolean;
@@ -64,13 +61,13 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
       let result;
 
       if (isEdit && initialValues?.id) {
-        result = await client.models.Gallery.update({
+        result = await getAdminClient().models.Gallery.update({
           id: initialValues.id,
           name: name.trim(),
           adminOnly,
         });
       } else {
-        result = await client.models.Gallery.create({
+        result = await getAdminClient().models.Gallery.create({
           name: name.trim(),
           createdDate: new Date().toISOString(),
           adminOnly,

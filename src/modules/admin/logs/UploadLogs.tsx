@@ -1,7 +1,7 @@
 import { iconClass } from '@/components/Icon';
+import { getAdminClient } from '@/lib/dataClient';
 import type { Schema } from '@/schema';
 import { useQuery } from '@tanstack/react-query';
-import { generateClient } from 'aws-amplify/data';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
@@ -9,10 +9,6 @@ import { Message } from 'primereact/message';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useMemo, useState } from 'react';
 import styles from './UploadLogs.module.css';
-
-// userPool rather than apiKey: the query is authorised to the admin group, so
-// it has to travel with the signed-in user's token.
-const client = generateClient<Schema>({ authMode: 'userPool' });
 
 type LogEntry = NonNullable<Schema['readUploadLogs']['returnType']>[number];
 
@@ -53,7 +49,7 @@ const UploadLogs = () => {
   } = useQuery({
     queryKey: ['uploadLogs', minutes, appliedFilter],
     queryFn: async (): Promise<NonNullable<LogEntry>[]> => {
-      const response = await client.queries.readUploadLogs({
+      const response = await getAdminClient().queries.readUploadLogs({
         minutes,
         limit: EVENT_LIMIT,
         filterPattern: appliedFilter || undefined,
