@@ -68,7 +68,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         error: null,
       });
     } catch (err) {
-      console.error('[AuthContext] checkUser failed:', err);
+      // Being signed out is the normal state for visitors, not a failure.
+      if (!(err instanceof Error && err.name === 'UserUnAuthenticatedException')) {
+        console.error('[AuthContext] checkUser failed:', err);
+      }
       setAuthState({
         isAuthenticated: false,
         isAdmin: false,
