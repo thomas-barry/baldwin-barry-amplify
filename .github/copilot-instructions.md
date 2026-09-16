@@ -212,11 +212,14 @@ function GalleryList() {
 ```typescript
 import { uploadData } from 'aws-amplify/storage';
 
+import { createUploadKey } from '@/lib/uploadKey';
+
 // Keys need a unique id so two files with the same name cannot overwrite each
-// other; see createImageUploadMetadata and PastableTextarea for the real flow.
-async function uploadImage(file: File, uploadId: string, safeName: string) {
+// other. createUploadKey builds `uploads/<uploadId>-<safe name>`.
+async function uploadImage(file: File) {
+  const { key } = createUploadKey(file);
   const result = await uploadData({
-    path: `uploads/${uploadId}-${safeName}`,
+    path: key,
     data: file,
     options: { contentType: file.type },
   }).result;

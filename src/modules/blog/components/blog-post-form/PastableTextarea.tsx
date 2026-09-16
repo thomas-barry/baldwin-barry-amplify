@@ -1,21 +1,13 @@
 import { createImageUploadMetadata } from '@/lib/s3-metadata-utils';
+import { createUploadKey } from '@/lib/uploadKey';
 import { uploadData } from 'aws-amplify/storage';
 import { InputTextarea, type InputTextareaProps } from 'primereact/inputtextarea';
 import { useRef, useState } from 'react';
-import { UPLOADS_PREFIX } from '../../../../../constants';
 import styles from './PastableTextarea.module.css';
 
 /** 25 MB — a generous ceiling for a web-bound photo, low enough to catch an
  *  accidental paste of something huge before it ties up the upload. */
 const MAX_BYTES = 25 * 1024 * 1024;
-
-const EXT_BY_TYPE: Record<string, string> = {
-  'image/png': 'png',
-  'image/jpeg': 'jpg',
-  'image/webp': 'webp',
-  'image/gif': 'gif',
-  'image/avif': 'avif',
-};
 
 type NotifySeverity = 'success' | 'info' | 'warn' | 'error';
 
@@ -36,18 +28,12 @@ interface UploadJob {
 }
 
 const buildJob = (file: File): UploadJob => {
-  const uploadId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  const ext = EXT_BY_TYPE[file.type] ?? file.name.split('.').pop()?.toLowerCase() ?? 'png';
-  const base = file.name
-    .replace(/\.[^.]+$/, '')
-    .replace(/[^a-zA-Z0-9._-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  const safeName = base && base !== 'image' ? `${base}.${ext}` : `pasted-${uploadId}.${ext}`;
+  const { uploadId, safeName, key } = createUploadKey(file, 'pasted');
   return {
     file,
     safeName,
     token: `![uploading ${safeName}…](uploading:${uploadId})`,
-    key: `${UPLOADS_PREFIX}${uploadId}-${safeName}`,
+    key,
   };
 };
 
