@@ -1,10 +1,10 @@
+import { createImageUploadMetadata } from '@/lib/s3-metadata-utils';
+import { createUploadKey } from '@/lib/uploadKey';
 import { FileUploader } from '@aws-amplify/ui-react-storage';
 import { Toast } from 'primereact/toast';
 import { useRef } from 'react';
-import { createImageUploadMetadata } from '../../../../lib/s3-metadata-utils';
+import { UPLOADS_PREFIX } from '../../../../../constants';
 import styles from './AmplifyFileUploader.module.css';
-
-const UPLOAD_PATH = 'uploads/';
 
 interface AmplifyFileUploaderProps {
   onUploadSuccess: (event: { key?: string; fileType?: string }) => void;
@@ -28,16 +28,19 @@ const AmplifyFileUploader = ({ onUploadSuccess, galleryId, showThumbnails = fals
     });
   };
 
-  const processFile = ({ file, key }: { file: File; key: string }) => {
+  // FileUploader would store the file under its own name, where a second
+  // upload with the same name replaces the first. `key` is relative to `path`.
+  const processFile = ({ file }: { file: File; key: string }) => {
+    const { key } = createUploadKey(file);
     const metadata = createImageUploadMetadata({
       galleryId,
       title: file.name,
       description: '',
       fileName: file.name,
-      s3Key: `${UPLOAD_PATH}${key}`,
+      s3Key: key,
     });
 
-    return { file, key, metadata };
+    return { file, key: key.slice(UPLOADS_PREFIX.length), metadata };
   };
 
   return (
@@ -45,7 +48,7 @@ const AmplifyFileUploader = ({ onUploadSuccess, galleryId, showThumbnails = fals
       <Toast ref={toast} />
       <FileUploader
         acceptedFileTypes={['image/*']}
-        path={UPLOAD_PATH}
+        path={UPLOADS_PREFIX}
         maxFileCount={10}
         isResumable={true}
         showThumbnails={showThumbnails}
