@@ -31,6 +31,7 @@ build
 .claude/
 
 # AWS infrastructure artifacts
+.aws-sam/
 dev-permissions.json
 prod-permissions.json
 
@@ -45,3 +46,6 @@ amplifyconfiguration*
 
 # TanStack tooling
 .tanstack/
+
+# npm cache used by amplify.yml (`npm ci --cache .npm`)
+.npm/
