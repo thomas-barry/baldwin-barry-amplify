@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { DISPLAY_MAX_EDGE, DISPLAY_QUALITY } from '../../../constants';
+import { DISPLAY_MAX_EDGE, DISPLAY_QUALITY, MAX_INPUT_PIXELS } from '../../../constants';
 
 /**
  * Encodes the capped copy the carousel serves. Shared with
@@ -13,7 +13,7 @@ import { DISPLAY_MAX_EDGE, DISPLAY_QUALITY } from '../../../constants';
  * PNG stays PNG so transparency survives; everything else becomes JPEG.
  */
 export async function encodeDisplayImage(source: Buffer, isPng: boolean): Promise<Buffer> {
-  const resized = sharp(source)
+  const resized = sharp(source, { limitInputPixels: MAX_INPUT_PIXELS })
     .rotate()
     .resize({
       width: DISPLAY_MAX_EDGE,
