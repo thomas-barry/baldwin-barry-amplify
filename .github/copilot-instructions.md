@@ -6,15 +6,15 @@ applyTo: '**'
 
 ## Project Overview
 
-This is a full-stack photo gallery application built with **React 18**, **TypeScript**, **Vite**, **AWS Amplify Gen 2**, and the **Tanstack** suite. The application provides authentication, image storage, and gallery management capabilities using AWS backend services.
+This is a full-stack photo gallery application built with **React 19**, **TypeScript**, **Vite**, **AWS Amplify Gen 2**, and the **Tanstack** suite. The application provides authentication, image storage, and gallery management capabilities using AWS backend services.
 
 ## Technology Stack
 
 ### Frontend
-- **Build Tool:** Vite 7.x with TypeScript
-- **UI Framework:** React 18.x (functional components with hooks)
+- **Build Tool:** Vite 8.x with TypeScript
+- **UI Framework:** React 19.x (functional components with hooks)
 - **Language:** TypeScript (strict mode enabled)
-- **Styling:** CSS Modules + PrimeReact UI components + PrimeFlex utilities
+- **Styling:** CSS Modules + PrimeReact UI components
 - **Routing:** Tanstack Router v1 (file-based routing)
 - **Data Fetching:** Tanstack Query v5 (server state management)
 - **CSS Transformer:** Lightning CSS for optimized builds
@@ -30,7 +30,7 @@ This is a full-stack photo gallery application built with **React 18**, **TypeSc
 - **Package Manager:** npm (do NOT use pnpm or yarn)
 - **Linter:** ESLint v9 with TypeScript ESLint
 - **Formatter:** Prettier with plugins for imports and multiline arrays
-- **Type Checking:** TypeScript 5.4.x
+- **Type Checking:** TypeScript 5.x
 
 ## Project Structure
 
@@ -51,8 +51,7 @@ This is a full-stack photo gallery application built with **React 18**, **TypeSc
 │   ├── storage/          # S3 storage configuration
 │   ├── functions/        # Lambda functions
 │   └── backend.ts        # Backend resource definitions
-├── public/               # Public static files
-└── schema-check.json/    # GraphQL schema introspection
+└── public/               # Public static files
 ```
 
 ## Path Aliases
@@ -155,7 +154,6 @@ export function Card({ title, onClick, children }: CardProps) {
 - **Import as:** `import styles from './Component.module.css'`
 - **Apply classes:** `className={styles.className}`
 - **PrimeReact:** Use PrimeReact components for consistency (Button, Card, Dialog, etc.)
-- **PrimeFlex:** Use utility classes for layout (e.g., `flex`, `justify-content-center`)
 
 **Example:**
 ```typescript
@@ -214,10 +212,13 @@ function GalleryList() {
 ```typescript
 import { uploadData } from 'aws-amplify/storage';
 
-async function uploadImage(file: File) {
+// Keys need a unique id so two files with the same name cannot overwrite each
+// other; see createImageUploadMetadata and PastableTextarea for the real flow.
+async function uploadImage(file: File, uploadId: string, safeName: string) {
   const result = await uploadData({
-    path: `uploads/${file.name}`,
+    path: `uploads/${uploadId}-${safeName}`,
     data: file,
+    options: { contentType: file.type },
   }).result;
   return result;
 }

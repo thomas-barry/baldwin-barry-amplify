@@ -23,7 +23,7 @@ There are no automated tests. Verification is manual in the browser.
 
 ## Architecture
 
-**Frontend**: React 18 + TypeScript (strict) + Vite 7. Routing via **Tanstack Router** (file-based, `src/routes/`). Server state via **Tanstack Query** v5. UI via **PrimeReact** + **PrimeFlex** utility classes. CSS via **CSS Modules** + Lightning CSS transformer.
+**Frontend**: React 19 + TypeScript (strict) + Vite 8. Routing via **Tanstack Router** (file-based, `src/routes/`). Server state via **Tanstack Query** v5. UI via **PrimeReact**. CSS via **CSS Modules** + Lightning CSS transformer.
 
 **Backend**: AWS Amplify Gen 2 — Cognito (auth), DynamoDB via AppSync GraphQL (data), S3 (storage), Lambda (functions). Backend is defined in `amplify/` which has its own `package.json` and `node_modules`.
 

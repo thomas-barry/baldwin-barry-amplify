@@ -1,3 +1,4 @@
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import GalleryEditor from '@/modules/galleries/components/gallery-editor/GalleryEditor';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -7,5 +8,11 @@ export const Route = createFileRoute('/photos/$galleryId/edit')({
 
 function RouteComponent() {
   const { galleryId } = Route.useParams();
-  return <GalleryEditor galleryId={galleryId} />;
+  return (
+    <ProtectedRoute
+      requireAdmin={true}
+      redirectTo='/'>
+      <GalleryEditor galleryId={galleryId} />
+    </ProtectedRoute>
+  );
 }

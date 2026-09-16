@@ -39,7 +39,9 @@ function browserslistToJsTargets(queries: string[]): string[] {
 export default defineConfig({
   plugins: [tanstackRouter({ target: 'react', autoCodeSplitting: true }), react()],
   server: {
-    host: true,
+    // Localhost only by default: on an untrusted network the dev server, and the
+    // sandbox config it serves, would otherwise be reachable by anyone.
+    // `npm run dev:lan` binds to all interfaces for testing from another device.
     allowedHosts: ['.local'],
   },
   build: {
