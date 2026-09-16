@@ -190,21 +190,17 @@ const Sidebar = () => {
             onClick={closeMobile}
           />
         ))}
-        {isAdmin && (
-          <>
-            <div className={styles.divider} />
-            {ADMIN_NAV_ITEMS.map(item => (
-              <NavLink
-                key={item.to}
-                item={item}
-                showLabel
-                onClick={closeMobile}
-                badge={badgeFor(item)}
-              />
-            ))}
-          </>
-        )}
-        <div className={styles.divider} />
+        {/* No dividers here: every row already has a full-width bottom border. */}
+        {isAdmin &&
+          ADMIN_NAV_ITEMS.map(item => (
+            <NavLink
+              key={item.to}
+              item={item}
+              showLabel
+              onClick={closeMobile}
+              badge={badgeFor(item)}
+            />
+          ))}
         <div className={styles.mobileAuthRow}>
           <AuthButton />
         </div>
