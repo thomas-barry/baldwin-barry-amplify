@@ -3,7 +3,7 @@ import ImagePicker from '@/components/ImagePicker';
 import Markdown from '@/components/Markdown';
 import { getAdminClient } from '@/lib/dataClient';
 import { useQueryClient } from '@tanstack/react-query';
-import { useBlocker, useNavigate } from '@tanstack/react-router';
+import { useBlocker, useCanGoBack, useNavigate, useRouter } from '@tanstack/react-router';
 import { remove } from 'aws-amplify/storage';
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
@@ -35,6 +35,8 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
   const toast = useRef<Toast>(null);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const router = useRouter();
+  const canGoBack = useCanGoBack();
 
   const isDirty =
     title !== (initialValues?.title ?? '') ||
@@ -106,6 +108,19 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
     isLeavingAfterSave.current = true;
     if (postId) {
       navigate({ to: '/blog/$postId', params: { postId } });
+    } else {
+      navigate({ to: '/blog' });
+    }
+  };
+
+  // Back to wherever the editor was opened from (the musing, or the list), so
+  // Cancel doesn't add a history entry. Opened directly, fall back to the
+  // musing unless it is a blank new draft, which the blocker deletes on the way out.
+  const handleCancel = () => {
+    if (canGoBack) {
+      router.history.back();
+    } else if (initialValues?.id && !isPristineDraft) {
+      navigate({ to: '/blog/$postId', params: { postId: initialValues.id } });
     } else {
       navigate({ to: '/blog' });
     }
@@ -191,7 +206,7 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
               icon={iconClass('times')}
               outlined
               text
-              onClick={() => navigate({ to: '/blog' })}
+              onClick={handleCancel}
             />
             <Button
               label={isSubmitting ? 'Saving...' : isEdit ? 'Update' : 'Create'}
