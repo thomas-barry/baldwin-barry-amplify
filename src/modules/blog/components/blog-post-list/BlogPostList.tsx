@@ -62,7 +62,7 @@ const BlogPostList = () => {
 
   if (isLoading) {
     return (
-      <div className={styles.postGrid}>
+      <div className={styles.postList}>
         {Array.from({ length: SKELETON_COUNT }, (_, i) => (
           <div
             key={i}
@@ -127,7 +127,7 @@ const BlogPostList = () => {
   }
 
   return (
-    <div className={styles.postGrid}>
+    <div className={styles.postList}>
       <Toast ref={toast} />
       {sortedPosts.map(post => (
         <BlogPostCard
