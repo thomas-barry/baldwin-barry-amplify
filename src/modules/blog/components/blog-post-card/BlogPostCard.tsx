@@ -35,9 +35,10 @@ const BlogPostCard = ({ post, onDelete }: BlogPostCardProps) => {
 
   return (
     <article className={styles.card}>
-      <div className={styles.cardHeader}>
-        {isAdmin && !post.published && <span className={styles.draftBadge}>Draft</span>}
-        {isAdmin && (
+      {/* Everything in the header is admin-only, so visitors get no empty strip. */}
+      {isAdmin && (
+        <div className={styles.cardHeader}>
+          {!post.published && <span className={styles.draftBadge}>Draft</span>}
           <div className={styles.adminOverlay}>
             <LinkButton
               to='/blog/$postId/edit'
@@ -61,8 +62,8 @@ const BlogPostCard = ({ post, onDelete }: BlogPostCardProps) => {
               />
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
       <div className={styles.cardBody}>
         <h3 className={styles.cardTitle}>
           <Link
