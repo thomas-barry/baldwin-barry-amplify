@@ -253,33 +253,11 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
           </div>
 
           <div className={styles.formField}>
-            <div className={styles.contentHeader}>
-              <label
-                htmlFor='post-content'
-                className={styles.formLabel}>
-                Content <span className={styles.formatHint}>Markdown</span>
-              </label>
-              <div className={styles.contentTools}>
-                {!showPreview && (
-                  <Button
-                    label='Insert image'
-                    icon={iconClass('image')}
-                    text
-                    size='small'
-                    type='button'
-                    onClick={() => setPickerVisible(true)}
-                  />
-                )}
-                <Button
-                  label={showPreview ? 'Write' : 'Preview'}
-                  icon={showPreview ? iconClass('pencil') : iconClass('eye')}
-                  text
-                  size='small'
-                  type='button'
-                  onClick={() => setShowPreview(p => !p)}
-                />
-              </div>
-            </div>
+            <label
+              htmlFor='post-content'
+              className={styles.formLabel}>
+              Content <span className={styles.formatHint}>Markdown</span>
+            </label>
             {showPreview ? (
               <div className={styles.preview}>
                 {content.trim() ? (
@@ -333,6 +311,31 @@ const BlogPostForm = ({ initialValues, isEdit = false }: BlogPostFormProps) => {
               className={styles.formLabel}>
               Publish
             </label>
+          </div>
+        </div>
+
+        {/* Pinned to the bottom of the viewport: the textarea grows with the
+            post, so these would otherwise scroll away with the top of it. */}
+        <div className={styles.contentBar}>
+          <div className={styles.contentTools}>
+            {!showPreview && (
+              <Button
+                label='Insert image'
+                icon={iconClass('image')}
+                text
+                size='small'
+                type='button'
+                onClick={() => setPickerVisible(true)}
+              />
+            )}
+            <Button
+              label={showPreview ? 'Write' : 'Preview'}
+              icon={showPreview ? iconClass('pencil') : iconClass('eye')}
+              text
+              size='small'
+              type='button'
+              onClick={() => setShowPreview(p => !p)}
+            />
           </div>
         </div>
       </div>
