@@ -61,3 +61,30 @@ The Management's single public answer to a complaint. A complaint has at most on
 response. It can be written while the complaint is pending, revised or removed at
 any time, and is shown publicly only once the complaint is approved.
 _Avoid_: Reply, comment, answer
+
+## Musing
+
+One piece of writing on the site's writing page. A musing is either a draft or
+published; only published musings are shown publicly.
+_Avoid_: Blog post, article, entry, post
+
+## Image
+
+One picture held in the site's image library. An image is uploaded once and may
+then be shown in any number of galleries and musings.
+_Avoid_: File, asset, media, attachment
+
+## Orphan
+
+An image nothing refers to: it belongs to no gallery, is no gallery's thumbnail,
+and appears in no musing — draft musings count, so an image held only by
+unfinished writing is not an orphan. A state an image enters and leaves, not a
+kind of image.
+_Avoid_: Unused, dangling, stray, unreferenced
+
+## Broken reference
+
+A musing naming an image the library no longer holds. The exact mirror of an
+orphan: an orphan is an image nothing points at, a broken reference is a
+pointer at no image.
+_Avoid_: Dangling link, missing image, dead link

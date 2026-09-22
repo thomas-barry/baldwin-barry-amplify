@@ -36,6 +36,7 @@ const ADMIN_NAV_ITEMS: NavItem[] = [
   // Was a loose constant rendered only in the mobile dropdown, so it never
   // appeared in the desktop sidebar at all.
   { to: '/admin/upload', icon: 'images', label: 'Upload Photos' },
+  { to: '/admin/images', icon: 'image', label: 'Image Library' },
   { to: '/admin/logs', icon: 'list', label: 'Upload Logs' },
 ];
 
