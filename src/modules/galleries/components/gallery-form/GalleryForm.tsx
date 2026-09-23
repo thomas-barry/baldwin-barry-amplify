@@ -141,7 +141,7 @@ const GalleryForm = ({ visible, onHide, onSave, initialValues, isEdit = false }:
         footer={dialogFooter}
         draggable={false}
         resizable={false}>
-        <div className={styles.formContainer}>
+        <div>
           <div className={styles.formField}>
             <label
               htmlFor='name'

@@ -18,14 +18,16 @@ import {
 import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
+import { useCanGoBack, useNavigate, useRouter } from '@tanstack/react-router';
 import { getUrl, remove, uploadData } from 'aws-amplify/storage';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { InputSwitch } from 'primereact/inputswitch';
+import { InputText } from 'primereact/inputtext';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Toast } from 'primereact/toast';
+import type { KeyboardEvent } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import AmplifyFileUploader from '../amplify-file-uploader/AmplifyFileUploader';
 import ThumbnailCropDialog from '../thumbnail-crop-dialog/ThumbnailCropDialog';
@@ -132,6 +134,56 @@ const SortableImageItem = ({
   );
 };
 
+interface GalleryNameFieldProps {
+  name: string;
+  /** Saves a changed name. Rejects on failure, which reverts the field. */
+  onRename: (name: string) => Promise<unknown>;
+}
+
+/**
+ * The gallery name, edited in place. Commits the trimmed value on blur or
+ * Enter; an empty name reverts, matching the create form's only rule.
+ */
+const GalleryNameField = ({ name, onRename }: GalleryNameFieldProps) => {
+  const [value, setValue] = useState(name);
+  // Escape blurs the input, and that blur must not commit the text being
+  // abandoned — the handler still sees this render's value.
+  const reverting = useRef(false);
+
+  // The server is the source of truth: re-sync when a rename round-trips.
+  useEffect(() => setValue(name), [name]);
+
+  const commit = () => {
+    const next = value.trim();
+    if (reverting.current || next === '' || next === name) {
+      reverting.current = false;
+      setValue(name);
+      return;
+    }
+    onRename(next).catch(() => setValue(name));
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.currentTarget.blur(); // blur commits
+    } else if (event.key === 'Escape') {
+      reverting.current = true;
+      event.currentTarget.blur();
+    }
+  };
+
+  return (
+    <InputText
+      className={styles.nameInput}
+      value={value}
+      aria-label='Gallery name'
+      onChange={event => setValue(event.target.value)}
+      onBlur={commit}
+      onKeyDown={handleKeyDown}
+    />
+  );
+};
+
 async function cropImageToBlob(imageUrl: string, crop: SquareSelection, outputSize = 200): Promise<Blob> {
   const response = await fetch(imageUrl);
   const imageBlob = await response.blob();
@@ -172,6 +224,8 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   const { isAuthenticated, isAdmin } = useAuth();
   const { openLogin } = useLoginDialog();
   const navigate = useNavigate();
+  const router = useRouter();
+  const canGoBack = useCanGoBack();
   const toast = useRef<Toast>(null);
   const queryClient = useQueryClient();
 
@@ -342,6 +396,25 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
         severity: 'error',
         summary: 'Error',
         detail: 'Failed to update gallery thumbnail',
+        life: 5000,
+      });
+    },
+  });
+
+  const renameMutation = useMutation({
+    mutationFn: (name: string) => getAdminClient().models.Gallery.update({ id: galleryId, name }),
+    onSuccess: () => {
+      // Prefixes: cover every audience's cached copy, not just this editor's.
+      queryClient.invalidateQueries({ queryKey: ['gallery', galleryId] });
+      queryClient.invalidateQueries({ queryKey: ['galleries'] });
+      toast.current?.show({ severity: 'success', summary: 'Gallery renamed', life: 3000 });
+    },
+    onError: error => {
+      console.error('Error renaming gallery:', error);
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to rename gallery',
         life: 5000,
       });
     },
@@ -520,12 +593,22 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
 
   const activeImage = sortedImages.find(item => item.galleryImage.id === activeId);
 
+  // Back to wherever the editor was opened from (the gallery list, or the
+  // gallery), so Done doesn't add a history entry. Opened directly, fall back
+  // to the gallery.
+  const handleDone = () => {
+    if (canGoBack) {
+      router.history.back();
+    } else {
+      navigate({ to: '/photos/$galleryId', params: { galleryId } });
+    }
+  };
+
   const backButton = (
     <Button
       label='Done'
-      icon={iconClass('arrow-left')}
       severity='secondary'
-      onClick={() => navigate({ to: '/photos/$galleryId', params: { galleryId } })}
+      onClick={handleDone}
     />
   );
 
@@ -614,7 +697,13 @@ const GalleryEditor = ({ galleryId }: GalleryEditorProps) => {
   return (
     <div className={styles.editorContainer}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Edit Gallery: {gallery.name}</h2>
+        <div className={styles.titleRow}>
+          <h2 className={styles.title}>Edit Gallery</h2>
+          <GalleryNameField
+            name={gallery.name}
+            onRename={renameMutation.mutateAsync}
+          />
+        </div>
         <label className={styles.adminOnlyToggle}>
           <InputSwitch
             checked={gallery.adminOnly ?? false}

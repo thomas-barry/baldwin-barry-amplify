@@ -78,7 +78,6 @@
   color: rgba(var(--color-knob-light), 0.95);
   font-size: 2em;
   font-weight: 300;
-  letter-spacing: -0.02em;
   pointer-events: none;
   user-select: none;
   z-index: 5;

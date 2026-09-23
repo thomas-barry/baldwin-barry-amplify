@@ -12,7 +12,6 @@
        as the hero card, so it renders the line at the size it will really be. */
     font-size: clamp(2rem, 5vw, 3rem);
     font-weight: var(--fw-black);
-    letter-spacing: -0.04em;
     padding: 0.5em;
     text-align: center;
   }

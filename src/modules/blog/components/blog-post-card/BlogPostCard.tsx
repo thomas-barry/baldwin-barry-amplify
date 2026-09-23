@@ -35,33 +35,10 @@ const BlogPostCard = ({ post, onDelete }: BlogPostCardProps) => {
 
   return (
     <article className={styles.card}>
-      {/* Everything in the header is admin-only, so visitors get no empty strip. */}
-      {isAdmin && (
+      {/* Only drafts get a header, so published cards carry no empty strip. */}
+      {isAdmin && !post.published && (
         <div className={styles.cardHeader}>
-          {!post.published && <span className={styles.draftBadge}>Draft</span>}
-          <div className={styles.adminOverlay}>
-            <LinkButton
-              to='/blog/$postId/edit'
-              params={{ postId: post.id }}
-              icon='pencil'
-              iconOnly
-              rounded
-              size='small'
-              severity='info'
-              aria-label='Edit post'
-            />
-            {onDelete && (
-              <Button
-                icon={iconClass('trash')}
-                rounded
-                text={false}
-                severity='danger'
-                size='small'
-                aria-label='Delete post'
-                onClick={handleDelete}
-              />
-            )}
-          </div>
+          <span className={styles.draftBadge}>Draft</span>
         </div>
       )}
       <div className={styles.cardBody}>
@@ -85,6 +62,34 @@ const BlogPostCard = ({ post, onDelete }: BlogPostCardProps) => {
                   {tag}
                 </span>
               ))}
+            </div>
+          )}
+          {/* In line with the date, pushed to the row's far end. Text buttons:
+              in the metadata row they should read as quiet controls. */}
+          {isAdmin && (
+            <div className={styles.adminOverlay}>
+              <LinkButton
+                to='/blog/$postId/edit'
+                params={{ postId: post.id }}
+                icon='pencil'
+                iconOnly
+                rounded
+                variant='text'
+                size='small'
+                severity='info'
+                aria-label='Edit post'
+              />
+              {onDelete && (
+                <Button
+                  icon={iconClass('trash')}
+                  rounded
+                  text
+                  severity='danger'
+                  size='small'
+                  aria-label='Delete post'
+                  onClick={handleDelete}
+                />
+              )}
             </div>
           )}
         </div>

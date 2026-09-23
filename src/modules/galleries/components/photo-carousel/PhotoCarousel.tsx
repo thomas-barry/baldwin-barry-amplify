@@ -205,7 +205,8 @@ const PhotoCarousel = ({
       ref={containerRef}>
       <ReactImageGallery
         items={galleryItems}
-        showThumbnails
+        // A strip holding the one photo already on screen is just noise.
+        showThumbnails={galleryItems.length > 1}
         showPlayButton={false}
         showFullscreenButton={false}
         showNav
