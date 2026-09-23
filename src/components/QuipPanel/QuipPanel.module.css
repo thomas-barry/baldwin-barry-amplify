@@ -3,6 +3,7 @@
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background: #000;
@@ -15,5 +16,18 @@
     letter-spacing: -0.04em;
     padding: 0.5em;
     text-align: center;
+  }
+
+  /* Sized off the quip, so it scales with the clamp above. Regular weight
+     because Inter Tight's only italic cut is 400 (see index.css). */
+  .quote {
+    margin: 0 0 0.75em;
+    font-size: 0.45em;
+    font-style: italic;
+    font-weight: var(--fw-regular);
+    letter-spacing: -0.01em;
+    /* The admin page's "Preview" heading colour — the same in both themes,
+       which matters because the panel is black in both. */
+    color: var(--color-accent-2);
   }
 }

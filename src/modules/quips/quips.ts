@@ -1,3 +1,5 @@
+import type { QuipContent } from './types';
+
 /**
  * Bundled fallback quips.
  *
@@ -10,6 +12,7 @@
  * Keep entries to roughly 25 characters. `QuipPanel` renders them at
  * `clamp(2rem, 5vw, 3rem)` in the display face at `--fw-black`, inside a card
  * locked to `aspect-ratio: 500 / 624` — longer lines wrap into a block that
- * loses the punch, and much longer ones overflow the panel outright.
+ * loses the punch, and much longer ones overflow the panel outright. A quote
+ * takes room above the quip too, so check a long one in the admin preview.
  */
-export const QUIPS: string[] = ['Fuck Donald Trump'];
+export const QUIPS: QuipContent[] = [{ text: 'Fuck Donald Trump' }];

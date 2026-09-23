@@ -51,6 +51,8 @@
 
   .draftRow {
     display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
     padding-top: var(--space-2);
     border-top: 1px dashed var(--color-border);
     margin-top: var(--space-1);
@@ -60,6 +62,25 @@
     flex: 1;
     min-width: 0;
     font-family: var(--font-display);
+  }
+
+  /* Matches the quote line in each quip row. */
+  .draftQuoteLine {
+    display: flex;
+    gap: var(--space-1);
+  }
+
+  .draftQuoteLine .draftInput {
+    flex: 2;
+  }
+
+  .draftQuoteLine .draftAttributionInput {
+    flex: 1;
+  }
+
+  .draftQuoteInput {
+    font-size: var(--fs-300);
+    font-style: italic;
   }
 
   .error {
