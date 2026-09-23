@@ -1,9 +1,12 @@
-.formContainer {
-  padding: 1rem 0;
-}
-
+/* No padding of its own: the dialog already pads 1.5rem under the header and
+   2rem under the content, and stacking more on top left ~5.5rem between the
+   last field and the buttons. */
 .formField {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .formLabel {
@@ -31,7 +34,6 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
-  padding-top: 1rem;
 }
 
 /* No `:global()` rules live here any more. A CSS module is unlayered and only

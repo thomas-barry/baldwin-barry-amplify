@@ -78,6 +78,7 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
               icon='pencil'
               iconOnly
               rounded
+              variant='text'
               size='small'
               severity='info'
               aria-label='Edit gallery'
@@ -86,7 +87,7 @@ const GalleryCard = ({ gallery, onDelete }: GalleryCardProps) => {
               <Button
                 icon={iconClass('trash')}
                 rounded
-                text={false}
+                text
                 severity='danger'
                 size='small'
                 aria-label='Delete gallery'

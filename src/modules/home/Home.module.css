@@ -51,7 +51,6 @@
     font-size: clamp(2.5rem, 5.5vw, var(--fs-h1));
     font-weight: var(--fw-heavy);
     line-height: 1.15;
-    letter-spacing: -0.04em;
     color: var(--color-text);
     margin: 0;
   }
