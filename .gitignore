@@ -26,9 +26,12 @@ build
 *.sln
 *.sw?
 
-# Claude Code
+# Claude Code — ignore .claude/ except the subagent definitions, which are versioned.
+# Agent memory stays ignored: this repo is public.
+# `.claude/*` rather than `.claude/`: git can't re-include files under an ignored directory.
 .worktrees/
-.claude/
+.claude/*
+!.claude/agents/
 
 # AWS infrastructure artifacts
 .aws-sam/
