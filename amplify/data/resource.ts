@@ -52,6 +52,12 @@ const schema = a.schema({
   Quip: a
     .model({
       text: a.string().required(),
+      // The line the quip answers, shown above it. Null when there is none —
+      // the admin UI never stores an empty string.
+      quote: a.string(),
+      // Who said the quote, shown inline after it. Null when there is none, and
+      // never rendered without a quote.
+      attribution: a.string(),
       // Written explicitly by the admin UI on create, so no row ever carries a
       // null here and the `enabled: { eq: true }` read filter is safe. The
       // default is a backstop, not the guarantee.

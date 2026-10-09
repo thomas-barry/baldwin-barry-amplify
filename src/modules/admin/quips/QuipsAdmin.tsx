@@ -1,24 +1,35 @@
 import { iconClass } from '@/components/Icon';
 import { QuipPanel } from '@/components/QuipPanel';
 import { getAdminClient } from '@/lib/dataClient';
-import { allQuipsQueryOptions, type Quip } from '@/modules/quips';
+import { allQuipsQueryOptions, type Quip, type QuipContent } from '@/modules/quips';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Toast } from 'primereact/toast';
-import type { KeyboardEvent } from 'react';
+import type { ChangeEvent, KeyboardEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { QuipRow } from './components/quip-row';
 import styles from './QuipsAdmin.module.css';
+
+/** The draft row's inputs, untrimmed. */
+interface Draft {
+  text: string;
+  quote: string;
+  attribution: string;
+}
+
+const EMPTY_DRAFT: Draft = { text: '', quote: '', attribution: '' };
 
 const QuipsAdmin = () => {
   const queryClient = useQueryClient();
   const toast = useRef<Toast>(null);
   const { data: quips, isLoading, isError, error, refetch } = useQuery(allQuipsQueryOptions());
 
-  const [draft, setDraft] = useState('');
-  const [preview, setPreview] = useState('');
+  const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
+  const [preview, setPreview] = useState<QuipContent>({ text: '' });
+  const draftQuoteInput = useRef<HTMLInputElement>(null);
+  const draftTextInput = useRef<HTMLInputElement>(null);
 
   const showError = (summary: string) => (err: unknown) =>
     toast.current?.show({
@@ -33,16 +44,25 @@ const QuipsAdmin = () => {
   const createMutation = useMutation({
     // `enabled` is written explicitly rather than left to the schema default, so
     // no row can carry a null and the rotation's `eq: true` filter stays safe.
-    mutationFn: (text: string) => getAdminClient().models.Quip.create({ text, enabled: true }),
+    mutationFn: (content: QuipContent) => getAdminClient().models.Quip.create({ ...content, enabled: true }),
     onSuccess: () => {
-      setDraft('');
+      setDraft(EMPTY_DRAFT);
+      // Refocusing fires onFocus with this render's drafts, so the preview keeps
+      // showing the quip just added until the next keystroke.
+      draftQuoteInput.current?.focus();
       invalidate();
     },
     onError: showError('Could not add quip'),
   });
 
   const updateMutation = useMutation({
-    mutationFn: (input: { id: string; text?: string; enabled?: boolean }) => getAdminClient().models.Quip.update(input),
+    mutationFn: (input: {
+      id: string;
+      text?: string;
+      quote?: string | null;
+      attribution?: string | null;
+      enabled?: boolean;
+    }) => getAdminClient().models.Quip.update(input),
     onSuccess: invalidate,
     onError: showError('Could not save quip'),
   });
@@ -69,10 +89,31 @@ const QuipsAdmin = () => {
     }
   };
 
-  const handleDraftKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== 'Enter') return;
-    const text = draft.trim();
-    if (text !== '') createMutation.mutate(text);
+  const draftProps = (name: keyof Draft) => ({
+    value: draft[name],
+    onChange: (event: ChangeEvent<HTMLInputElement>) => {
+      const next = { ...draft, [name]: event.target.value };
+      setDraft(next);
+      setPreview(next);
+    },
+    onFocus: () => setPreview(draft),
+  });
+
+  // Enter in the quote or attribution moves on to the quip — neither can be
+  // saved alone.
+  const handleDraftLeadInKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') draftTextInput.current?.focus();
+  };
+
+  const handleDraftTextKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Enter' || createMutation.isPending) return;
+    const text = draft.text.trim();
+    if (text === '') return;
+    createMutation.mutate({
+      text,
+      quote: draft.quote.trim() || null,
+      attribution: draft.attribution.trim() || null,
+    });
   };
 
   return (
@@ -108,26 +149,40 @@ const QuipsAdmin = () => {
                   quip={quip}
                   isPending={pendingId === quip.id}
                   onPreview={setPreview}
-                  onSave={text => updateMutation.mutate({ id: quip.id, text })}
+                  onSave={changes => updateMutation.mutate({ id: quip.id, ...changes })}
                   onToggleEnabled={enabled => updateMutation.mutate({ id: quip.id, enabled })}
                   onDelete={() => handleDelete(quip)}
                 />
               ))}
 
-              {/* Pinned draft row: adding several in a row never needs the mouse. */}
+              {/* Pinned draft row: adding several in a row never needs the mouse.
+                  Not disabled while a create is in flight — that would drop
+                  focus, and success hands it back to the quote input. */}
               <li className={styles.draftRow}>
+                <div className={styles.draftQuoteLine}>
+                  <InputText
+                    ref={draftQuoteInput}
+                    className={[styles.draftInput, styles.draftQuoteInput].join(' ')}
+                    placeholder='Quote (optional)'
+                    aria-label='New quote'
+                    onKeyDown={handleDraftLeadInKeyDown}
+                    {...draftProps('quote')}
+                  />
+                  <InputText
+                    className={[styles.draftInput, styles.draftQuoteInput, styles.draftAttributionInput].join(' ')}
+                    placeholder='Attribution'
+                    aria-label='New attribution'
+                    onKeyDown={handleDraftLeadInKeyDown}
+                    {...draftProps('attribution')}
+                  />
+                </div>
                 <InputText
+                  ref={draftTextInput}
                   className={styles.draftInput}
-                  value={draft}
                   placeholder='Add a quip, then press Enter'
                   aria-label='New quip'
-                  disabled={createMutation.isPending}
-                  onChange={event => {
-                    setDraft(event.target.value);
-                    setPreview(event.target.value);
-                  }}
-                  onFocus={() => setPreview(draft)}
-                  onKeyDown={handleDraftKeyDown}
+                  onKeyDown={handleDraftTextKeyDown}
+                  {...draftProps('text')}
                 />
               </li>
             </ul>
@@ -140,7 +195,11 @@ const QuipsAdmin = () => {
               wrap the home page will produce. There is no character limit —
               this is the only length feedback there is. */}
           <div className={styles.previewCard}>
-            <QuipPanel>{preview}</QuipPanel>
+            <QuipPanel
+              quote={preview.quote}
+              attribution={preview.attribution}>
+              {preview.text}
+            </QuipPanel>
           </div>
           <p className={styles.previewHint}>
             Focus a quip to preview it. Long lines wrap — if it looks wrong here, it looks wrong on the home page.

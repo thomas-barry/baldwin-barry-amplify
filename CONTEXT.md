@@ -11,7 +11,19 @@ revealed the curtain slides away to expose the back.
 ## Quip
 
 One short line written for the home page curtain. A quip is either enabled or
-disabled; only enabled quips are eligible for display.
+disabled; only enabled quips are eligible for display. A quip may answer a quote.
+
+## Quote
+
+A line someone else said that a quip answers. Optional; a quip has at most one.
+Shown with its quip, never on its own.
+_Avoid_: Setup, prompt, epigraph
+
+## Attribution
+
+Who said a quote. Optional, and belongs to the quote: a quip with no quote has
+no attribution to show.
+_Avoid_: Source, author, credit, speaker
 
 ## Rotation
 

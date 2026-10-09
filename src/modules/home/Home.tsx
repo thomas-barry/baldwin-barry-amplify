@@ -1,14 +1,14 @@
 import facePalmImage from '@/assets/facepalm.jpg';
 import { CurtainCard } from '@/components/CurtainCard';
 import { QuipPanel } from '@/components/QuipPanel';
-import { QUIPS, rotationQueryOptions } from '@/modules/quips';
+import { QUIPS, rotationQueryOptions, type QuipContent } from '@/modules/quips';
 import { useQuery } from '@tanstack/react-query';
 import type { FocusEvent, KeyboardEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './Home.module.css';
 
 /** Fisher-Yates on a copy — never mutates the source list. */
-const shuffle = (source: string[]): string[] => {
+const shuffle = <T,>(source: T[]): T[] => {
   const out = [...source];
   for (let i = out.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -24,7 +24,7 @@ const Home = () => {
    * no acceptable loading state. See docs/adr/0001-bundled-quip-fallback.md.
    */
   const { data: rotation } = useQuery(rotationQueryOptions());
-  const source = useRef<string[]>(QUIPS);
+  const source = useRef<QuipContent[]>(QUIPS);
 
   /*
    * Reshuffle bag: draws pop off the end, so every quip is shown once before
@@ -33,18 +33,18 @@ const Home = () => {
    * that entry to the far end. A swap rather than a re-roll — with a
    * single-quip list there is nothing to swap to and a loop would never end.
    */
-  const bag = useRef<string[]>([]);
-  const lastShown = useRef('');
+  const bag = useRef<QuipContent[]>([]);
+  const lastShown = useRef<QuipContent>({ text: '' });
 
   const drawQuip = useCallback(() => {
     if (bag.current.length === 0) {
       bag.current = shuffle(source.current);
       const next = bag.current.length - 1;
-      if (bag.current.length > 1 && bag.current[next] === lastShown.current) {
+      if (bag.current.length > 1 && bag.current[next].text === lastShown.current.text) {
         [bag.current[0], bag.current[next]] = [bag.current[next], bag.current[0]];
       }
     }
-    lastShown.current = bag.current.pop() ?? '';
+    lastShown.current = bag.current.pop() ?? { text: '' };
     return lastShown.current;
   }, []);
 
@@ -60,9 +60,10 @@ const Home = () => {
    * emptying the rotation.
    */
   useEffect(() => {
-    const texts = rotation?.map(entry => entry.text).filter(Boolean) ?? [];
-    if (texts.length === 0) return;
-    source.current = texts;
+    const entries =
+      rotation?.filter(entry => entry.text).map(({ text, quote, attribution }) => ({ text, quote, attribution })) ?? [];
+    if (entries.length === 0) return;
+    source.current = entries;
     bag.current = [];
   }, [rotation]);
   const [open, setOpen] = useState(false);
@@ -191,7 +192,13 @@ const Home = () => {
                 className={styles.heroCardImage}
               />
             }
-            back={<QuipPanel>{quip}</QuipPanel>}
+            back={
+              <QuipPanel
+                quote={quip.quote}
+                attribution={quip.attribution}>
+                {quip.text}
+              </QuipPanel>
+            }
           />
         </div>
       </section>

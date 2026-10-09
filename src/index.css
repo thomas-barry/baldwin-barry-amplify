@@ -51,13 +51,15 @@
 
 /* Self-hosted fonts (audit L6): Google Fonts used to see every visitor's IP.
    The same static cuts the old Google request asked for — Inter at 400/500/600,
-   Inter Tight at 400/600/700/800, no italics — so bolder or italic Inter is
-   still synthesized. Each file declares every subset with its unicode-range,
+   Inter Tight at 400/600/700/800 — plus a real 400 italic for quip quotes, so
+   the one italic the display face shows is not synthesized. Bolder or italic
+   Inter is still synthesized. Each file declares every subset with its unicode-range,
    and browsers only fetch the subsets a page actually uses. */
 @import url('@fontsource/inter/400.css') layer(vendor);
 @import url('@fontsource/inter/500.css') layer(vendor);
 @import url('@fontsource/inter/600.css') layer(vendor);
 @import url('@fontsource/inter-tight/400.css') layer(vendor);
+@import url('@fontsource/inter-tight/400-italic.css') layer(vendor);
 @import url('@fontsource/inter-tight/600.css') layer(vendor);
 @import url('@fontsource/inter-tight/700.css') layer(vendor);
 @import url('@fontsource/inter-tight/800.css') layer(vendor);
