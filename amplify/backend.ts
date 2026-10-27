@@ -262,15 +262,19 @@ backend.readUploadLogs.resources.lambda.addToRolePolicy(
 backend.readUploadLogs.resources.lambda.addToRolePolicy(
   new PolicyStatement({
     // Reading the events themselves stays restricted to upload-handler groups.
+    // FilterLogEvents is a log-group action. From April 26, 2027, CloudWatch
+    // Logs authorizes it only against the group ARN (no trailing `:*`). The
+    // older stream-format ARN stays alongside it, as AWS advises, while the
+    // change rolls out region by region.
     actions: ['logs:FilterLogEvents'],
-    resources: [
+    resources: ['/aws/lambda/*onUploadHandler*', '/aws/lambda/*onUploadHandler*:*'].map(resourceName =>
       logsScope.formatArn({
         service: 'logs',
         resource: 'log-group',
-        resourceName: '/aws/lambda/*onUploadHandler*:*',
+        resourceName,
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       }),
-    ],
+    ),
   }),
 );
 
